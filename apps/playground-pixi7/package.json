@@ -1,0 +1,31 @@
+{
+  "name": "playground-pixi7",
+  "version": "0.0.1",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@pixi/layers": "^2.1.0",
+    "@react-pixi-fiber/pixi-7": "workspace:*",
+    "@react-pixi-fiber/react-19": "workspace:*",
+    "animated": "^0.2.2",
+    "pixi.js": "^7.4.3",
+    "playground-shell": "workspace:*",
+    "react": "19.3.0",
+    "react-dom": "19.3.0",
+    "react-pixi-fiber": "workspace:*"
+  },
+  "scripts": {
+    "build": "vite build",
+    "check-types": "tsc --noEmit",
+    "preview": "vite preview",
+    "start": "vite"
+  },
+  "devDependencies": {
+    "@tailwindcss/vite": "4.3.3",
+    "@types/react": "^19.2.0",
+    "@types/react-dom": "^19.2.0",
+    "@vitejs/plugin-react": "^6.1.1",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.1"
+  }
+}

@@ -119,6 +119,55 @@ importers:
         specifier: ^8.3.1
         version: 8.3.1(@types/node@26.6.3)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(yaml@2.9.1)
 
+  apps/playground-pixi7:
+    dependencies:
+      '@pixi/layers':
+        specifier: ^2.1.0
+        version: 2.1.0(@pixi/canvas-renderer@7.4.3(@pixi/core@7.4.3))(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))
+      '@react-pixi-fiber/pixi-7':
+        specifier: workspace:*
+        version: link:../../packages/pixi-7
+      '@react-pixi-fiber/react-19':
+        specifier: workspace:*
+        version: link:../../packages/react-19
+      animated:
+        specifier: ^0.2.2
+        version: 0.2.2(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+      pixi.js:
+        specifier: ^7.4.3
+        version: 7.4.3
+      playground-shell:
+        specifier: workspace:*
+        version: link:../playground-shell
+      react:
+        specifier: 19.3.0
+        version: 19.3.0
+      react-dom:
+        specifier: 19.3.0
+        version: 19.3.0(react@19.3.0)
+      react-pixi-fiber:
+        specifier: workspace:*
+        version: link:../../packages/react-pixi-fiber
+    devDependencies:
+      '@tailwindcss/vite':
+        specifier: 4.3.3
+        version: 4.3.3(vite@8.3.1(@types/node@26.6.3)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(yaml@2.9.1))
+      '@types/react':
+        specifier: ^19.2.0
+        version: 19.3.0
+      '@types/react-dom':
+        specifier: ^19.2.0
+        version: 19.3.0(@types/react@19.3.0)
+      '@vitejs/plugin-react':
+        specifier: ^6.1.1
+        version: 6.1.1(vite@8.3.1(@types/node@26.6.3)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(yaml@2.9.1))
+      typescript:
+        specifier: ^7.0.2
+        version: 7.0.2
+      vite:
+        specifier: ^8.3.1
+        version: 8.3.1(@types/node@26.6.3)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(yaml@2.9.1)
+
   apps/playground-pixi8:
     dependencies:
       '@react-pixi-fiber/pixi-8':
