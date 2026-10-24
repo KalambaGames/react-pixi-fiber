@@ -1,4 +1,4 @@
-import { RotateCcw, Share2, SunMoon } from "lucide-react";
+import { Code, Columns3, Eye, type LucideIcon, RotateCcw, Share2, SunMoon } from "lucide-react";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -11,11 +11,22 @@ import { Input } from "./components/ui/input";
 import { Popover, PopoverAnchor, PopoverContent } from "./components/ui/popover";
 import { Separator } from "./components/ui/separator";
 import { SidebarTrigger } from "./components/ui/sidebar";
+import { ToggleGroup, ToggleGroupItem } from "./components/ui/toggle-group";
+import { Tooltip, TooltipContent, TooltipTrigger } from "./components/ui/tooltip";
 import type { Example } from "./Playground";
+import type { Layout } from "./useLayout";
+
+const layouts: { icon: LucideIcon; label: string; value: Layout }[] = [
+  { icon: Code, label: "Editor only", value: "editor" },
+  { icon: Columns3, label: "Editor and preview", value: "both" },
+  { icon: Eye, label: "Preview only", value: "preview" },
+];
 
 export function TopBar({
   dark,
   example,
+  layout,
+  onLayout,
   onReset,
   onShare,
   onShareClose,
@@ -24,6 +35,8 @@ export function TopBar({
 }: {
   dark: boolean;
   example: Example;
+  layout: Layout;
+  onLayout: (layout: Layout) => void;
   onReset: () => void;
   onShare: () => void;
   onShareClose: () => void;
@@ -43,6 +56,25 @@ export function TopBar({
           </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>
+      <ToggleGroup
+        aria-label="Layout"
+        size="sm"
+        type="single"
+        value={layout}
+        variant="outline"
+        onValueChange={value => value && onLayout(value as Layout)}
+      >
+        {layouts.map(({ icon: Icon, label, value }) => (
+          <Tooltip key={value}>
+            <TooltipTrigger asChild>
+              <ToggleGroupItem aria-label={label} value={value}>
+                <Icon />
+              </ToggleGroupItem>
+            </TooltipTrigger>
+            <TooltipContent>{label}</TooltipContent>
+          </Tooltip>
+        ))}
+      </ToggleGroup>
       <Button
         aria-label={dark ? "Switch to the light theme" : "Switch to the dark theme"}
         size="icon-sm"

@@ -11,9 +11,11 @@ import { Toaster } from "./components/ui/sonner";
 import { ConsolePanel } from "./ConsolePanel";
 import { Editor } from "./Editor";
 import { useIsMobile } from "./hooks/use-mobile";
+import type { Layout } from "./useLayout";
 import { Preview } from "./Preview";
 import { SetupBar } from "./SetupBar";
 import { TopBar } from "./TopBar";
+import { useLayout } from "./useLayout";
 import { useRunner } from "./useRunner";
 import { useSidebarOpen } from "./useSidebarOpen";
 import { useTheme, type Theme } from "./useTheme";
@@ -87,35 +89,46 @@ function Panels({
   console,
   editor,
   isMobile,
+  layout,
   preview,
 }: {
   console: ReactNode;
   editor: ReactNode;
   isMobile: boolean;
+  layout: Layout;
   preview: ReactNode;
 }) {
   const main = useDefaultLayout({ id: "playground:panels:main", storage: panelStorage });
   const output = useDefaultLayout({ id: "playground:panels:output", storage: panelStorage });
+  // A hidden part stays mounted, so the example keeps running and the editor keeps its history.
+  const editorHidden = layout === "preview" || undefined;
+  const outputHidden = layout === "editor" || undefined;
   if (isMobile)
     return (
-      <div className="flex flex-col">
-        <div className="flex h-[50vh] flex-col">{editor}</div>
-        <div className="h-[360px] border-t">{preview}</div>
-        <div className="h-48 border-t">{console}</div>
+      <div className="flex flex-col [&>[data-hidden]]:hidden">
+        <div className="flex h-[50vh] flex-col" data-hidden={editorHidden}>
+          {editor}
+        </div>
+        <div className="h-[360px] border-t first:border-t-0" data-hidden={outputHidden}>
+          {preview}
+        </div>
+        <div className="h-48 border-t" data-hidden={outputHidden}>
+          {console}
+        </div>
       </div>
     );
   return (
     <ResizablePanelGroup
-      className="min-h-0 flex-1"
+      className="min-h-0 flex-1 [&>[data-hidden]]:hidden!"
       defaultLayout={main.defaultLayout}
       orientation="horizontal"
       onLayoutChanged={main.onLayoutChanged}
     >
-      <ResizablePanel className="flex flex-col" defaultSize="50" id="editor" minSize="25">
+      <ResizablePanel className="flex flex-col" data-hidden={editorHidden} defaultSize="50" id="editor" minSize="25">
         {editor}
       </ResizablePanel>
-      <ResizableHandle withHandle />
-      <ResizablePanel defaultSize="50" id="output" minSize="25">
+      <ResizableHandle data-hidden={editorHidden ?? outputHidden} withHandle />
+      <ResizablePanel data-hidden={outputHidden} defaultSize="50" id="output" minSize="25">
         <ResizablePanelGroup
           defaultLayout={output.defaultLayout}
           orientation="vertical"
@@ -155,6 +168,7 @@ function Session({
     setUpstream(hash !== null);
   };
   const [shareUrl, setShareUrl] = useState<string | null>(null);
+  const [layout, setLayout] = useLayout();
   const { entries, iframeKey, iframeRef, restart } = useRunner(example.runner, code, {
     held: resolved.held,
     onRun: () => {
@@ -164,11 +178,11 @@ function Session({
   });
   // Switching between the mobile and desktop layouts mounts a new editor and preview, so the example runs again.
   const isMobile = useIsMobile();
-  const layout = useRef(isMobile);
+  const mobileLayout = useRef(isMobile);
   // biome-ignore lint/correctness/useExhaustiveDependencies: only a layout switch restarts, with the code shown then
   useEffect(() => {
-    if (layout.current === isMobile) return;
-    layout.current = isMobile;
+    if (mobileLayout.current === isMobile) return;
+    mobileLayout.current = isMobile;
     restart(code);
   }, [isMobile]);
   const pending = useRef<string | null>(null);
@@ -248,7 +262,9 @@ function Session({
       <TopBar
         dark={dark}
         example={example}
+        layout={layout}
         shareUrl={shareUrl}
+        onLayout={setLayout}
         onReset={reset}
         onShare={share}
         onShareClose={() => setShareUrl(null)}
@@ -257,6 +273,7 @@ function Session({
       <Panels
         console={<ConsolePanel entries={shown} />}
         isMobile={isMobile}
+        layout={layout}
         editor={
           <>
             <div className="flex flex-col gap-2 empty:hidden [&:has(>*)]:p-2">
