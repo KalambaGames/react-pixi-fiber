@@ -12,7 +12,8 @@ export default defineConfig({
   // animated reads Node's `global`.
   define: { global: "globalThis", "process.env.NODE_ENV": JSON.stringify("development") },
   // The sandboxed iframe runs in the opaque origin "null" and fetches its scripts cross-origin.
-  server: { cors: { origin: "null" } },
+  // The version picker links to the other playground's fixed port.
+  server: { cors: { origin: "null" }, port: 5180, strictPort: true },
   build: {
     rollupOptions: {
       input: {

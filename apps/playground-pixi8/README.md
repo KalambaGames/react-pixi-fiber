@@ -23,8 +23,9 @@ To start the playground, run this command in the repository root:
 pnpm start
 ```
 
-This command starts the Vite development servers of all the playgrounds. Each server prints its URL. When you change the
-playground or an example, the page updates. To start only this playground, run `pnpm --filter playground-pixi8 start`.
+This command starts the Vite development servers of all the playgrounds. This playground is at http://localhost:5180/.
+When you change the playground or an example, the page updates. The version picker opens the other playgrounds on their
+own dev servers. To start only this playground, run `pnpm --filter playground-pixi8 start`.
 
 The playground uses development builds of React, react-pixi-fiber and the adapter. This is on purpose. The warnings
 in the console are then readable.

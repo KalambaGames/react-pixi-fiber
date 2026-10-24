@@ -1,6 +1,6 @@
 import { Blocks, ChevronRight, CircleFadingArrowUp, type LucideIcon, Package, Sparkles } from "lucide-react";
 import { buildHash } from "../share";
-import { versions } from "../versions";
+import { versionHref, versions } from "../versions";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "./components/ui/hover-card";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "./components/ui/select";
 import {
@@ -82,7 +82,11 @@ export function AppSidebar({
   const sections = groups
     .map(group => ({ ...group, items: examples.filter(example => example.group === group.name) }))
     .filter(section => section.items.length > 0);
-  const current = versions.find(version => version.label === `PixiJS ${pixiMajor}`) ?? versions[0];
+  const links = versions.map(version => ({
+    href: versionHref(version, window.location, selectedId),
+    label: version.label,
+  }));
+  const current = links.find(link => link.label === `PixiJS ${pixiMajor}`) ?? links[0];
   return (
     <Sidebar collapsible="icon" variant="inset">
       <SidebarHeader className="px-0">
@@ -101,9 +105,9 @@ export function AppSidebar({
           </SelectTrigger>
           <SelectContent position="popper">
             <SelectGroup>
-              {versions.map(version => (
-                <SelectItem key={version.href} value={version.href}>
-                  {version.label}
+              {links.map(link => (
+                <SelectItem key={link.href} value={link.href}>
+                  {link.label}
                 </SelectItem>
               ))}
             </SelectGroup>
@@ -116,11 +120,7 @@ export function AppSidebar({
             <SidebarMenu>
               <HoverSection
                 icon={Package}
-                links={versions.map(version => ({
-                  active: version === current,
-                  href: version.href,
-                  label: version.label,
-                }))}
+                links={links.map(link => ({ ...link, active: link === current }))}
                 name="PixiJS version"
               />
               {sections.map(({ icon, items, name }) => (

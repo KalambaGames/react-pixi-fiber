@@ -1,0 +1,22 @@
+import { describe, expect, it } from "vitest";
+import { versionHref, versions } from "../src/versions";
+
+const [pixi7, pixi8] = versions;
+
+describe("versionHref", () => {
+  it("links to the other dev server from a playground dev server", () => {
+    expect(versionHref(pixi7, { hostname: "localhost", port: "5180" })).toBe("http://localhost:5170/");
+    expect(versionHref(pixi8, { hostname: "localhost", port: "5170" })).toBe("http://localhost:5180/");
+  });
+
+  it("keeps the example when it switches versions", () => {
+    expect(versionHref(pixi7, { hostname: "localhost", port: "5180" }, "container")).toBe(
+      "http://localhost:5170/#container"
+    );
+    expect(versionHref(pixi8, { hostname: "example.com", port: "" }, "container")).toBe("../pixi-8/#container");
+  });
+
+  it("links to the sibling folder on the site", () => {
+    expect(versionHref(pixi7, { hostname: "example.com", port: "" })).toBe("../pixi-7/");
+  });
+});
