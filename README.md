@@ -6,7 +6,7 @@
 
 This repository holds [`react-pixi-fiber`](./packages/react-pixi-fiber), a React Fiber renderer for [PixiJS](https://pixijs.com/), its React and PixiJS adapters, and the playgrounds. Package documentation lives in the [package README](./packages/react-pixi-fiber/README.md).
 
-Try the playgrounds in your browser: [PixiJS 8](https://react-pixi-fiber.pages.dev/pixi-8/), [PixiJS 7](https://react-pixi-fiber.pages.dev/pixi-7/) and [PixiJS 6](https://react-pixi-fiber.pages.dev/pixi-6/).
+Try the playgrounds in your browser: [PixiJS 8](https://react-pixi-fiber.pages.dev/pixi-8/), [PixiJS 7](https://react-pixi-fiber.pages.dev/pixi-7/), [PixiJS 6](https://react-pixi-fiber.pages.dev/pixi-6/) and [PixiJS 5](https://react-pixi-fiber.pages.dev/pixi-5/).
 
 ## Layout
 
@@ -22,7 +22,7 @@ Try the playgrounds in your browser: [PixiJS 8](https://react-pixi-fiber.pages.d
 | [`packages/react-19`](./packages/react-19) | `@react-pixi-fiber/react-19`, the React 19 adapter, bundles `react-reconciler` 0.34.0 | `react` ^19.3.0, `react-pixi-fiber` ^3.0.0 |
 | [`packages/react-pixi-fiber`](./packages/react-pixi-fiber) | `react-pixi-fiber`, the core with the components, `Stage` and `configure` | `react` >=17.0.0 <20.0.0 |
 
-[`apps/playground-pixi6`](./apps/playground-pixi6), [`apps/playground-pixi7`](./apps/playground-pixi7) and [`apps/playground-pixi8`](./apps/playground-pixi8) hold the playgrounds, built with Vite on the local packages. [`apps/playground-shell`](./apps/playground-shell) holds the code they share.
+[`apps/playground-pixi5`](./apps/playground-pixi5), [`apps/playground-pixi6`](./apps/playground-pixi6), [`apps/playground-pixi7`](./apps/playground-pixi7) and [`apps/playground-pixi8`](./apps/playground-pixi8) hold the playgrounds, built with Vite on the local packages. [`apps/playground-shell`](./apps/playground-shell) holds the code they share.
 
 An app installs the core, one React adapter and one PixiJS adapter. Every PixiJS adapter implements all 13 core tags; the [compatibility matrix](./packages/react-pixi-fiber/README.md#compatibility-matrix) and the version notes (React 17, React 19, PixiJS 4 and PixiJS 8) are in the package README, and each adapter's README lists its supported features.
 
@@ -48,7 +48,7 @@ Rebuild the packages after changing their source before running or typechecking 
 
 ## Hosted playgrounds
 
-[Cloudflare Pages](https://pages.cloudflare.com) builds the playgrounds from this repository with `pnpm build:site` and serves the `site` directory: the PixiJS 6 playground at `/pixi-6/`, the PixiJS 7 playground at `/pixi-7/` and the PixiJS 8 playground at `/pixi-8/`. The root redirects to `/pixi-8/`. Pushes to `develop` deploy to https://react-pixi-fiber.pages.dev, and every pull request gets a preview URL, posted as a comment on the pull request.
+[Cloudflare Pages](https://pages.cloudflare.com) builds the playgrounds from this repository with `pnpm build:site` and serves the `site` directory: the PixiJS 5 playground at `/pixi-5/`, the PixiJS 6 playground at `/pixi-6/`, the PixiJS 7 playground at `/pixi-7/` and the PixiJS 8 playground at `/pixi-8/`. The root redirects to `/pixi-8/`. Pushes to `develop` deploy to https://react-pixi-fiber.pages.dev, and every pull request gets a preview URL, posted as a comment on the pull request.
 
 ## Contributing
 

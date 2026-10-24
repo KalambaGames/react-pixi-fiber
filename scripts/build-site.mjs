@@ -1,4 +1,4 @@
-// Puts the built PixiJS 6, 7 and 8 playgrounds into one folder for Cloudflare Pages.
+// Puts the built PixiJS 5, 6, 7 and 8 playgrounds into one folder for Cloudflare Pages.
 // Run through `pnpm build:site`: `pnpm build` builds every app, each playground with its base `/pixi-<major>/`.
 import { cpSync, rmSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
@@ -6,7 +6,7 @@ import { fileURLToPath } from "node:url";
 
 const root = fileURLToPath(new URL("..", import.meta.url));
 const site = join(root, "site");
-const majors = [6, 7, 8];
+const majors = [5, 6, 7, 8];
 
 rmSync(site, { force: true, recursive: true });
 for (const major of majors) {
