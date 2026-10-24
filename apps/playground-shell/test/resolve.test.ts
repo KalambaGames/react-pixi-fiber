@@ -41,9 +41,7 @@ describe("resolve", () => {
     store.markRunning("first");
     const resolved = await resolve(examples, store, window.location.hash);
     expect(resolved).toMatchObject({ code: "while (true) {}", held: true });
-    expect(resolved.notices).toEqual([
-      "The last run of this code did not finish. Edit the code to run it again, or press Reset to load the original example.",
-    ]);
+    expect(resolved.notices).toEqual([]);
     store.reset("first");
     expect(await resolve(examples, store, window.location.hash)).toMatchObject({ held: false, notices: [] });
   });
@@ -54,9 +52,7 @@ describe("resolve", () => {
     window.history.replaceState(null, "", `#first&code=${await encodeCode("while (true) {}")}`);
     const resolved = await resolve(examples, store, window.location.hash);
     expect(resolved).toMatchObject({ banner: "shared", code: "while (true) {}", held: true });
-    expect(resolved.notices).toEqual([
-      "The last run of this code did not finish. Edit the code to run it again, or press Reset to load the original example.",
-    ]);
+    expect(resolved.notices).toEqual([]);
   });
 
   it("opens the first example without shared code for an unknown id", async () => {

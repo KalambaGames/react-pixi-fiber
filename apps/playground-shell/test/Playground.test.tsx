@@ -4,6 +4,7 @@ import { act } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { type Example, Playground, withConsoleSize } from "../src/parent/Playground";
+import { createStore } from "../src/storage";
 
 declare global {
   var IS_REACT_ACT_ENVIRONMENT: boolean;
@@ -88,7 +89,7 @@ describe("Playground", () => {
     expect(container.querySelector("iframe")).not.toBeNull();
   });
 
-  it("runs the example once more, with a clean console, when the layout switches to mobile", async () => {
+  it("keeps the example running, with its console, when the layout switches to mobile", async () => {
     await render();
     const frame = container.querySelector("iframe") as HTMLIFrameElement;
     const source = frame.contentWindow;
@@ -100,7 +101,8 @@ describe("Playground", () => {
     });
     expect(log()).toContain("hello");
     setWidth(500);
-    expect(log()).not.toContain("hello");
+    expect(container.querySelector("iframe")).toBe(frame);
+    expect(log()).toContain("hello");
   });
 
   it("saves the last edit when the page unloads", async () => {
@@ -123,6 +125,19 @@ describe("Playground", () => {
     expect(localStorage.getItem("playground:pixi-8-running")).toBeNull();
   });
 
+  it("runs held code when Run is pressed", async () => {
+    createStore(8, localStorage).save("first", "edited code", "code");
+    localStorage.setItem("playground:pixi-8-running", "first");
+    await render();
+    const frame = container.querySelector("iframe");
+    expect(container.textContent).toContain("The last run of this code did not finish.");
+    const run = [...container.querySelectorAll("button")].find(button => button.textContent === "Run");
+    act(() => run?.click());
+    expect(container.querySelector("iframe")).not.toBe(frame);
+    expect(container.textContent).not.toContain("The last run of this code did not finish.");
+    expect(container.textContent).toContain("edited code");
+  });
+
   it("says so when the browser cannot pack the code into a link", async () => {
     vi.stubGlobal(
       "CompressionStream",
@@ -136,6 +151,16 @@ describe("Playground", () => {
     const share = [...container.querySelectorAll("button")].find(button => button.textContent === "Share");
     await act(async () => share?.click());
     await vi.waitFor(() => expect(document.body.textContent).toContain("This browser cannot create a share link."));
+  });
+
+  it("keeps the editor and the setup state when the layout switches to mobile", async () => {
+    await render();
+    const editor = container.querySelector(".cm-editor");
+    const setup = [...container.querySelectorAll("button")].find(button => button.textContent?.startsWith("Setup:"));
+    act(() => setup?.click());
+    setWidth(500);
+    expect(container.querySelector(".cm-editor")).toBe(editor);
+    expect(container.textContent).toContain("configure();");
   });
 
   it("shows the setup collapsed to its summary until opened", async () => {

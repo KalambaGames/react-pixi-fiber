@@ -16,7 +16,7 @@ let held = false;
 
 function Harness({ code }: { code: string }) {
   latest = useRunner("runner.html", code, { held, onRun });
-  return <Preview src="runner.html" iframeKey={latest.iframeKey} iframeRef={latest.iframeRef} />;
+  return <Preview src="runner.html" iframeKey={latest.iframeKey} iframeRef={latest.iframeRef} slot={null} />;
 }
 
 let container: HTMLDivElement;

@@ -1,4 +1,5 @@
 import { type ReactNode, useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { type GroupProps, type Layout as PanelLayout, useDefaultLayout, usePanelRef } from "react-resizable-panels";
 import { toast } from "sonner";
 import { buildHash, decodeCode, encodeCode, parseHash } from "../share";
@@ -40,9 +41,6 @@ interface Resolved {
   staleHash: string | null;
 }
 
-const HELD =
-  "The last run of this code did not finish. Edit the code to run it again, or press Reset to load the original example.";
-
 export async function resolve(examples: Example[], store: CodeStore, hash: string): Promise<Resolved> {
   const parsed = parseHash(hash);
   const known = examples.find(candidate => candidate.id === parsed.exampleId);
@@ -53,14 +51,14 @@ export async function resolve(examples: Example[], store: CodeStore, hash: strin
     try {
       const code = await decodeCode(shared);
       const held = store.wasRunning(example.id);
-      return { banner: "shared", code, example, held, notices: held ? [HELD] : [], staleHash: null };
+      return { banner: "shared", code, example, held, notices: [], staleHash: null };
     } catch {
       window.history.replaceState(null, "", buildHash(example.id));
     }
   }
   const saved = store.load(example.id, example.code);
   const held = saved !== null && store.wasRunning(example.id);
-  const notices = [...(shared === null ? [] : ["This link holds code that cannot be read."]), ...(held ? [HELD] : [])];
+  const notices = shared === null ? [] : ["This link holds code that cannot be read."];
   return {
     banner: null,
     code: saved?.code ?? example.code,
@@ -253,16 +251,14 @@ function Session({
       setTimeout(() => store.clearRunning(example.id), 2000);
     },
   });
-  // The mobile, split and stacked layouts each mount a new editor and preview, so the example runs again.
+  // The mobile, split and stacked layouts each mount new panels. The preview frame and the editor stay outside them,
+  // so a layout switch keeps the example running and the editor keeps its history.
   const isMobile = useIsMobile();
   const arrangement = isMobile ? "mobile" : layout === "stacked" ? "stacked" : "split";
-  const shownArrangement = useRef(arrangement);
-  // biome-ignore lint/correctness/useExhaustiveDependencies: only an arrangement switch restarts, with the code shown then
-  useEffect(() => {
-    if (shownArrangement.current === arrangement) return;
-    shownArrangement.current = arrangement;
-    restart(code);
-  }, [arrangement]);
+  const [previewSlot, setPreviewSlot] = useState<HTMLDivElement | null>(null);
+  const [editorHost] = useState(() =>
+    Object.assign(document.createElement("div"), { className: "flex min-h-0 flex-1 flex-col" })
+  );
   const pending = useRef<string | null>(null);
   const timer = useRef<ReturnType<typeof setTimeout>>(undefined);
 
@@ -336,7 +332,7 @@ function Session({
   ];
 
   return (
-    <>
+    <div className="relative flex min-h-0 flex-1 flex-col">
       <TopBar
         dark={dark}
         example={example}
@@ -355,25 +351,41 @@ function Session({
         isMobile={isMobile}
         layout={layout}
         editor={
-          <>
-            <div className="flex flex-col gap-2 empty:hidden [&:has(>*)]:p-2">
-              {banner === "shared" && <Banner text="Shared code. Editing saves it as your version." />}
-              {upstream && (
-                <Banner
-                  text="This example changed since you edited it."
-                  actions={[{ label: "Reset", onClick: reset }]}
-                />
-              )}
-            </div>
-            <div className="min-h-0 flex-1">
-              <Editor dark={dark} value={code} onChange={edit} />
-            </div>
-            <SetupBar code={example.configure.code} dark={dark} summary={example.configure.summary} />
-          </>
+          <div
+            className="contents"
+            ref={slot => {
+              if (slot && editorHost.parentNode !== slot) slot.append(editorHost);
+            }}
+          />
         }
-        preview={<Preview iframeKey={iframeKey} iframeRef={iframeRef} src={example.runner} />}
+        preview={<div className="size-full" ref={setPreviewSlot} />}
       />
-    </>
+      {createPortal(
+        <>
+          <div className="flex flex-col gap-2 empty:hidden [&:has(>*)]:p-2">
+            {banner === "shared" && <Banner text="Shared code. Editing saves it as your version." />}
+            {resolved.held && iframeKey === 0 && (
+              <Banner
+                text="The last run of this code did not finish. Press Run to try again."
+                actions={[
+                  { label: "Run", onClick: () => restart(code) },
+                  { label: "Reset", onClick: reset },
+                ]}
+              />
+            )}
+            {upstream && (
+              <Banner text="This example changed since you edited it." actions={[{ label: "Reset", onClick: reset }]} />
+            )}
+          </div>
+          <div className="min-h-0 flex-1">
+            <Editor dark={dark} value={code} onChange={edit} />
+          </div>
+          <SetupBar code={example.configure.code} dark={dark} summary={example.configure.summary} />
+        </>,
+        editorHost
+      )}
+      <Preview iframeKey={iframeKey} iframeRef={iframeRef} slot={previewSlot} src={example.runner} />
+    </div>
   );
 }
 
