@@ -1,26 +1,20 @@
 import { useState } from "react";
+import { browserStorage } from "../storage";
 
-export type Layout = "both" | "editor" | "preview";
+export type Layout = "both" | "editor" | "preview" | "stacked";
 
 const KEY = "playground:layout";
 
 function stored(): Layout {
-  try {
-    const value = localStorage.getItem(KEY);
-    return value === "editor" || value === "preview" ? value : "both";
-  } catch {
-    return "both";
-  }
+  const value = browserStorage.get(KEY);
+  return value === "editor" || value === "preview" || value === "stacked" ? value : "both";
 }
 
 export function useLayout(): [Layout, (layout: Layout) => void] {
   const [layout, setLayout] = useState(stored);
   const update = (next: Layout) => {
     setLayout(next);
-    try {
-      if (next === "both") localStorage.removeItem(KEY);
-      else localStorage.setItem(KEY, next);
-    } catch {}
+    browserStorage.set(KEY, next === "both" ? null : next);
   };
   return [layout, update];
 }

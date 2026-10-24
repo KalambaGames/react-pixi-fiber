@@ -1,4 +1,4 @@
-import { Code, Columns3, Eye, type LucideIcon, RotateCcw, Share2, SunMoon } from "lucide-react";
+import { Code, Columns3, Eye, type LucideIcon, RotateCcw, Rows3, Share2, SunMoon } from "lucide-react";
 import {
   Breadcrumb,
   BreadcrumbItem,
@@ -19,6 +19,7 @@ import type { Layout } from "./useLayout";
 const layouts: { icon: LucideIcon; label: string; value: Layout }[] = [
   { icon: Code, label: "Editor only", value: "editor" },
   { icon: Columns3, label: "Editor and preview", value: "both" },
+  { icon: Rows3, label: "Preview, editor and console stacked", value: "stacked" },
   { icon: Eye, label: "Preview only", value: "preview" },
 ];
 

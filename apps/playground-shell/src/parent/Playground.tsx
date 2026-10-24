@@ -1,5 +1,5 @@
 import { type ReactNode, useEffect, useRef, useState } from "react";
-import { type GroupProps, useDefaultLayout, usePanelRef } from "react-resizable-panels";
+import { type GroupProps, type Layout as PanelLayout, useDefaultLayout, usePanelRef } from "react-resizable-panels";
 import { toast } from "sonner";
 import { buildHash, decodeCode, encodeCode, parseHash } from "../share";
 import { browserStorage, createStore, type CodeStore } from "../storage";
@@ -85,6 +85,18 @@ const panelStorage = {
   setItem: browserStorage.set,
 };
 
+// A group that has no size yet gives the collapsed console all of it, and that layout cannot scale.
+export function withConsoleSize(layout: PanelLayout, size: number): PanelLayout | undefined {
+  if (layout.console >= 100) return undefined;
+  const scale = (100 - size) / (100 - layout.console);
+  return Object.fromEntries(Object.entries(layout).map(([id, value]) => [id, id === "console" ? size : value * scale]));
+}
+
+// The groups that hold the console get these sizes in their first render, also when no layout is saved. Without them,
+// the console collapses on mount before the group has a size, and the collapsed console takes the whole group.
+const OUTPUT_SIZES = { console: 30, preview: 70 };
+const STACKED_SIZES = { console: 15, editor: 35, preview: 50 };
+
 // The height of the console header, which stays visible while the console is collapsed.
 const CONSOLE_COLLAPSED = "32px";
 
@@ -105,6 +117,7 @@ function Panels({
 }) {
   const main = useDefaultLayout({ id: "playground:panels:main", storage: panelStorage });
   const output = useDefaultLayout({ id: "playground:panels:output", storage: panelStorage });
+  const stacked = useDefaultLayout({ id: "playground:panels:stacked", storage: panelStorage });
   // The console starts collapsed and opens when the example writes to it.
   const consolePanel = usePanelRef();
   const [consoleOpen, setConsoleOpen] = useState(false);
@@ -117,11 +130,38 @@ function Panels({
   useEffect(() => {
     openConsole(hasEntries);
   }, [hasEntries]);
-  // A collapsed console is not saved, so a reload opens it at the size it had before.
-  const saveOutput: GroupProps["onLayoutChanged"] = (...args) => {
-    if (!consolePanel.current?.isCollapsed()) output.onLayoutChanged(...args);
-  };
+  // A collapsed console saves the size it had while open, so a reload opens it at that size.
+  const consoleSize = useRef<number | undefined>(undefined);
+  const keepConsoleSize =
+    (
+      { defaultLayout, onLayoutChanged }: ReturnType<typeof useDefaultLayout>,
+      sizes: PanelLayout
+    ): GroupProps["onLayoutChanged"] =>
+    (layout, meta) => {
+      const requested = meta.requestedLayout ?? layout;
+      if (!consolePanel.current?.isCollapsed()) {
+        consoleSize.current = requested.console;
+        return onLayoutChanged(layout, meta);
+      }
+      const scaled = withConsoleSize(requested, consoleSize.current ?? defaultLayout?.console ?? sizes.console);
+      if (scaled) onLayoutChanged(scaled, { ...meta, requestedLayout: undefined });
+    };
   const consoleNode = console({ onToggle: () => openConsole(!consoleOpen), open: consoleOpen });
+  const consoleResizable = (
+    <ResizablePanel
+      collapsedSize={CONSOLE_COLLAPSED}
+      collapsible
+      id="console"
+      minSize="10"
+      panelRef={consolePanel}
+      onResize={() => {
+        const open = !consolePanel.current?.isCollapsed();
+        if (open !== consoleOpen) setConsoleOpen(open);
+      }}
+    >
+      {consoleNode}
+    </ResizablePanel>
+  );
   // A hidden part stays mounted, so the example keeps running and the editor keeps its history.
   const editorHidden = layout === "preview" || undefined;
   const outputHidden = layout === "editor" || undefined;
@@ -139,6 +179,25 @@ function Panels({
         </div>
       </div>
     );
+  if (layout === "stacked")
+    return (
+      <ResizablePanelGroup
+        className="min-h-0 flex-1"
+        defaultLayout={stacked.defaultLayout ?? STACKED_SIZES}
+        orientation="vertical"
+        onLayoutChanged={keepConsoleSize(stacked, STACKED_SIZES)}
+      >
+        <ResizablePanel id="preview" minSize="15">
+          {preview}
+        </ResizablePanel>
+        <ResizableHandle withHandle />
+        <ResizablePanel className="flex flex-col" id="editor" minSize="15">
+          {editor}
+        </ResizablePanel>
+        <ResizableHandle withHandle />
+        {consoleResizable}
+      </ResizablePanelGroup>
+    );
   return (
     <ResizablePanelGroup
       className="min-h-0 flex-1 [&>[data-hidden]]:hidden!"
@@ -151,25 +210,14 @@ function Panels({
       </ResizablePanel>
       <ResizableHandle data-hidden={editorHidden ?? outputHidden} withHandle />
       <ResizablePanel data-hidden={outputHidden} defaultSize="50" id="output" minSize="25">
-        <ResizablePanelGroup defaultLayout={output.defaultLayout} orientation="vertical" onLayoutChanged={saveOutput}>
-          <ResizablePanel defaultSize="70" id="preview">
-            {preview}
-          </ResizablePanel>
+        <ResizablePanelGroup
+          defaultLayout={output.defaultLayout ?? OUTPUT_SIZES}
+          orientation="vertical"
+          onLayoutChanged={keepConsoleSize(output, OUTPUT_SIZES)}
+        >
+          <ResizablePanel id="preview">{preview}</ResizablePanel>
           <ResizableHandle withHandle />
-          <ResizablePanel
-            collapsedSize={CONSOLE_COLLAPSED}
-            collapsible
-            defaultSize="30"
-            id="console"
-            minSize="10"
-            panelRef={consolePanel}
-            onResize={() => {
-              const open = !consolePanel.current?.isCollapsed();
-              if (open !== consoleOpen) setConsoleOpen(open);
-            }}
-          >
-            {consoleNode}
-          </ResizablePanel>
+          {consoleResizable}
         </ResizablePanelGroup>
       </ResizablePanel>
     </ResizablePanelGroup>
@@ -205,15 +253,16 @@ function Session({
       setTimeout(() => store.clearRunning(example.id), 2000);
     },
   });
-  // Switching between the mobile and desktop layouts mounts a new editor and preview, so the example runs again.
+  // The mobile, split and stacked layouts each mount a new editor and preview, so the example runs again.
   const isMobile = useIsMobile();
-  const mobileLayout = useRef(isMobile);
-  // biome-ignore lint/correctness/useExhaustiveDependencies: only a layout switch restarts, with the code shown then
+  const arrangement = isMobile ? "mobile" : layout === "stacked" ? "stacked" : "split";
+  const shownArrangement = useRef(arrangement);
+  // biome-ignore lint/correctness/useExhaustiveDependencies: only an arrangement switch restarts, with the code shown then
   useEffect(() => {
-    if (mobileLayout.current === isMobile) return;
-    mobileLayout.current = isMobile;
+    if (shownArrangement.current === arrangement) return;
+    shownArrangement.current = arrangement;
     restart(code);
-  }, [isMobile]);
+  }, [arrangement]);
   const pending = useRef<string | null>(null);
   const timer = useRef<ReturnType<typeof setTimeout>>(undefined);
 
@@ -300,6 +349,7 @@ function Session({
         onToggleTheme={() => onTheme(dark ? "light" : "dark")}
       />
       <Panels
+        key={arrangement}
         console={props => <ConsolePanel entries={shown} {...props} />}
         hasEntries={shown.length > 0}
         isMobile={isMobile}

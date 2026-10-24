@@ -3,7 +3,7 @@ import { EditorView } from "codemirror";
 import { act } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { type Example, Playground } from "../src/parent/Playground";
+import { type Example, Playground, withConsoleSize } from "../src/parent/Playground";
 
 declare global {
   var IS_REACT_ACT_ENVIRONMENT: boolean;
@@ -155,5 +155,18 @@ describe("Playground", () => {
     await render();
     await act(async () => container.querySelector<HTMLButtonElement>("[aria-label='Copy setup']")?.click());
     expect(writeText).toHaveBeenCalledWith("configure();");
+  });
+});
+
+describe("withConsoleSize", () => {
+  it("gives the console its open size and scales the other panels to fill the rest", () => {
+    const layout = withConsoleSize({ console: 3, editor: 37, preview: 60 }, 15);
+    expect(layout?.console).toBe(15);
+    expect(layout?.editor).toBeCloseTo((37 * 85) / 97);
+    expect(layout?.preview).toBeCloseTo((60 * 85) / 97);
+  });
+
+  it("gives nothing for a console that fills the group", () => {
+    expect(withConsoleSize({ console: 100, preview: 0 }, 30)).toBeUndefined();
   });
 });
