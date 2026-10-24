@@ -62,6 +62,58 @@ importers:
         specifier: 1.1.0
         version: 1.1.0
 
+  apps/playground-pixi4:
+    dependencies:
+      '@react-pixi-fiber/pixi-4':
+        specifier: workspace:*
+        version: link:../../packages/pixi-4
+      '@react-pixi-fiber/react-19':
+        specifier: workspace:*
+        version: link:../../packages/react-19
+      animated:
+        specifier: ^0.2.2
+        version: 0.2.2(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+      pixi-layers:
+        specifier: ^0.1.10
+        version: 0.1.10
+      pixi.js:
+        specifier: ^4.8.9
+        version: 4.8.9
+      playground-shell:
+        specifier: workspace:*
+        version: link:../playground-shell
+      react:
+        specifier: 19.3.0
+        version: 19.3.0
+      react-dom:
+        specifier: 19.3.0
+        version: 19.3.0(react@19.3.0)
+      react-pixi-fiber:
+        specifier: workspace:*
+        version: link:../../packages/react-pixi-fiber
+    devDependencies:
+      '@tailwindcss/vite':
+        specifier: 4.3.3
+        version: 4.3.3(vite@8.3.1(@types/node@26.6.3)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(yaml@2.9.1))
+      '@types/pixi.js':
+        specifier: ^4.8.9
+        version: 4.8.9
+      '@types/react':
+        specifier: ^19.2.0
+        version: 19.3.0
+      '@types/react-dom':
+        specifier: ^19.2.0
+        version: 19.3.0(@types/react@19.3.0)
+      '@vitejs/plugin-react':
+        specifier: ^6.1.1
+        version: 6.1.1(vite@8.3.1(@types/node@26.6.3)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(yaml@2.9.1))
+      typescript:
+        specifier: ^7.0.2
+        version: 7.0.2
+      vite:
+        specifier: ^8.3.1
+        version: 8.3.1(@types/node@26.6.3)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(yaml@2.9.1)
+
   apps/playground-pixi5:
     dependencies:
       '@react-pixi-fiber/pixi-5':
@@ -3831,6 +3883,9 @@ packages:
   pixi-gl-core@1.1.4:
     resolution: {integrity: sha512-dGLwg7664yASpT1insVUexNTMVEtvPZh/eDoXu8QUBoq2CY1Fc8axNwR+qbS1aJ8vj6y/TfWiOEaOSyNH41txw==}
 
+  pixi-layers@0.1.10:
+    resolution: {integrity: sha512-isK7wss3Vg7IMrUieZhstjp8r1Ynk9HJVgc1Tz/TGnMRN0LN5APiUCeLrsFvaodfbVxCQ/4YRm56gW0jaeEoig==}
+
   pixi-layers@0.3.1:
     resolution: {integrity: sha512-sLqkg4xnlKKjKceTgyNEvb2Fh7A1OmbsZRTHVnnsqMmhkVLVUgRNZX6ZflTne0pgGOal6EXp1bmns4geXZsY7A==}
 
@@ -7583,6 +7638,10 @@ snapshots:
   pirates@4.0.7: {}
 
   pixi-gl-core@1.1.4: {}
+
+  pixi-layers@0.1.10:
+    dependencies:
+      '@types/pixi.js': 4.8.9
 
   pixi-layers@0.3.1: {}
 

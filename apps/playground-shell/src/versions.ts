@@ -3,6 +3,7 @@ import { buildHash } from "./share";
 export type Version = { devPort: number; label: string; path: string };
 
 export const versions: Version[] = [
+  { devPort: 5140, label: "PixiJS 4", path: "../pixi-4/" },
   { devPort: 5150, label: "PixiJS 5", path: "../pixi-5/" },
   { devPort: 5160, label: "PixiJS 6", path: "../pixi-6/" },
   { devPort: 5170, label: "PixiJS 7", path: "../pixi-7/" },
