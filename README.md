@@ -46,7 +46,7 @@ Rebuild the packages after changing their source before running or typechecking 
 
 ## Hosted examples
 
-[Cloudflare Pages](https://pages.cloudflare.com) builds the examples from this repository with `pnpm build && pnpm --filter examples build` and serves `apps/examples/dist`. Pushes to `master` deploy to https://react-pixi-fiber.pages.dev, and every pull request gets a preview URL, posted as a comment on the pull request.
+[Cloudflare Pages](https://pages.cloudflare.com) builds the examples from this repository with `pnpm build:site` and serves the `site` directory: the PixiJS 7 examples at the root and the PixiJS 8 playground at `/pixi-8/`. Pushes to `master` deploy to https://react-pixi-fiber.pages.dev, and every pull request gets a preview URL, posted as a comment on the pull request.
 
 ## Contributing
 
