@@ -129,16 +129,16 @@ export type WithPointLike<T> =
  * Base components
  */
 
-// `Instance` is the display object a `ref` on the component receives.
+// `Instance` is the Display Object a `ref` on the component receives.
 export type PixiElement<Props, Instance = Props> = Props & React.ClassAttributes<Instance>;
 
 // This is similar to React.FunctionComponent<P>
-// `I` is the display object a `ref` on the component receives.
+// `I` is the Display Object a `ref` on the component receives.
 export interface PixiComponent<P = {}, I = P> {
   (props: PixiElement<P, I>): React.ReactElement<P>;
 }
 
-// Takes a display object type and updates its fields to be used with `ReactPixiFiber`. `PixiExtraProps` adds the props
+// Takes a Display Object type and updates its fields to be used with `ReactPixiFiber`. `PixiExtraProps` adds the props
 // the adapter declares for every tag.
 export type DisplayObjectProps<T> = PropsWithReactChildren<Partial<WithPointLike<T>>> & PixiExtraProps;
 export type Props<T> = DisplayObjectProps<T>;
@@ -215,7 +215,7 @@ export interface PixiAdapter {
  * React adapter
  */
 
-// What `<Fragment ref>` receives: the top-level display objects of the fragment, like react-dom's host children.
+// What `<Fragment ref>` receives: the top-level Display Objects of the fragment, like react-dom's host children.
 export interface PixiFragmentInstance {
   readonly children: readonly any[];
   getBounds(): any[];
@@ -251,7 +251,7 @@ export interface HostOps {
   // Development only. `internalHandle` is the fiber, so the core can gate on <StrictMode> with the adapter's bit.
   validateProperties(type: string, props: Record<string, unknown>, internalHandle?: unknown): void;
   // Fragment refs, for a reconciler with fragment instances. `readChildren` returns the fragment's current top-level
-  // display objects; the adapter reads them from its fibers.
+  // Display Objects; the adapter reads them from its fibers.
   commitNewChildToFragmentInstance(child: any, instance: PixiFragmentInstance): void;
   createFragmentInstance(readChildren: () => any[]): PixiFragmentInstance;
   deleteChildFromFragmentInstance(child: any, instance: PixiFragmentInstance): void;
@@ -312,7 +312,7 @@ export type StageComponent = React.ForwardRefExoticComponent<StageProps & { ref?
  * Components registered with `PIXIComponent`
  */
 
-// A display object created by a `PIXIComponent` behavior.
+// A Display Object created by a `PIXIComponent` behavior.
 export type PIXIComponentInstance<T extends object, P> = T;
 
 // Used create an instance of `PIXI.DisplayObject`.

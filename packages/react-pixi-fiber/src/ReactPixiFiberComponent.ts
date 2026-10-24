@@ -217,7 +217,7 @@ export function updateProperties(
 }
 
 // Re-applies props to an instance the way the component that created it does: through its own `applyProps`
-// when it has one, otherwise through the display-object prop pipeline for its tag.
+// when it has one, otherwise through the Display Object prop pipeline for its tag.
 export function applyProps(
   instance: any,
   oldProps: Record<string, unknown> | undefined,
@@ -226,7 +226,7 @@ export function applyProps(
   const bound = getBoundBehavior(instance);
   invariant(
     bound,
-    "`applyProps` expects an instance that react-pixi-fiber created. Use `applyDisplayObjectProps(type, instance, oldProps, newProps)` for other display objects."
+    "`applyProps` expects an instance that react-pixi-fiber created. Use `applyDisplayObjectProps(type, instance, oldProps, newProps)` for other Display Objects."
   );
   if (bound.applyProps) {
     bound.applyProps(instance, withDefaults(bound.tag, oldProps as Props), withDefaults(bound.tag, newProps));

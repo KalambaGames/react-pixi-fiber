@@ -97,7 +97,7 @@ Every React adapter works with every PixiJS adapter:
 
 - An error thrown while rendering is reported to `console.error` instead of being thrown from `render()`.
 - `<ViewTransition>` inside `Stage` renders its children without animating.
-- A `<Fragment ref>` inside `Stage` receives the fragment's top-level display objects: `children` lists them, `getBounds()` returns the bounds of each, and `on(event, fn)` and `off(event, fn)` add and remove a listener on each, including display objects added to the fragment later.
+- A `<Fragment ref>` inside `Stage` receives the fragment's top-level Display Objects: `children` lists them, `getBounds()` returns the bounds of each, and `on(event, fn)` and `off(event, fn)` add and remove a listener on each, including Display Objects added to the fragment later.
 
 ### PixiJS 4
 
@@ -117,10 +117,10 @@ Every React adapter works with every PixiJS adapter:
 - `Stage` creates the application with the asynchronous `app.init()`, so it renders its children after the application exists. Read the application in [`onInit`](#read-the-application-in-oninit-not-from-the-ref-at-mount).
 - `usePixiTicker` callbacks receive the PixiJS 8 `Ticker`, not a delta: read `ticker.deltaTime`.
 - `tint` accepts color strings as well as numbers.
-- `ParticleContainer` takes `<Particle>` children, imported from `@react-pixi-fiber/pixi-8`, not display objects. A `Particle` needs a `texture` and takes the `Particle` fields as props (`x`, `y`, `scaleX`, `scaleY`, `anchorX`, `anchorY`, `rotation`, `tint`, `alpha`); a change to a prop that is not in the container's `dynamicProperties` calls the container's `update()`. `ParticleContainer` takes `dynamicProperties`, `roundPixels`, `shader` and `texture`, read when it is created.
+- `ParticleContainer` takes `<Particle>` children, imported from `@react-pixi-fiber/pixi-8`, not Scene Objects. A `Particle` needs a `texture` and takes the `Particle` fields as props (`x`, `y`, `scaleX`, `scaleY`, `anchorX`, `anchorY`, `rotation`, `tint`, `alpha`); a change to a prop that is not in the container's `dynamicProperties` calls the container's `update()`. `ParticleContainer` takes `dynamicProperties`, `roundPixels`, `shader` and `texture`, read when it is created.
 - A Suspense boundary inside a `ParticleContainer` does not hide its particles while it shows a fallback (a boundary above the container hides the container), a `ParticleContainer` cannot be the container passed to `render`, and a `<Particle>` under any other container fails inside PixiJS.
 - `pixi8({ compat })`, with `compat` imported from `@react-pixi-fiber/pixi-8/compat/pixi6` (or `/compat/pixi7`, the same module), translates the props that PixiJS 8 renamed: `buttonMode` to `cursor`, `interactive` to `eventMode`, `name` to `label`, `uvRespectAnchor` to `applyAnchorToTexture`, the event names such as `click` and `pointerdown` to `onclick` and `onpointerdown`, and `mousemove`, `pointermove` and `touchmove` to `onglobalmousemove`, `onglobalpointermove` and `onglobaltouchmove`, which run on every move as the 2.x move props did. In development each translated prop warns once and names the replacement. When both the old and the PixiJS 8 prop are passed, the PixiJS 8 prop wins. PixiJS 4 and 5 apps use `compat/pixi6` too. Without the import, `pixi-8` holds no compat code.
-- Compat covers props only. A filter is not a display object, so `BlurFilter.blur` (now `strength`) still logs PixiJS's own deprecation warning.
+- Compat covers props only. A filter is not a Display Object, so `BlurFilter.blur` (now `strength`) still logs PixiJS's own deprecation warning.
 
 Moved from the PixiJS 7 playground to PixiJS 8 with `compat` from `@react-pixi-fiber/pixi-8/compat/pixi6`, the Sprite, Events and Point-like props examples work after these changes:
 
@@ -253,9 +253,9 @@ Expects **one** the following props:
 
 #### Tags
 
-Each tag names a display object concept. The configured PixiJS adapter creates the matching class of your PixiJS version; every adapter implements all 13 tags.
+Each tag names a Display Object concept. The configured PixiJS adapter creates the matching class of your PixiJS version; every adapter implements all 13 tags.
 
-A display object is an object in the scene graph: a `PIXI.DisplayObject` on PixiJS 4 to 7, a `PIXI.Container` on PixiJS 8, which has no `DisplayObject`. The API names that contain `DisplayObject`, for example `applyDisplayObjectProps` and `DisplayObjectProps`, keep the 2.x names on every PixiJS version.
+A Display Object is an object in the scene graph: a `PIXI.DisplayObject` on PixiJS 4 to 7, a `PIXI.Container` on PixiJS 8, which has no `DisplayObject`. The API names that contain `DisplayObject`, for example `applyDisplayObjectProps` and `DisplayObjectProps`, keep the 2.x names on every PixiJS version.
 
 | Tag | Renders |
 | --- | --- |
@@ -277,7 +277,7 @@ For code that runs on every PixiJS version, use `<MeshSimple texture vertices uv
 
 ### Props
 
-ReactPixiFiber does not ignore unknown display object members – they are all set on the instance as-is, and
+ReactPixiFiber does not ignore unknown Display Object members – they are all set on the instance as-is, and
 an unknown name is not reported.
 
 
@@ -523,7 +523,7 @@ Keep the number of contexts the same across renders, as with hooks: a change rem
 
 #### `create(props)`
 
-Use this to create the display object.
+Use this to create the Display Object.
 
 This is your entry point to custom components and the only required method.
 
@@ -903,7 +903,7 @@ import { applyProps } from "react-pixi-fiber";
 applyProps(instance, {}, props);
 ```
 
-`_customApplyProps`, `_customDidAttach` and `_customWillDetach` are no longer set on the display object. `applyProps` works for every instance React Pixi Fiber created, built-in or custom, and `getInstanceTag(instance)` returns its tag.
+`_customApplyProps`, `_customDidAttach` and `_customWillDetach` are no longer set on the Display Object. `applyProps` works for every instance React Pixi Fiber created, built-in or custom, and `getInstanceTag(instance)` returns its tag.
 
 ### Read the application in `onInit`, not from the ref at mount
 
@@ -1029,7 +1029,7 @@ PIXIProperty("NineSliceSprite", "leftWidth", value => value >= 0);
 getInstanceTag(nineSlicePlaneInstance); // "NineSlicePlane"
 ```
 
-The tags an adapter adds under its PixiJS class names, for example `NineSlicePlane`, `SimpleMesh`, `SimplePlane` and `SimpleRope` in `@react-pixi-fiber/pixi-6`, create the same display objects as the core tags, but each is a tag of its own. `defaults` and `PIXIProperty` keyed by the core tag do not apply to them, and `getInstanceTag` returns the tag you wrote. Key them by that tag too, or use the core tag.
+The tags an adapter adds under its PixiJS class names, for example `NineSlicePlane`, `SimpleMesh`, `SimplePlane` and `SimpleRope` in `@react-pixi-fiber/pixi-6`, create the same Display Objects as the core tags, but each is a tag of its own. `defaults` and `PIXIProperty` keyed by the core tag do not apply to them, and `getInstanceTag` returns the tag you wrote. Key them by that tag too, or use the core tag.
 
 ### The 2.x interaction types import from the PixiJS adapter
 

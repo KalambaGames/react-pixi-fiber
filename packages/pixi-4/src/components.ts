@@ -10,7 +10,7 @@ function bitmapTextStyle(props: Record<string, any>) {
   return style;
 }
 
-// PixiJS 4 has one mesh class, so `Mesh` and `MeshSimple` create the same display object.
+// PixiJS 4 has one mesh class, so `Mesh` and `MeshSimple` create the same Display Object.
 const mesh: Behavior = {
   create: props => new PIXI.mesh.Mesh(props.texture, props.vertices, props.uvs, props.indices, props.drawMode),
 };

@@ -1,6 +1,6 @@
 # @react-pixi-fiber/react-17
 
-React 17 adapter for [react-pixi-fiber](https://github.com/michalochman/react-pixi-fiber). It bundles `react-reconciler` 0.26.2 and builds the renderer that `react-pixi-fiber` uses to render PixiJS display objects. It needs React 17.0.2 or a later 17.x, the peer range of that `react-reconciler`.
+React 17 adapter for [react-pixi-fiber](https://github.com/michalochman/react-pixi-fiber). It bundles `react-reconciler` 0.26.2 and builds the renderer that `react-pixi-fiber` uses to render PixiJS Display Objects. It needs React 17.0.2 or a later 17.x, the peer range of that `react-reconciler`.
 
 Install it next to `react-pixi-fiber`, `react` 17 and a PixiJS adapter from the [adapter table](../react-pixi-fiber/README.md#setup), then configure once in the app entry, before the first render:
 
@@ -20,7 +20,7 @@ The tree inside `Stage`, or inside a container passed to `render`, is its own Re
 
 | Feature | Support |
 | --- | --- |
-| Context, error boundaries, hooks, refs | Supported. A ref on a tag receives the PixiJS display object |
+| Context, error boundaries, hooks, refs | Supported. A ref on a tag receives the PixiJS Display Object |
 | Concurrent features | With `root: "concurrent"`, experimental, as concurrent mode is in React 17: `render` commits synchronously and later updates are scheduled by React. As with `unstable_createRoot`, the whole tree is in strict mode, so React renders each component twice in development. An update from a PixiJS event handler does not get the priority of its DOM event. With the default `root: "legacy"`, not available: the root is a legacy root, as `ReactDOM.render` creates |
 | DevTools | The renderer registers with React DevTools as `react-pixi-fiber` in development |
 | Errors while rendering | Thrown from `render` and caught by error boundaries, as in React 17 |

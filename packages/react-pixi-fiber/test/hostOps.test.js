@@ -467,7 +467,7 @@ describe("hostOps", () => {
       expect(instance.getBounds()).toEqual([bounds]);
     });
 
-    it("reaches a PixiJS display object with on, once after it is reported again", () => {
+    it("reaches a PixiJS Display Object with on, once after it is reported again", () => {
       const container = new PIXI.Container();
       const instance = hostOps.createFragmentInstance(() => [container]);
       const fn = vi.fn();

@@ -19,7 +19,7 @@ const particleParents = new WeakMap<PIXI.Particle, PIXI.ParticleContainer>();
 function asParticle(child: unknown, Particle: Pixi8Components["Particle"] | undefined): PIXI.Particle {
   if (Particle === undefined || !(child instanceof Particle)) {
     throw new Error(
-      "`ParticleContainer` takes only `Particle` children from `@react-pixi-fiber/pixi-8`, not display objects."
+      "`ParticleContainer` takes only `Particle` children from `@react-pixi-fiber/pixi-8`, not Scene Objects."
     );
   }
   return child;

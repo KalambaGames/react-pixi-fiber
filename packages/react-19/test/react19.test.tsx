@@ -263,7 +263,7 @@ describe("react19", () => {
     }
   });
 
-  it("gives a Fragment ref the fragment's display objects and tracks added and removed ones", () => {
+  it("gives a Fragment ref the fragment's Display Objects and tracks added and removed ones", () => {
     const { ops } = createFakeHostOps();
     const renderer = react19().createRenderer(ops, { isPrimaryRenderer: true });
     const error = vi.spyOn(console, "error");
@@ -342,7 +342,7 @@ describe("react19", () => {
     expect(ref.current!.children.map(child => child.listeners)).toEqual([[["pointerdown", fn]], [["pointerdown", fn]]]);
   });
 
-  it("gives a Fragment ref the display objects of a nested Fragment and of a portal", () => {
+  it("gives a Fragment ref the Display Objects of a nested Fragment and of a portal", () => {
     const { ops } = createFakeHostOps();
     const renderer = react19().createRenderer(ops, { isPrimaryRenderer: true });
     const container = { children: [] as any[] };

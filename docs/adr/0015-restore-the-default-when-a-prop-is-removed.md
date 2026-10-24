@@ -9,7 +9,7 @@ A consumer can remove a prop between two renders: `<Sprite alpha={0.5} />` becom
 
 ## Decision Drivers
 
-- A removed prop must leave the display object as if the prop was never set
+- A removed prop must leave the Display Object as if the prop was never set
 - An explicit `null` from the consumer must stay a real value
 
 ## Decision

@@ -12,18 +12,18 @@ export interface Behavior<I = any, P = any> {
   beforeRemove?(instance: I): void;
   /**
    * Adds `child` to the end of this parent's children, or moves it there, in place of `parent.addChild(child)`.
-   * For adapters whose container keeps children that are not display objects. Unstable: may change in a minor.
+   * For adapters whose container keeps children that are not Display Objects. Unstable: may change in a minor.
    */
   appendChild?(parent: I, child: unknown): void;
   /**
    * Adds `child` before `before`, or moves it there, in place of `parent.addChildAt(child, index)`.
-   * For adapters whose container keeps children that are not display objects. Unstable: may change in a minor.
+   * For adapters whose container keeps children that are not Display Objects. Unstable: may change in a minor.
    */
   insertBefore?(parent: I, child: unknown, before: unknown): void;
   /**
    * Removes `child` from this parent's children, in place of `parent.removeChild(child)`. The core destroys the child
    * afterwards when it has a `destroy` method.
-   * For adapters whose container keeps children that are not display objects. Unstable: may change in a minor.
+   * For adapters whose container keeps children that are not Display Objects. Unstable: may change in a minor.
    */
   removeChild?(parent: I, child: unknown): void;
 }
@@ -79,7 +79,7 @@ export function normalizeBehavior(type: string, behavior: BehaviorInput): Behavi
   }
   invariant(
     typeof normalized.create === "function",
-    "Invalid behavior for `%s`: `create` must be a function that returns a display object.",
+    "Invalid behavior for `%s`: `create` must be a function that returns a Display Object.",
     type
   );
   return normalized as unknown as Behavior;
@@ -142,7 +142,7 @@ export function createRegisteredInstance(
   const instance = behavior.create(props);
   invariant(
     instance !== null && (typeof instance === "object" || typeof instance === "function"),
-    "`create` of `%s` returned `%s`, expected a display object.",
+    "`create` of `%s` returned `%s`, expected a Display Object.",
     type,
     String(instance)
   );
