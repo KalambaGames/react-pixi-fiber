@@ -85,7 +85,7 @@ Every React adapter works with every PixiJS adapter:
 | `react-18`, `react` ^18.3.1, `react-reconciler` 0.29.2 | tested | tested | tested | tested | tested |
 | `react-19`, `react` ^19.3.0, `react-reconciler` 0.34.0 | supported | supported | supported | supported | supported |
 
-"tested": a test suite in this repository renders through this pair. The core suite runs on `react-18` and `pixi-6`, each PixiJS adapter's suite runs on `react-18`, and the examples run on `react-18` and `pixi-7`. "supported": the React adapter's suite runs against a fake PixiJS adapter and the PixiJS adapter's suite against `react-18`; the two meet only through `configure`, so the pair is expected to work but no test renders through it.
+"tested": a test suite in this repository renders through this pair. The core suite runs on `react-18` and `pixi-6`, each PixiJS adapter's suite runs on `react-18`, and the examples run on `react-18` and `pixi-7`. "supported": the React adapter's suite runs against a fake PixiJS adapter and the PixiJS adapter's suite against `react-18`. The two meet only through `configure`, so the pair is expected to work but no test renders through it.
 
 ### React 17
 

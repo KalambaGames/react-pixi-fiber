@@ -8,3 +8,8 @@ ignoredBuiltDependencies:
   - core-js
   - core-js-pure
   - esbuild
+# react-resizable-panels has no @types/react peer, so it would get the React 18 types other packages hoist.
+packageExtensions:
+  react-resizable-panels:
+    peerDependencies:
+      "@types/react": "*"
