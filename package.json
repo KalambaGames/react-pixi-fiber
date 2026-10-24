@@ -12,6 +12,7 @@
     "format": "biome check --write",
     "check-types": "pnpm -r check-types && tsc -p scripts/tsconfig.json",
     "start": "pnpm --filter examples start",
+    "playground": "pnpm --filter playground-pixi8 start",
     "check-bundle": "pnpm -r --if-present check-bundle",
     "check-package": "node scripts/check-package.mjs",
     "changeset": "changeset",

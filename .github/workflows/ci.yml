@@ -56,3 +56,6 @@ jobs:
 
       # typecheck the library source, the TypeScript fixture, and the examples against the built declarations
       - run: pnpm check-types
+
+      # build the PixiJS 8 playground
+      - run: pnpm --filter playground-pixi8 build
