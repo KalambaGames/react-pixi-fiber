@@ -27,7 +27,7 @@
 
 ## Demo
 
-The playgrounds cover the API. They are hosted at https://react-pixi-fiber.pages.dev (the root opens the PixiJS 8 playground, `/pixi-7/` the PixiJS 7 playground). To run them locally, use `pnpm install`, `pnpm build` and `pnpm start` in the repository.
+The playgrounds cover the API. They are hosted at https://react-pixi-fiber.pages.dev (the root opens the PixiJS 8 playground, `/pixi-7/` the PixiJS 7 playground and `/pixi-6/` the PixiJS 6 playground). To run them locally, use `pnpm install`, `pnpm build` and `pnpm start` in the repository.
 
 
 ## Installing
@@ -225,7 +225,7 @@ This example will render [`PIXI.Text`] object into a [Root Container] of PIXI Ap
 
 ## Running Examples
 
-The playgrounds live in [`apps/playground-pixi8`](../../apps/playground-pixi8) and [`apps/playground-pixi7`](../../apps/playground-pixi7) of the [repository](https://github.com/michalochman/react-pixi-fiber) and use the local `react-pixi-fiber` package.
+The playgrounds live in [`apps/playground-pixi8`](../../apps/playground-pixi8), [`apps/playground-pixi7`](../../apps/playground-pixi7) and [`apps/playground-pixi6`](../../apps/playground-pixi6) of the [repository](https://github.com/michalochman/react-pixi-fiber) and use the local `react-pixi-fiber` package.
 
 1. Run `pnpm install` in the repository root.
 2. Run `pnpm build` in the repository root. The playgrounds load the built files, so rebuild after changing the package source.
