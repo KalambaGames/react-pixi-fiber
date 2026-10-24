@@ -1,5 +1,5 @@
 import { type ReactNode, useEffect, useRef, useState } from "react";
-import { useDefaultLayout } from "react-resizable-panels";
+import { type GroupProps, useDefaultLayout, usePanelRef } from "react-resizable-panels";
 import { toast } from "sonner";
 import { buildHash, decodeCode, encodeCode, parseHash } from "../share";
 import { browserStorage, createStore, type CodeStore } from "../storage";
@@ -85,21 +85,43 @@ const panelStorage = {
   setItem: browserStorage.set,
 };
 
+// The height of the console header, which stays visible while the console is collapsed.
+const CONSOLE_COLLAPSED = "32px";
+
 function Panels({
   console,
   editor,
+  hasEntries,
   isMobile,
   layout,
   preview,
 }: {
-  console: ReactNode;
+  console: (props: { onToggle: () => void; open: boolean }) => ReactNode;
   editor: ReactNode;
+  hasEntries: boolean;
   isMobile: boolean;
   layout: Layout;
   preview: ReactNode;
 }) {
   const main = useDefaultLayout({ id: "playground:panels:main", storage: panelStorage });
   const output = useDefaultLayout({ id: "playground:panels:output", storage: panelStorage });
+  // The console starts collapsed and opens when the example writes to it.
+  const consolePanel = usePanelRef();
+  const [consoleOpen, setConsoleOpen] = useState(false);
+  const openConsole = (open: boolean) => {
+    setConsoleOpen(open);
+    if (open) consolePanel.current?.expand();
+    else consolePanel.current?.collapse();
+  };
+  // biome-ignore lint/correctness/useExhaustiveDependencies: the first entry of a run is the trigger
+  useEffect(() => {
+    openConsole(hasEntries);
+  }, [hasEntries]);
+  // A collapsed console is not saved, so a reload opens it at the size it had before.
+  const saveOutput: GroupProps["onLayoutChanged"] = (...args) => {
+    if (!consolePanel.current?.isCollapsed()) output.onLayoutChanged(...args);
+  };
+  const consoleNode = console({ onToggle: () => openConsole(!consoleOpen), open: consoleOpen });
   // A hidden part stays mounted, so the example keeps running and the editor keeps its history.
   const editorHidden = layout === "preview" || undefined;
   const outputHidden = layout === "editor" || undefined;
@@ -112,8 +134,8 @@ function Panels({
         <div className="h-[360px] border-t first:border-t-0" data-hidden={outputHidden}>
           {preview}
         </div>
-        <div className="h-48 border-t" data-hidden={outputHidden}>
-          {console}
+        <div className={consoleOpen ? "h-48 border-t" : "border-t"} data-hidden={outputHidden}>
+          {consoleNode}
         </div>
       </div>
     );
@@ -129,17 +151,24 @@ function Panels({
       </ResizablePanel>
       <ResizableHandle data-hidden={editorHidden ?? outputHidden} withHandle />
       <ResizablePanel data-hidden={outputHidden} defaultSize="50" id="output" minSize="25">
-        <ResizablePanelGroup
-          defaultLayout={output.defaultLayout}
-          orientation="vertical"
-          onLayoutChanged={output.onLayoutChanged}
-        >
+        <ResizablePanelGroup defaultLayout={output.defaultLayout} orientation="vertical" onLayoutChanged={saveOutput}>
           <ResizablePanel defaultSize="70" id="preview">
             {preview}
           </ResizablePanel>
           <ResizableHandle withHandle />
-          <ResizablePanel defaultSize="30" id="console" minSize="10">
-            {console}
+          <ResizablePanel
+            collapsedSize={CONSOLE_COLLAPSED}
+            collapsible
+            defaultSize="30"
+            id="console"
+            minSize="10"
+            panelRef={consolePanel}
+            onResize={() => {
+              const open = !consolePanel.current?.isCollapsed();
+              if (open !== consoleOpen) setConsoleOpen(open);
+            }}
+          >
+            {consoleNode}
           </ResizablePanel>
         </ResizablePanelGroup>
       </ResizablePanel>
@@ -271,7 +300,8 @@ function Session({
         onToggleTheme={() => onTheme(dark ? "light" : "dark")}
       />
       <Panels
-        console={<ConsolePanel entries={shown} />}
+        console={props => <ConsolePanel entries={shown} {...props} />}
+        hasEntries={shown.length > 0}
         isMobile={isMobile}
         layout={layout}
         editor={
