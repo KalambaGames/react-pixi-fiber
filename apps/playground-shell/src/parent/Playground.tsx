@@ -365,10 +365,10 @@ function Session({
                 />
               )}
             </div>
-            <SetupBar code={example.configure.code} summary={example.configure.summary} />
             <div className="min-h-0 flex-1">
               <Editor dark={dark} value={code} onChange={edit} />
             </div>
+            <SetupBar code={example.configure.code} dark={dark} summary={example.configure.summary} />
           </>
         }
         preview={<Preview iframeKey={iframeKey} iframeRef={iframeRef} src={example.runner} />}

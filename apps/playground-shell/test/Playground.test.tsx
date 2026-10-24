@@ -153,6 +153,8 @@ describe("Playground", () => {
     const writeText = vi.fn(() => Promise.resolve());
     vi.stubGlobal("navigator", { ...navigator, clipboard: { writeText } });
     await render();
+    const setup = [...container.querySelectorAll("button")].find(button => button.textContent?.startsWith("Setup:"));
+    await act(async () => setup?.click());
     await act(async () => container.querySelector<HTMLButtonElement>("[aria-label='Copy setup']")?.click());
     expect(writeText).toHaveBeenCalledWith("configure();");
   });

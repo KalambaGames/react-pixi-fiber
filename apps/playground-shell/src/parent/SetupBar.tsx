@@ -1,10 +1,11 @@
-import { ChevronRight, Copy } from "lucide-react";
+import { ChevronRight, Copy, Plug } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "./components/ui/button";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "./components/ui/collapsible";
+import { Editor } from "./Editor";
 
-// The configure code the example runs with, collapsed to one line.
-export function SetupBar({ code, summary }: { code: string; summary: string }) {
+// The configure code the example runs with, collapsed to one line below the editor. It opens upwards.
+export function SetupBar({ code, dark, summary }: { code: string; dark: boolean; summary: string }) {
   const copy = async () => {
     try {
       await navigator.clipboard.writeText(code);
@@ -14,20 +15,25 @@ export function SetupBar({ code, summary }: { code: string; summary: string }) {
     }
   };
   return (
-    <Collapsible className="border-b">
-      <div className="flex items-center gap-1 px-1 py-0.5">
-        <CollapsibleTrigger asChild>
-          <Button className="group min-w-0 flex-1 justify-start" size="sm" variant="ghost">
-            <ChevronRight className="transition-transform group-data-[state=open]:rotate-90" />
-            <span className="truncate">Setup: {summary}</span>
-          </Button>
-        </CollapsibleTrigger>
-        <Button aria-label="Copy setup" size="icon-sm" variant="ghost" onClick={copy}>
+    <Collapsible className="flex flex-col-reverse border-t">
+      <CollapsibleTrigger asChild>
+        <Button className="group h-8 shrink-0 justify-start rounded-none" size="sm" variant="ghost">
+          <ChevronRight className="transition-transform group-data-[state=open]:-rotate-90" />
+          <Plug />
+          <span className="truncate">Setup: {summary}</span>
+        </Button>
+      </CollapsibleTrigger>
+      <CollapsibleContent className="relative">
+        <Button
+          aria-label="Copy setup"
+          className="absolute top-1 right-1"
+          size="icon-sm"
+          variant="ghost"
+          onClick={copy}
+        >
           <Copy />
         </Button>
-      </div>
-      <CollapsibleContent>
-        <pre className="overflow-x-auto px-3 pb-2 font-mono text-muted-foreground text-xs">{code}</pre>
+        <Editor dark={dark} readOnly value={code} />
       </CollapsibleContent>
     </Collapsible>
   );
