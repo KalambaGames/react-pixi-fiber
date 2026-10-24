@@ -27,7 +27,7 @@
 
 ## Demo
 
-The [examples](../../apps/examples) cover the API. They are hosted at https://react-pixi-fiber.pages.dev; to run them locally, use `pnpm install`, `pnpm build` and `pnpm start` in the repository.
+The playgrounds cover the API. They are hosted at https://react-pixi-fiber.pages.dev (the root opens the PixiJS 8 playground, `/pixi-7/` the PixiJS 7 playground). To run them locally, use `pnpm install`, `pnpm build` and `pnpm start` in the repository.
 
 
 ## Installing
@@ -85,7 +85,7 @@ Every React adapter works with every PixiJS adapter:
 | `react-18`, `react` ^18.3.1, `react-reconciler` 0.29.2 | tested | tested | tested | tested | tested |
 | `react-19`, `react` ^19.3.0, `react-reconciler` 0.34.0 | supported | supported | supported | supported | supported |
 
-"tested": a test suite in this repository renders through this pair. The core suite runs on `react-18` and `pixi-6`, each PixiJS adapter's suite runs on `react-18`, and the examples run on `react-18` and `pixi-7`. "supported": the React adapter's suite runs against a fake PixiJS adapter and the PixiJS adapter's suite against `react-18`. The two meet only through `configure`, so the pair is expected to work but no test renders through it.
+"tested": a test suite in this repository renders through this pair. The core suite runs on `react-18` and `pixi-6`, each PixiJS adapter's suite runs on `react-18`. "supported": the React adapter's suite runs against a fake PixiJS adapter and the PixiJS adapter's suite against `react-18`. The two meet only through `configure`, so the pair is expected to work but no test renders through it.
 
 ### React 17
 
@@ -122,13 +122,12 @@ Every React adapter works with every PixiJS adapter:
 - `pixi8({ compat })`, with `compat` imported from `@react-pixi-fiber/pixi-8/compat/pixi6` (or `/compat/pixi7`, the same module), translates the props that PixiJS 8 renamed: `buttonMode` to `cursor`, `interactive` to `eventMode`, `name` to `label`, `uvRespectAnchor` to `applyAnchorToTexture`, the event names such as `click` and `pointerdown` to `onclick` and `onpointerdown`, and `mousemove`, `pointermove` and `touchmove` to `onglobalmousemove`, `onglobalpointermove` and `onglobaltouchmove`, which run on every move as the 2.x move props did. In development each translated prop warns once and names the replacement. When both the old and the PixiJS 8 prop are passed, the PixiJS 8 prop wins. PixiJS 4 and 5 apps use `compat/pixi6` too. Without the import, `pixi-8` holds no compat code.
 - Compat covers props only. A filter is not a display object, so `BlurFilter.blur` (now `strength`) still logs PixiJS's own deprecation warning.
 
-The bundled examples run on PixiJS 7. Moved to PixiJS 8 with `compat` from `@react-pixi-fiber/pixi-8/compat/pixi6`, the Bunny, Click and Points examples work after these changes:
+Moved from the PixiJS 7 playground to PixiJS 8 with `compat` from `@react-pixi-fiber/pixi-8/compat/pixi6`, the Sprite, Events and Point-like props examples work after these changes:
 
 - `Texture.from(url)` followed by `.baseTexture` becomes `await Assets.load(url)` and `new Texture({ frame, source })`.
 - `BaseTexture.defaultOptions.scaleMode = SCALE_MODES.NEAREST` becomes `TextureSource.defaultOptions.scaleMode = "nearest"`.
 - A `usePixiTicker` callback reads `ticker.deltaTime`.
-- `PIXI.DisplayObject` becomes `PIXI.Container`.
-- The Bunnymark, Custom Bunnymark and Suspense examples still use the PixiJS 7 texture calls (`Texture.from(url, options)`, `Texture.fromURL`) and need the same change.
+- The Bunnymark, Bunnymark with custom components and Suspense examples still use the PixiJS 7 texture calls (`Texture.from(url)`, `Texture.fromURL`) and need the same change.
 - The Layers example depends on `@pixi/layers`, which supports PixiJS 7 only.
 
 ## Usage
@@ -226,12 +225,12 @@ This example will render [`PIXI.Text`] object into a [Root Container] of PIXI Ap
 
 ## Running Examples
 
-The examples live in [`apps/examples`](../../apps/examples) of the [repository](https://github.com/michalochman/react-pixi-fiber) and use the local `react-pixi-fiber` package.
+The playgrounds live in [`apps/playground-pixi8`](../../apps/playground-pixi8) and [`apps/playground-pixi7`](../../apps/playground-pixi7) of the [repository](https://github.com/michalochman/react-pixi-fiber) and use the local `react-pixi-fiber` package.
 
 1. Run `pnpm install` in the repository root.
-2. Run `pnpm build` in the repository root. The examples load the built files, so rebuild after changing the package source.
-3. Run `pnpm start` in the repository root.
-4. Wait few seconds and browse examples that will open in new browser window.
+2. Run `pnpm build` in the repository root. The playgrounds load the built files, so rebuild after changing the package source.
+3. Run `pnpm start` in the repository root. It starts the dev servers of all the playgrounds.
+4. Open one of the URLs that the command prints.
 
 
 ## API

@@ -3,6 +3,8 @@
 The playground shows examples of react-pixi-fiber with PixiJS 8. Each example has a code editor and a live preview.
 You can change the code and see the result.
 
+The hosted playground is at https://react-pixi-fiber.pages.dev/pixi-8/.
+
 ## Run the playground
 
 The playground loads the built packages of this repository. Before the first start, run these commands in the
@@ -18,10 +20,11 @@ When you change a package, run `pnpm build` again.
 To start the playground, run this command in the repository root:
 
 ```sh
-pnpm playground
+pnpm start
 ```
 
-This command starts the Vite development server. When you change the playground or an example, the page updates.
+This command starts the Vite development servers of all the playgrounds. Each server prints its URL. When you change the
+playground or an example, the page updates. To start only this playground, run `pnpm --filter playground-pixi8 start`.
 
 The playground uses development builds of React, react-pixi-fiber and the adapter. This is on purpose. The warnings
 in the console are then readable.

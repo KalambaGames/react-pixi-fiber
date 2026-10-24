@@ -70,7 +70,7 @@ The core team is monitoring for pull requests. We will review your pull request 
 5. Format your code (`pnpm format`) and make sure it lints (`pnpm lint`).
 6. Write your commit messages as [Conventional Commits](#commit-messages).
 
-Every pull request gets a preview of the examples on Cloudflare Pages; the URL is posted as a comment on the pull request.
+Every pull request gets a preview of the playgrounds on Cloudflare Pages; the URL is posted as a comment on the pull request.
 
 ## Style Guide
 
@@ -88,7 +88,7 @@ type(scope): description
 ```
 
 - **type** is one of `feat`, `fix`, `perf`, `refactor`, `docs`, `test`, `build`, `ci`, or `chore`.
-- **scope** is the directory name of the package or app that the commit changes, for example `pixi-8`, `react-18`, or `examples`. The core package `react-pixi-fiber` uses the scope `core`. Leave out the scope when the commit changes the whole repository, or more than one package for one reason.
+- **scope** is the directory name of the package or app that the commit changes, for example `pixi-8`, `react-18`, or `playground-pixi8`. The core package `react-pixi-fiber` uses the scope `core`. Leave out the scope when the commit changes the whole repository, or more than one package for one reason.
 - **description** is an imperative sentence that starts with a lowercase letter and has no period at the end.
 - Add `!` after the type or the scope, or a `BREAKING CHANGE:` footer, for a breaking change.
 

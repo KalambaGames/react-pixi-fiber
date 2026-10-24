@@ -7,19 +7,17 @@
   "packageManager": "pnpm@10.24.0",
   "scripts": {
     "build": "pnpm -r build",
-    "build:site": "cross-env PLAYGROUND_BASE=/pixi-8/ pnpm build && node scripts/build-site.mjs",
-    "test": "pnpm -r test",
-    "lint": "biome check",
-    "format": "biome check --write",
-    "check-types": "pnpm -r check-types && tsc -p scripts/tsconfig.json",
-    "start": "pnpm --filter examples start",
-    "playground": "pnpm --filter playground-pixi8 start",
-    "playground:pixi7": "pnpm --filter playground-pixi7 start",
+    "build:site": "cross-env PLAYGROUND_SITE=1 pnpm build && node scripts/build-site.mjs",
+    "changeset": "changeset",
     "check-bundle": "pnpm -r --if-present check-bundle",
     "check-package": "node scripts/check-package.mjs",
-    "changeset": "changeset",
-    "version-packages": "changeset version",
-    "release": "pnpm -r build && pnpm check-package && pnpm check-bundle && changeset publish"
+    "check-types": "pnpm -r check-types && tsc -p scripts/tsconfig.json",
+    "format": "biome check --write",
+    "lint": "biome check",
+    "release": "pnpm -r build && pnpm check-package && pnpm check-bundle && changeset publish",
+    "start": "pnpm --filter \"playground-pixi*\" --parallel start",
+    "test": "pnpm -r test",
+    "version-packages": "changeset version"
   },
   "devDependencies": {
     "@arethetypeswrong/cli": "^0.18.5",
@@ -41,9 +39,7 @@
   },
   "pnpm": {
     "overrides": {
-      "@types/react-reconciler@0.26>@types/react": "^17",
-      "@types/react-router-dom>@types/react": "^18.3.0",
-      "@types/react-router>@types/react": "^18.3.0"
+      "@types/react-reconciler@0.26>@types/react": "^17"
     }
   }
 }

@@ -27,7 +27,7 @@ optional footers
 ```
 
 - **type** is one of `feat`, `fix`, `perf`, `refactor`, `docs`, `test`, `build`, `ci`, and `chore`.
-- **scope** is the directory name of the package or app that the commit changes, for example `pixi-8`, `react-18`, or `examples`. The core package `react-pixi-fiber` uses the scope `core`, because the other scopes also leave out the `react-pixi-fiber` prefix. A commit that changes the whole repository, or more than one package for one reason, has no scope.
+- **scope** is the directory name of the package or app that the commit changes, for example `pixi-8`, `react-18`, or `playground-pixi8`. The core package `react-pixi-fiber` uses the scope `core`, because the other scopes also leave out the `react-pixi-fiber` prefix. A commit that changes the whole repository, or more than one package for one reason, has no scope.
 - **description** is an imperative sentence that starts with a lowercase letter and has no period at the end.
 - A `!` after the type or the scope, or a `BREAKING CHANGE:` footer, marks a breaking change.
 

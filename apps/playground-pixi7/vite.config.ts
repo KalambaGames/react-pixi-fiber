@@ -4,7 +4,7 @@ import react from "@vitejs/plugin-react";
 import { defineConfig } from "vite";
 
 export default defineConfig({
-  base: process.env.PLAYGROUND_BASE ?? "/",
+  base: process.env.PLAYGROUND_SITE ? "/pixi-7/" : "/",
   plugins: [react(), tailwindcss()],
   // Development builds of React, react-pixi-fiber and the adapter in every mode, so the console shows warnings.
   // The workspace packages resolve their own devDependency copies of react, which differ from the one the app uses.
