@@ -24,6 +24,7 @@ export const lazyModules: LazyModules = {
   animated: () => import("animated"),
   gsap: () => import("gsap"),
   "gsap/PixiPlugin": () => import("gsap/PixiPlugin"),
+  leva: () => import("leva"),
   motion: () => import("motion"),
   zustand: () => import("zustand"),
 };
