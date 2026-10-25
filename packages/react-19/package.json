@@ -43,9 +43,9 @@
     "react-pixi-fiber": "^3.0.0-alpha.0"
   },
   "devDependencies": {
-    "@types/react": "^19.3.0",
-    "@types/react-reconciler": "^0.33.1",
-    "react": "^19.3.0",
+    "@types/react": "19.3.0",
+    "@types/react-reconciler": "0.33.1",
+    "react": "19.3.0",
     "react-pixi-fiber": "workspace:*",
     "react-reconciler": "0.34.0"
   },

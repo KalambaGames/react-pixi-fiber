@@ -43,7 +43,7 @@
     "react-pixi-fiber": "^3.0.0-alpha.0"
   },
   "devDependencies": {
-    "pixi.js": "^5.3.12",
+    "pixi.js": "5.3.12",
     "react-pixi-fiber": "workspace:*"
   },
   "scripts": {
