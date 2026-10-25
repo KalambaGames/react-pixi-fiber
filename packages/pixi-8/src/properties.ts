@@ -66,9 +66,8 @@ export const properties: PixiPropertyTable = {
     "label",
     "mask",
     "name",
-    "origin",
     "sortDirty",
     "tint",
   ],
-  vector: ["anchor", "pivot", "position", "scale", "skew", "tilePosition", "tileScale"],
+  vector: ["anchor", "origin", "pivot", "position", "scale", "skew", "tilePosition", "tileScale"],
 };

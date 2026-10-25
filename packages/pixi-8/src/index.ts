@@ -76,6 +76,50 @@ export interface Pixi8WithComponentsOptions extends Pixi8Options {
   components: Partial<Pixi8Components>;
 }
 
+// PixiJS 6 props that PixiJS 8 sets and never reads. Only the development build lists them, to warn.
+const LEGACY_PROPS = [
+  "buttonMode",
+  "click",
+  "mousedown",
+  "mousemove",
+  "mouseout",
+  "mouseover",
+  "mouseup",
+  "mouseupoutside",
+  "pointercancel",
+  "pointerdown",
+  "pointermove",
+  "pointerout",
+  "pointerover",
+  "pointertap",
+  "pointerup",
+  "pointerupoutside",
+  "rightclick",
+  "rightdown",
+  "rightup",
+  "rightupoutside",
+  "tap",
+  "touchcancel",
+  "touchend",
+  "touchendoutside",
+  "touchmove",
+  "touchstart",
+];
+const warnedLegacyProps: Record<string, boolean> = {};
+
+// Not the compat module's `warning`: a module both entries import would become a shared chunk.
+function warnLegacyProps(type: string, props: Record<string, unknown>): Record<string, unknown> {
+  for (const name of LEGACY_PROPS) {
+    if (Object.prototype.hasOwnProperty.call(props, name) && !warnedLegacyProps[name]) {
+      warnedLegacyProps[name] = true;
+      console.error(
+        `Warning: \`${name}\` on \`<${type} />\` is a PixiJS 6 prop that PixiJS 8 ignores. Use the PixiJS 8 prop, or pass the default export of \`@react-pixi-fiber/pixi-8/compat/pixi6\` or \`@react-pixi-fiber/pixi-8/compat/pixi7\` as \`pixi8({ compat })\`.`
+      );
+    }
+  }
+  return props;
+}
+
 // The adapter with every class in `allComponents`.
 export default function pixi8(options: Pixi8Options = {}): PixiAdapter {
   if ((options as Partial<Pixi8WithComponentsOptions> | null)?.components !== undefined) {
@@ -162,6 +206,8 @@ export function pixi8WithComponents(options: Pixi8WithComponentsOptions): PixiAd
       );
     }
     adapter.translateProps = compat;
+  } else if (__DEV__) {
+    adapter.translateProps = warnLegacyProps;
   }
   return adapter;
 }
