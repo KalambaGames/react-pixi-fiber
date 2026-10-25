@@ -21,6 +21,7 @@ import ParticleContainer from "./ParticleContainer.tsx?raw";
 import PIXIComponent from "./PIXIComponent.tsx?raw";
 import PIXIProperty from "./PIXIProperty.tsx?raw";
 import PointLikeProps from "./PointLikeProps.tsx?raw";
+import SmokeTest from "./SmokeTest.tsx?raw";
 import Sprite from "./Sprite.tsx?raw";
 import Suspense from "./Suspense.tsx?raw";
 import Text from "./Text.tsx?raw";
@@ -71,6 +72,7 @@ export const examples: Example[] = [
   feature("PIXIComponent", "PIXIComponent", PIXIComponent),
   feature("PIXIProperty", "PIXIProperty", PIXIProperty),
   feature("PointLikeProps", "Point-like props", PointLikeProps),
+  feature("SmokeTest", "Smoke test", SmokeTest),
   feature("Suspense", "Suspense", Suspense),
   integration("Animated", "Animated", Animated),
 ];
