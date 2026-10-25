@@ -17,6 +17,7 @@
     "@pixi/utils": "6.5.10",
     "@react-pixi-fiber/pixi-6": "workspace:*",
     "@react-pixi-fiber/react-19": "workspace:*",
+    "@react-spring/core": "^10.1.2",
     "animated": "^0.2.2",
     "gsap": "^3.15.0",
     "pixi.js": "^6.5.10",

@@ -58,4 +58,5 @@ export const examples: Example[] = [
   feature("Suspense", "Suspense"),
   integration("Animated", "Animated"),
   integration("GSAP", "GSAP"),
+  integration("ReactSpring", "react-spring"),
 ];

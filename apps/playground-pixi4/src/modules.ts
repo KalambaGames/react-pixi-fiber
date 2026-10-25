@@ -21,6 +21,7 @@ export const modules: Record<string, unknown> = {
 };
 
 export const lazyModules: LazyModules = {
+  "@react-spring/core": () => import("@react-spring/core"),
   animated: () => import("animated"),
   gsap: () => import("gsap"),
   "gsap/PixiPlugin": () => import("gsap/PixiPlugin"),
