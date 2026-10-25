@@ -13,3 +13,8 @@ packageExtensions:
   react-resizable-panels:
     peerDependencies:
       "@types/react": "*"
+# pixi-viewport 5.0 imports @pixi/core and @pixi/display without declaring them, so it would get the hoisted PixiJS 6 copies.
+  pixi-viewport@5:
+    peerDependencies:
+      "@pixi/core": ^7
+      "@pixi/display": ^7

@@ -28,5 +28,6 @@ export const lazyModules: LazyModules = {
   leva: () => import("leva"),
   "matter-js": () => import("matter-js"),
   motion: () => import("motion"),
+  "pixi-viewport": () => import("pixi-viewport"),
   zustand: () => import("zustand"),
 };

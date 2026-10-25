@@ -62,5 +62,6 @@ export const examples: Example[] = [
   integration("MatterJS", "Matter.js"),
   integration("Motion", "Motion"),
   integration("ReactSpring", "react-spring"),
+  integration("Viewport", "Viewport"),
   integration("Zustand", "zustand"),
 ];

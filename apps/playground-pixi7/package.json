@@ -13,6 +13,7 @@
     "leva": "^0.10.1",
     "matter-js": "^0.20.0",
     "motion": "^14.6.0",
+    "pixi-viewport": "5.0.2",
     "pixi.js": "^7.4.3",
     "playground-shell": "workspace:*",
     "react": "19.3.0",

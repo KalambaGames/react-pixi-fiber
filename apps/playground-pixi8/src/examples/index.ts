@@ -73,6 +73,7 @@ export const examples: Example[] = [
   integration("Motion", "Motion"),
   integration("PixiStats", "pixi-stats"),
   integration("ReactSpring", "react-spring"),
+  integration("Viewport", "Viewport"),
   integration("Zustand", "zustand"),
   compat(6, "MigratingFromPixi6", "Migrating from PixiJS 6"),
   compat(7, "MigratingFromPixi7", "Migrating from PixiJS 7"),
