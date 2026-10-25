@@ -72,7 +72,7 @@ function StageWithoutBridge(props: StageProps, ref: Ref<StageRef>) {
     if (props.width != null || props.height != null) {
       warnOnce(
         "size",
-        "`width` and `height` props of `Stage` are deprecated. They size `app.stage`, not the renderer. To size the renderer, pass them in `options`."
+        "`width` and `height` props of `Stage` are deprecated. They size `app.stage`, not the renderer. To size the renderer, pass them in `options`. They will be removed in 4.0.0."
       );
     }
     if (app != null && options != null && Object.keys(options).length > 0) {
