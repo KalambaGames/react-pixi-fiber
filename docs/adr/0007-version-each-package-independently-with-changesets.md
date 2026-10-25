@@ -30,7 +30,7 @@ The release flow:
 `.changeset/config.json` sets:
 
 - `@changesets/changelog-github` to write the entries, with links to the pull requests
-- `ignore: ["examples"]`, because the examples app is not published
+- `ignore` for the playground apps, because they are not published
 - `updateInternalDependencies: "patch"`
 - `onlyUpdatePeerDependentsWhenOutOfRange: true`, so a core release that stays inside the peer range of the adapters does not bump the adapters
 

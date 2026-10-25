@@ -5,7 +5,7 @@
 
 ## Context
 
-The library needs a default value for a prop in two cases. The first case is a prop that a consumer does not pass. The second case is a prop that the library must reset, for example when it arrives as `undefined`. A PixiJS display object has no "remove", so a reset must write a value. Version 2.x had a table of default values for each prop, written by hand for one PixiJS version. Default values differ between PixiJS majors, and consumer components have props that no table lists.
+The library needs a default value for a prop in two cases. The first case is a prop that a consumer does not pass. The second case is a prop that the library must reset, for example when it arrives as `undefined`. A PixiJS Display Object has no "remove", so a reset must write a value. Version 2.x had a table of default values for each prop, written by hand for one PixiJS version. Default values differ between PixiJS majors, and consumer components have props that no table lists.
 
 ## Decision Drivers
 
@@ -16,7 +16,7 @@ The library needs a default value for a prop in two cases. The first case is a p
 
 ## Decision
 
-Two sources supply default values: the `defaults` option of the PixiJS adapter (see [0012](0012-describe-each-pixijs-major-as-adapter-data.md)), and the values that PixiJS itself gives a new display object.
+Two sources supply default values: the `defaults` option of the PixiJS adapter (see [0012](0012-describe-each-pixijs-major-as-adapter-data.md)), and the values that PixiJS itself gives a new Display Object.
 
 The `defaults` option works like React `defaultProps`, keyed by tag:
 

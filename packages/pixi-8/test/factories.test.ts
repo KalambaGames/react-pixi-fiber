@@ -74,7 +74,7 @@ describe("factories", () => {
   it("ParticleContainer rejects a child that is not components.Particle", () => {
     const { create, appendChild } = factories.ParticleContainer(PIXI.ParticleContainer, allComponents);
     expect(() => appendChild?.(create({}), new PIXI.Sprite(texture))).toThrow(
-      "`ParticleContainer` takes only `Particle` children from `@react-pixi-fiber/pixi-8`, not display objects."
+      "`ParticleContainer` takes only `Particle` children from `@react-pixi-fiber/pixi-8`, not Scene Objects."
     );
   });
 });

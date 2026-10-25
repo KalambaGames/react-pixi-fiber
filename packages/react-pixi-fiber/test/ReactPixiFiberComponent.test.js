@@ -257,7 +257,7 @@ describe("ReactPixiFiber", () => {
   });
 
   describe("applyProps", () => {
-    it("applyProps delegates to the component's applyProps or to the display-object pipeline", () => {
+    it("applyProps delegates to the component's applyProps or to the Display Object pipeline", () => {
       const custom = vi.fn();
       registerComponent("WithApply", { create: () => ({ kind: "custom" }), applyProps: custom });
       registerComponent("Plain", () => ({ kind: "plain" }));

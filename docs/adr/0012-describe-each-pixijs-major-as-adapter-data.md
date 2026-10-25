@@ -33,7 +33,7 @@ Every adapter implements the core tags. An adapter can add tags for classes that
 2. the adapter component
 3. the deprecated tag map of the core (see [0008](0008-keep-deprecated-apis-until-the-next-major.md))
 
-The core runs the tree operations on the display object. A parent behavior can take over the child operations of its children with the optional keys `appendChild`, `insertBefore`, and `removeChild`. The core then calls these keys instead of the display-object methods, in the same order with `afterAdd` and `beforeRemove`. These keys are for adapters only and are not a stable public API. The core records which parent holds each child through these keys, so a reorder inside that parent is a move, not a new add.
+The core runs the tree operations on the Display Object. A parent behavior can take over the child operations of its children with the optional keys `appendChild`, `insertBefore`, and `removeChild`. The core then calls these keys instead of the Display Object methods, in the same order with `afterAdd` and `beforeRemove`. These keys are for adapters only and are not a stable public API. The core records which parent holds each child through these keys, so a reorder inside that parent is a move, not a new add.
 
 For types, the core declares interfaces that an adapter augments with `declare module "react-pixi-fiber"`. The interfaces hold the instance class for each tag, the PixiJS application, point, and event types, and extra props. With no adapter installed, the props fall back to loose records and still compile.
 

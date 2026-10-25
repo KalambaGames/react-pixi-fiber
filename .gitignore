@@ -15,3 +15,4 @@ chrome-user-data
 *.swo
 .envrc
 .vitest-reports/
+site/

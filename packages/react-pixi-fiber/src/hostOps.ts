@@ -15,7 +15,7 @@ import type { HostOps, PixiFragmentInstance } from "./types";
 // The parent that holds a child through its own ops, for children that have no `parent` of their own.
 const heldBy = new WeakMap<object, object>();
 
-// A parent's behavior may own its child operations; otherwise the display-object methods are used.
+// A parent's behavior may own its child operations; otherwise the Display Object methods are used.
 // `afterAdd` runs only when the child joins the parent. A reorder within the same parent is a move, not an add,
 // and calls neither `afterAdd` nor `beforeRemove`.
 export function appendChild(parentInstance: any, child: any): void {
@@ -49,7 +49,7 @@ export function removeChild(parentInstance: any, child: any): void {
     parentInstance.removeChild(child);
   }
 
-  // A child that is not a display object may have nothing to destroy.
+  // A child that is not a Display Object may have nothing to destroy.
   if (typeof child.destroy === "function") child.destroy({ children: true });
 }
 

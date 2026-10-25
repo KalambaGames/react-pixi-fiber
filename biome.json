@@ -6,6 +6,7 @@
     "indentStyle": "space",
     "lineWidth": 120
   },
+  "css": { "parser": { "tailwindDirectives": true } },
   "javascript": {
     "formatter": {
       "arrowParentheses": "asNeeded",

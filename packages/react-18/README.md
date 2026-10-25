@@ -1,6 +1,6 @@
 # @react-pixi-fiber/react-18
 
-React 18 adapter for [react-pixi-fiber](https://github.com/michalochman/react-pixi-fiber). It bundles `react-reconciler` 0.29.2 and builds the renderer that `react-pixi-fiber` uses to render PixiJS display objects. It needs React 18.3.1 or a later 18.x, the peer range of that `react-reconciler`.
+React 18 adapter for [react-pixi-fiber](https://github.com/michalochman/react-pixi-fiber). It bundles `react-reconciler` 0.29.2 and builds the renderer that `react-pixi-fiber` uses to render PixiJS Display Objects. It needs React 18.3.1 or a later 18.x, the peer range of that `react-reconciler`.
 
 Install it next to `react-pixi-fiber`, `react` 18 and a PixiJS adapter from the [adapter table](../react-pixi-fiber/README.md#setup), then configure once in the app entry, before the first render:
 
@@ -20,7 +20,7 @@ The tree inside `Stage`, or inside a container passed to `render`, is its own Re
 
 | Feature | Support |
 | --- | --- |
-| Context, error boundaries, hooks, refs | Supported. A ref on a tag receives the PixiJS display object |
+| Context, error boundaries, hooks, refs | Supported. A ref on a tag receives the PixiJS Display Object |
 | Concurrent features | With `root: "concurrent"`, supported: `render` commits synchronously; later updates, `startTransition` and `useDeferredValue` are scheduled as on a `createRoot` root, and an update from a PixiJS event handler gets the priority react-dom gives that DOM event. With the default `root: "legacy"`, not available: `startTransition` and `useDeferredValue` updates render synchronously |
 | DevTools | The renderer registers with React DevTools as `react-pixi-fiber` in development |
 | Errors while rendering | Thrown from `render` and caught by error boundaries; errors React recovers from are logged with `console.error` |

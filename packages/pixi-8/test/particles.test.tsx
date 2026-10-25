@@ -91,7 +91,7 @@ describe("ParticleContainer and Particle", () => {
     unmount(root);
   });
 
-  it("throws when a display object is rendered under a ParticleContainer", () => {
+  it("throws when a Scene Object is rendered under a ParticleContainer", () => {
     vi.spyOn(console, "error").mockImplementation(() => {});
     expect(() =>
       render(
@@ -100,9 +100,7 @@ describe("ParticleContainer and Particle", () => {
         </ParticleContainer>,
         root
       )
-    ).toThrow(
-      "`ParticleContainer` takes only `Particle` children from `@react-pixi-fiber/pixi-8`, not display objects."
-    );
+    ).toThrow("`ParticleContainer` takes only `Particle` children from `@react-pixi-fiber/pixi-8`, not Scene Objects.");
   });
 
   it("throws when a Particle has no texture", () => {

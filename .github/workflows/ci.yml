@@ -54,5 +54,5 @@ jobs:
       # React of the test environment cannot drive, so only the development builds render here.
       - run: RPF_DIST=es pnpm --filter "test-matrix-*" --workspace-concurrency=1 test:dev
 
-      # typecheck the library source, the TypeScript fixture, and the examples against the built declarations
+      # typecheck the library source, the TypeScript fixture, and the playgrounds against the built declarations
       - run: pnpm check-types

@@ -60,7 +60,7 @@ const measurement = Object.freeze({});
 const HostComponent = 5;
 const OffscreenComponent = 22;
 
-// The top-level display objects under `fiber`, skipping hidden subtrees (a hidden <Activity>, a suspended
+// The top-level Display Objects under `fiber`, skipping hidden subtrees (a hidden <Activity>, a suspended
 // <Suspense>) as the reconciler does when it reports children to the fragment. Portals are walked through: the
 // reconciler reports a portal's children to the fragments above it too.
 function collectHostChildren(fiber: any, children: unknown[]): void {
