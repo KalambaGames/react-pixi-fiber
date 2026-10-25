@@ -2,13 +2,12 @@ import type { PixiApplication } from "./types";
 import React from "react";
 import { useContext, useEffect } from "react";
 import { AppContext } from "./AppProvider";
+import invariant from "./invariant";
 
 export function usePixiApp(): PixiApplication {
   const app = useContext(AppContext);
 
-  if (app === null) {
-    throw new Error("No PIXI.Application is available here. You can only access it in children of <Stage />");
-  }
+  invariant(app !== null, "No PIXI.Application is available here. You can only access it in children of <Stage />");
 
   return app;
 }
@@ -21,9 +20,7 @@ export type PixiTickerCallback = PixiApplication extends { ticker: { add(fn: inf
 export function usePixiTicker(fn: PixiTickerCallback): void {
   const { ticker } = usePixiApp();
 
-  if (ticker == null) {
-    throw new Error("`usePixiTicker` needs an `app` with a `ticker`.");
-  }
+  invariant(ticker != null, "`usePixiTicker` needs an `app` with a `ticker`.");
 
   useEffect(() => {
     ticker.add(fn);
