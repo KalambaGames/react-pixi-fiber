@@ -4,6 +4,7 @@
   "private": true,
   "type": "module",
   "dependencies": {
+    "@pixi-spine/runtime-4.1": "^4.0.6",
     "@pixi/layers": "^2.1.0",
     "@pixi/layout": "^1.0.1",
     "@pixi/sound": "^5.2.3",
@@ -17,6 +18,7 @@
     "leva": "^0.10.1",
     "matter-js": "^0.20.0",
     "motion": "^14.6.0",
+    "pixi-spine": "^4.0.6",
     "pixi-viewport": "5.0.2",
     "pixi.js": "^7.4.3",
     "playground-shell": "workspace:*",

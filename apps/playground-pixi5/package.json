@@ -23,6 +23,7 @@
     "motion": "^14.6.0",
     "pixi-layers": "^0.3.1",
     "pixi-sound": "^3.0.5",
+    "pixi-spine": "^2.1.14",
     "pixi-tilemap": "^2.1.4",
     "pixi-viewport": "^3.23.2",
     "pixi.js": "^5.3.12",

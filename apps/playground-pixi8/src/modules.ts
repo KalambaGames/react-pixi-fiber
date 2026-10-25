@@ -6,12 +6,14 @@ import * as reactDom from "react-dom";
 import * as reactPixiFiber from "react-pixi-fiber";
 import bunnys from "./examples/assets/bunnys.png";
 import sounds from "./examples/assets/sounds.mp3";
+import spineboy from "./examples/assets/spineboy.png";
 import tinyTown from "./examples/assets/tiny-town.png";
 import type { LazyModules } from "playground-shell/runner";
 
 export const modules: Record<string, unknown> = {
   "./assets/bunnys.png": bunnys,
   "./assets/sounds.mp3": sounds,
+  "./assets/spineboy.png": spineboy,
   "./assets/tiny-town.png": tinyTown,
   "@react-pixi-fiber/pixi-8": pixi8,
   "pixi.js": pixi,
@@ -22,6 +24,9 @@ export const modules: Record<string, unknown> = {
 };
 
 export const lazyModules: LazyModules = {
+  "./assets/spineboy.atlas?raw": () => import("./examples/assets/spineboy.atlas?raw"),
+  "./assets/spineboy.json?raw": () => import("./examples/assets/spineboy.json?raw"),
+  "@esotericsoftware/spine-pixi-v8": () => import("@esotericsoftware/spine-pixi-v8"),
   "@pixi/layout": () => import("@pixi/layout"),
   "@pixi/layout/components": () => import("@pixi/layout/components"),
   "@pixi/sound": () => import("@pixi/sound"),

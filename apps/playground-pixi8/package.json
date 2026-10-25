@@ -4,6 +4,7 @@
   "private": true,
   "type": "module",
   "dependencies": {
+    "@esotericsoftware/spine-pixi-v8": "^4.3.13",
     "@pixi/layout": "^3.2.1",
     "@pixi/sound": "^6.0.1",
     "@pixi/tilemap": "^5.0.2",
