@@ -1,6 +1,6 @@
-import { Point, Rectangle, SCALE_MODES, settings, Texture } from "pixi.js";
+import { type interaction, Point, Rectangle, SCALE_MODES, settings, Texture } from "pixi.js";
 import { type ComponentProps, type ComponentType, useCallback, useState } from "react";
-import { Sprite, Stage } from "react-pixi-fiber";
+import { Sprite, Stage, Text } from "react-pixi-fiber";
 import bunnys from "./assets/bunnys.png";
 
 const centerAnchor = new Point(0.5, 0.5);
@@ -30,29 +30,38 @@ settings.SCALE_MODE = SCALE_MODES.NEAREST;
 
 const OPTIONS = {
   backgroundColor: 0x1099bb,
-  height: 600,
-  width: 800,
+  height: 300,
+  width: 400,
 };
 
 // http://pixijs.io/examples/#/basics/click.js
 function ClickExample() {
   const [scale, setScale] = useState(1);
-  const handleClick = useCallback(() => {
-    setScale(scale => scale * 1.25);
+  // The right button shrinks the bunny, any other button grows it.
+  const handlePointerDown = useCallback((event: interaction.InteractionEvent) => {
+    const shrink = event.data.button === 2;
+    setScale(scale => (shrink ? scale / 1.25 : scale * 1.25));
   }, []);
 
   return (
-    <Stage options={OPTIONS}>
+    // The canvas keeps the right button for the bunny, without the browser menu.
+    <Stage onContextMenu={event => event.preventDefault()} options={OPTIONS}>
       <Bunny
         // Shows hand cursor
         cursor="pointer"
         // Opt-in to interactivity
         interactive
         // Pointers normalize touch and mouse
-        pointerdown={handleClick}
+        pointerdown={handlePointerDown}
         scale={new Point(scale, scale)}
-        x={400}
-        y={300}
+        x={200}
+        y={150}
+      />
+      <Text
+        style={{ fill: "white", fontSize: 16 }}
+        text="Click the bunny to grow it. Right-click it to shrink it."
+        x={10}
+        y={10}
       />
     </Stage>
   );

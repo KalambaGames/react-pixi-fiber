@@ -1,4 +1,4 @@
-import { Assets, Point, Rectangle, Texture, TextureSource } from "pixi.js";
+import { Assets, type FederatedPointerEvent, Point, Rectangle, Texture, TextureSource } from "pixi.js";
 import {
   type ComponentProps,
   type ComponentType,
@@ -9,7 +9,7 @@ import {
   useEffect,
   useState,
 } from "react";
-import { Sprite, Stage } from "react-pixi-fiber";
+import { Sprite, Stage, Text } from "react-pixi-fiber";
 import bunnys from "./assets/bunnys.png";
 
 const centerAnchor = new Point(0.5, 0.5);
@@ -58,19 +58,22 @@ TextureSource.defaultOptions.scaleMode = "nearest";
 
 const OPTIONS = {
   backgroundColor: 0x1099bb,
-  height: 600,
-  width: 800,
+  height: 300,
+  width: 400,
 };
 
 // http://pixijs.io/examples/#/basics/click.js
 function ClickExample() {
   const [scale, setScale] = useState(1);
-  const handleClick = useCallback(() => {
-    setScale(scale => scale * 1.25);
+  // The right button shrinks the bunny, any other button grows it.
+  const handlePointerDown = useCallback((event: FederatedPointerEvent) => {
+    const shrink = event.button === 2;
+    setScale(scale => (shrink ? scale / 1.25 : scale * 1.25));
   }, []);
 
   return (
-    <Stage options={OPTIONS}>
+    // The canvas keeps the right button for the bunny, without the browser menu.
+    <Stage onContextMenu={event => event.preventDefault()} options={OPTIONS}>
       <BunnyTexturesProvider>
         <Bunny
           // Shows hand cursor
@@ -78,10 +81,16 @@ function ClickExample() {
           // Opt-in to interactivity
           eventMode="static"
           // Pointers normalize touch and mouse
-          onpointerdown={handleClick}
+          onpointerdown={handlePointerDown}
           scale={new Point(scale, scale)}
-          x={400}
-          y={300}
+          x={200}
+          y={150}
+        />
+        <Text
+          style={{ fill: "white", fontSize: 16 }}
+          text="Click the bunny to grow it. Right-click it to shrink it."
+          x={10}
+          y={10}
         />
       </BunnyTexturesProvider>
     </Stage>
