@@ -12,7 +12,7 @@ overrides:
   '@pixi/layout@1>@pixi/ui': '-'
   '@types/react-reconciler@0.26>@types/react': ^17
 
-packageExtensionsChecksum: sha256-e5CS1RLdYRjZX/m3+kyE+nkzCmeDhj+J2n8gFo8zsF8=
+packageExtensionsChecksum: sha256-ootxtGP+jEeX3QiCBM1yznnDLO1PF0iCn8UKBs4tr8A=
 
 importers:
 
@@ -401,7 +401,7 @@ importers:
         version: 2.1.0(@pixi/canvas-renderer@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))(@pixi/graphics@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))(@pixi/sprite@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))))(@pixi/settings@7.4.3)(@pixi/utils@7.4.3(@pixi/core@7.4.3)))(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))
       '@pixi/layout':
         specifier: ^1.0.1
-        version: 1.0.1(@pixi/assets@7.4.3(@pixi/core@7.4.3))(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))(@pixi/graphics@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))(@pixi/sprite@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))))(@pixi/mesh@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3)))(@pixi/sprite@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3)))(@pixi/text@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))(@pixi/sprite@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))))
+        version: 1.0.1(@pixi/assets@7.4.3(@pixi/core@7.4.3))(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))(@pixi/graphics@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))(@pixi/sprite@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))))(@pixi/mesh-extras@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))(@pixi/mesh@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))))(@pixi/sprite-tiling@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))(@pixi/sprite@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))))(@pixi/sprite@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3)))(@pixi/text@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))(@pixi/sprite@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))))
       '@pixi/sound':
         specifier: ^5.2.3
         version: 5.2.3(@pixi/assets@7.4.3(@pixi/core@7.4.3))(@pixi/core@7.4.3)
@@ -410,7 +410,7 @@ importers:
         version: 4.1.0(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))
       '@pixi/ui':
         specifier: ^1.2.4
-        version: 1.2.4(99592c23a6175e81602db65308d08e48)
+        version: 1.2.4(c234e24745d2fa093925f358cff819e5)
       '@react-pixi-fiber/pixi-7':
         specifier: workspace:*
         version: link:../../packages/pixi-7
@@ -1789,7 +1789,9 @@ packages:
       '@pixi/core': ^7.3.1
       '@pixi/display': ^7.3.1
       '@pixi/graphics': ^7.3.1
+      '@pixi/mesh-extras': ^7
       '@pixi/sprite': ^7.3.1
+      '@pixi/sprite-tiling': ^7
       '@pixi/text': ^7.3.1
 
   '@pixi/layout@3.2.1':
@@ -2168,6 +2170,7 @@ packages:
       '@pixi/display': ^7.3.1
       '@pixi/events': ^7.3.1
       '@pixi/graphics': ^7.3.1
+      '@pixi/mesh-extras': ^7
       '@pixi/sprite': ^7.3.1
       '@pixi/text': ^7.3.1
       '@pixi/text-bitmap': ^7.3.1
@@ -6270,7 +6273,7 @@ snapshots:
       '@pixi/core': 7.4.3
       '@pixi/display': 7.4.3(@pixi/core@7.4.3)
 
-  '@pixi/layout@1.0.1(@pixi/assets@7.4.3(@pixi/core@7.4.3))(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))(@pixi/graphics@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))(@pixi/sprite@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))))(@pixi/mesh@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3)))(@pixi/sprite@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3)))(@pixi/text@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))(@pixi/sprite@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))))':
+  '@pixi/layout@1.0.1(@pixi/assets@7.4.3(@pixi/core@7.4.3))(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))(@pixi/graphics@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))(@pixi/sprite@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))))(@pixi/mesh-extras@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))(@pixi/mesh@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))))(@pixi/sprite-tiling@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))(@pixi/sprite@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))))(@pixi/sprite@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3)))(@pixi/text@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))(@pixi/sprite@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))))':
     dependencies:
       '@pixi/assets': 7.4.3(@pixi/core@7.4.3)
       '@pixi/core': 7.4.3
@@ -6280,8 +6283,6 @@ snapshots:
       '@pixi/sprite': 7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))
       '@pixi/sprite-tiling': 7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))(@pixi/sprite@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3)))
       '@pixi/text': 7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))(@pixi/sprite@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3)))
-    transitivePeerDependencies:
-      - '@pixi/mesh'
 
   '@pixi/layout@3.2.1(@types/react@19.3.0)(pixi.js@8.21.0)(react@19.3.0)(yoga-layout@3.2.1)':
     dependencies:
@@ -6698,12 +6699,13 @@ snapshots:
     dependencies:
       pixi.js: 8.21.0
 
-  '@pixi/ui@1.2.4(99592c23a6175e81602db65308d08e48)':
+  '@pixi/ui@1.2.4(c234e24745d2fa093925f358cff819e5)':
     dependencies:
       '@pixi/core': 7.4.3
       '@pixi/display': 7.4.3(@pixi/core@7.4.3)
       '@pixi/events': 7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))
       '@pixi/graphics': 7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))(@pixi/sprite@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3)))
+      '@pixi/mesh-extras': 7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))(@pixi/mesh@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3)))
       '@pixi/sprite': 7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))
       '@pixi/text': 7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))(@pixi/sprite@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3)))
       '@pixi/text-bitmap': 7.4.3(@pixi/assets@7.4.3(@pixi/core@7.4.3))(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))(@pixi/mesh@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3)))(@pixi/text@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))(@pixi/sprite@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))))
