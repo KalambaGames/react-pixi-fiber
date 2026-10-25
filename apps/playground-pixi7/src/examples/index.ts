@@ -71,6 +71,7 @@ export const examples: Example[] = [
   integration("MatterJS", "Matter.js"),
   integration("Motion", "Motion"),
   integration("ReactSpring", "react-spring"),
+  integration("UI", "UI"),
   integration("Viewport", "Viewport"),
   integration("Zustand", "zustand"),
   compat("MigratingFromPixi6", "Migrating from PixiJS 6"),
