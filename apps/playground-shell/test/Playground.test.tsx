@@ -224,6 +224,90 @@ describe("Playground", () => {
   });
 });
 
+describe("Playground sidebar", () => {
+  const titles = () =>
+    [...container.querySelectorAll<HTMLAnchorElement>("[data-sidebar=content] a")].map(link => link.textContent);
+  const groupLabel = (name: string) =>
+    [...container.querySelectorAll<HTMLElement>("[data-sidebar=menu-button]")].find(
+      button => button.textContent === name
+    );
+  const filter = (text: string) =>
+    act(() => {
+      const input = container.querySelector<HTMLInputElement>("[data-sidebar=input]") as HTMLInputElement;
+      Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value")?.set?.call(input, text);
+      input.dispatchEvent(new Event("input", { bubbles: true }));
+    });
+
+  beforeEach(() => {
+    examples = [
+      example("first", "First"),
+      example("sprite", "Sprite"),
+      { ...example("bunnymark", "Bunnymark"), group: "Features" },
+      { ...example("sprite-props", "Sprite props"), group: "Features" },
+      { ...example("tilemap", "Tilemap"), group: "Integrations" },
+    ];
+  });
+
+  it("opens only the group of the current example", async () => {
+    await render();
+    expect(titles()).toEqual(["First", "Sprite"]);
+  });
+
+  it("shows that a group label is clickable", async () => {
+    await render();
+    expect(groupLabel("Features")?.className).toContain("cursor-pointer");
+  });
+
+  it("marks the current example with the primary color", async () => {
+    await render();
+    const current = container.querySelector<HTMLElement>("[data-sidebar=menu-sub-button][data-active=true]");
+    expect(current?.textContent).toBe("First");
+    expect(current?.className).toContain("data-[active=true]:bg-sidebar-primary");
+  });
+
+  it("opens a group when its label is clicked", async () => {
+    await render();
+    act(() => groupLabel("Features")?.click());
+    expect(titles()).toEqual(["First", "Sprite", "Bunnymark", "Sprite props"]);
+  });
+
+  it("opens the group of the example that the hash moves to", async () => {
+    await render();
+    window.history.replaceState(null, "", "#tilemap");
+    await act(async () => window.dispatchEvent(new HashChangeEvent("hashchange")));
+    expect(titles()).toContain("Tilemap");
+  });
+
+  it("filters the examples by title, ignoring case, and hides the groups without matches", async () => {
+    await render();
+    filter("SPRITE");
+    expect(titles()).toEqual(["Sprite", "Sprite props"]);
+    expect(groupLabel("Integrations")).toBeUndefined();
+  });
+
+  it("says so when no example matches the filter", async () => {
+    await render();
+    filter("zzz");
+    expect(titles()).toEqual([]);
+    expect(container.querySelector("[data-sidebar=content]")?.textContent).toContain("No examples match");
+  });
+
+  it("closes the other groups again when the filter is cleared", async () => {
+    await render();
+    filter("sprite");
+    filter("");
+    expect(titles()).toEqual(["First", "Sprite"]);
+  });
+
+  it("keeps the group of the current example open after a label click while filtering", async () => {
+    await render();
+    filter("sprite");
+    act(() => groupLabel("Scene Objects")?.click());
+    filter("");
+    expect(titles()).toEqual(["First", "Sprite"]);
+  });
+});
+
 describe("withConsoleSize", () => {
   it("gives the console its open size and scales the other panels to fill the rest", () => {
     const layout = withConsoleSize({ console: 3, editor: 37, preview: 60 }, 15);
