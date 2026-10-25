@@ -68,6 +68,7 @@ export const examples: Example[] = [
   feature("Suspense", "Suspense"),
   integration("Animated", "Animated"),
   integration("GSAP", "GSAP"),
+  integration("Layout", "Layout"),
   integration("Leva", "Leva"),
   integration("MatterJS", "Matter.js"),
   integration("Motion", "Motion"),

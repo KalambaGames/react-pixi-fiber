@@ -4,6 +4,7 @@
   "private": true,
   "type": "module",
   "dependencies": {
+    "@pixi/layout": "^3.2.1",
     "@react-pixi-fiber/pixi-8": "workspace:*",
     "@react-pixi-fiber/react-19": "workspace:*",
     "@react-spring/core": "^10.1.2",
@@ -19,6 +20,7 @@
     "react": "19.3.0",
     "react-dom": "19.3.0",
     "react-pixi-fiber": "workspace:*",
+    "yoga-layout": "^3.2.1",
     "zustand": "^5.0.16"
   },
   "scripts": {

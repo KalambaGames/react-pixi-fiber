@@ -39,6 +39,10 @@
   },
   "pnpm": {
     "overrides": {
+      "@pixi/layout@1>@pixi/eslint-config": "-",
+      "@pixi/layout@1>@pixi/extension-scripts": "-",
+      "@pixi/layout@1>@pixi/storybook-renderer": "-",
+      "@pixi/layout@1>@pixi/storybook-webpack5": "-",
       "@types/react-reconciler@0.26>@types/react": "^17"
     }
   }

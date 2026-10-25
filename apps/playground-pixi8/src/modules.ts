@@ -18,6 +18,8 @@ export const modules: Record<string, unknown> = {
 };
 
 export const lazyModules: LazyModules = {
+  "@pixi/layout": () => import("@pixi/layout"),
+  "@pixi/layout/components": () => import("@pixi/layout/components"),
   "@react-spring/core": () => import("@react-spring/core"),
   animated: () => import("animated"),
   gsap: () => import("gsap"),

@@ -13,6 +13,11 @@ packageExtensions:
   react-resizable-panels:
     peerDependencies:
       "@types/react": "*"
+# @pixi/layout 1.0 imports @pixi/mesh-extras and @pixi/sprite-tiling without declaring them.
+  "@pixi/layout@1":
+    dependencies:
+      "@pixi/mesh-extras": ^7.3.1
+      "@pixi/sprite-tiling": ^7.3.1
 # pixi-viewport 5.0 imports @pixi/core and @pixi/display without declaring them, so it would get the hoisted PixiJS 6 copies.
   pixi-viewport@5:
     peerDependencies:

@@ -5,6 +5,7 @@
   "type": "module",
   "dependencies": {
     "@pixi/layers": "^2.1.0",
+    "@pixi/layout": "^1.0.1",
     "@react-pixi-fiber/pixi-7": "workspace:*",
     "@react-pixi-fiber/react-19": "workspace:*",
     "@react-spring/core": "^10.1.2",
