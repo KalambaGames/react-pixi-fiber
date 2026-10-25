@@ -16,7 +16,15 @@ let held = false;
 
 function Harness({ code }: { code: string }) {
   latest = useRunner("runner.html", code, { held, onRun });
-  return <Preview src="runner.html" iframeKey={latest.iframeKey} iframeRef={latest.iframeRef} slot={null} />;
+  return (
+    <Preview
+      src="runner.html"
+      iframeKey={latest.iframeKey}
+      iframeRef={latest.iframeRef}
+      loading={latest.loading}
+      slot={null}
+    />
+  );
 }
 
 let container: HTMLDivElement;
@@ -146,7 +154,7 @@ describe("useRunner", () => {
     await act(() => vi.advanceTimersByTimeAsync(4999));
     expect(latest.entries).toEqual([]);
     await act(() => vi.advanceTimersByTimeAsync(1));
-    expect(latest.entries).toEqual([{ level: "system", text: "The preview did not start." }]);
+    expect(latest.entries).toEqual([{ level: "system", text: "The preview did not start (yet)." }]);
     await render("b");
     await act(() => vi.advanceTimersByTimeAsync(500));
     expect(latest.entries).toEqual([]);
@@ -157,6 +165,35 @@ describe("useRunner", () => {
     await send({ type: "ready" });
     await act(() => vi.advanceTimersByTimeAsync(5000));
     expect(latest.entries).toEqual([]);
+  });
+
+  it("is loading until the runner posts started for the current run", async () => {
+    await render("a");
+    expect(latest.loading).toBe(true);
+    // The skeleton pulses its opacity, so an opaque layer under it hides the frame.
+    expect(container.querySelector("[data-slot=skeleton]")?.parentElement?.className).toContain("bg-background");
+    await send({ type: "started", runId: 0 });
+    expect(latest.loading).toBe(true);
+    await send({ type: "started", runId: 1 });
+    expect(latest.loading).toBe(false);
+    expect(container.querySelector("[data-slot=skeleton]")).toBeNull();
+    await render("b");
+    await act(() => vi.advanceTimersByTimeAsync(500));
+    expect(latest.loading).toBe(true);
+  });
+
+  it("is not loading while the run is held", async () => {
+    held = true;
+    await render("a");
+    expect(latest.loading).toBe(false);
+    await act(() => latest.restart("a"));
+    expect(latest.loading).toBe(true);
+  });
+
+  it("stops loading when the runner does not start", async () => {
+    await render("a");
+    await act(() => vi.advanceTimersByTimeAsync(5000));
+    expect(latest.loading).toBe(false);
   });
 
   it("keeps only the last 500 entries", async () => {

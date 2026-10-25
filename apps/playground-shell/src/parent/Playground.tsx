@@ -248,7 +248,7 @@ function Session({
   };
   const [shareUrl, setShareUrl] = useState<string | null>(null);
   const [layout, setLayout] = useLayout();
-  const { entries, iframeKey, iframeRef, restart } = useRunner(example.runner, code, {
+  const { entries, iframeKey, iframeRef, loading, restart } = useRunner(example.runner, code, {
     held: resolved.held,
     onRun: () => {
       store.markRunning(example.id);
@@ -268,7 +268,8 @@ function Session({
 
   const flush = () => {
     clearTimeout(timer.current);
-    if (pending.current !== null) store.save(example.id, pending.current, resolved.original, staleHash.current ?? undefined);
+    if (pending.current !== null)
+      store.save(example.id, pending.current, resolved.original, staleHash.current ?? undefined);
     pending.current = null;
   };
   const drop = () => {
@@ -388,7 +389,7 @@ function Session({
         </>,
         editorHost
       )}
-      <Preview iframeKey={iframeKey} iframeRef={iframeRef} slot={previewSlot} src={example.runner} />
+      <Preview iframeKey={iframeKey} iframeRef={iframeRef} loading={loading} slot={previewSlot} src={example.runner} />
     </div>
   );
 }

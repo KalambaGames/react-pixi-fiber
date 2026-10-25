@@ -185,7 +185,6 @@ describe("Playground", () => {
     expect(container.querySelector(".cm-editor")).toBeNull();
     await act(async () => finish("code"));
     expect(container.querySelector(".cm-editor")).not.toBeNull();
-    expect(container.querySelector("[data-slot=skeleton]")).toBeNull();
   });
 
   it("tells the reader when the example source cannot load", async () => {

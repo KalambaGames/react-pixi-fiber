@@ -1,10 +1,10 @@
 import { Component, createElement, type ComponentType, type ReactNode } from "react";
 import { isParentMessage, type ConsoleLevel, type RunnerMessage } from "../protocol";
 import { compile } from "./compile";
-import { createModuleRequire } from "./modules";
+import { createModuleRequire, type LazyModules, loadImports } from "./modules";
 
 export { compile } from "./compile";
-export { createModuleRequire } from "./modules";
+export { createModuleRequire, type LazyModules, loadImports } from "./modules";
 
 export function canRun(): boolean {
   return self.origin === "null";
@@ -17,9 +17,17 @@ function isPlain(item: object): boolean {
   return Array.isArray(item) || prototype === Object.prototype || prototype === null;
 }
 
-function stringify(value: unknown): string {
+// A cause can lead back to an error that the chain already holds.
+function stringify(value: unknown, errors = new Set<Error>()): string {
   if (typeof value === "string") return value;
-  if (value instanceof Error) return value.stack ? `${value.message}\n${value.stack}` : value.message;
+  if (value instanceof Error) {
+    const text = value.stack ? `${value.message}\n${value.stack}` : value.message;
+    if (value.cause === undefined) return text;
+    errors.add(value);
+    const cause =
+      value.cause instanceof Error && errors.has(value.cause) ? "[Circular]" : stringify(value.cause, errors);
+    return `${text}\nCaused by: ${cause}`;
+  }
   const ancestors: unknown[] = [];
   try {
     const text = JSON.stringify(value, function (this: unknown, _key, item: unknown) {
@@ -43,7 +51,7 @@ function stringify(value: unknown): string {
 
 function format(args: unknown[]): string {
   const [first, ...rest] = args;
-  if (typeof first !== "string") return args.map(stringify).join(" ");
+  if (typeof first !== "string") return args.map(arg => stringify(arg)).join(" ");
   const text = first.replace(/%([sdifoOc%])/g, (match, code: string) => {
     if (code === "%") return "%";
     if (rest.length === 0) return match;
@@ -55,7 +63,7 @@ function format(args: unknown[]): string {
     if (code === "d" || code === "f") return String(number);
     return stringify(value);
   });
-  return [text, ...rest.map(stringify)].join(" ");
+  return [text, ...rest.map(arg => stringify(arg))].join(" ");
 }
 
 function post(message: RunnerMessage) {
@@ -74,11 +82,11 @@ class Boundary extends Component<{ children?: ReactNode }, { failed: boolean }> 
 }
 
 export function startRunner(options: {
+  lazyModules?: LazyModules;
   modules: Record<string, unknown>;
   render: (Component: ComponentType) => void;
 }): void {
   if (!canRun()) return;
-  const require = createModuleRequire(options.modules);
   const parentOrigin = new URL(location.href).origin;
   let runId = 0;
 
@@ -94,24 +102,31 @@ export function startRunner(options: {
   window.addEventListener("error", event => send("error", stringify(event.error ?? event.message)));
   window.addEventListener("unhandledrejection", event => send("error", stringify(event.reason)));
 
-  window.addEventListener("message", event => {
-    if (event.source !== window.parent || event.origin !== parentOrigin || !isParentMessage(event.data)) return;
-    runId = event.data.runId;
-    const compiled = compile(event.data.code);
+  // The parent shows a skeleton until started, so every run ends with it, also a failed one.
+  const run = async (code: string) => {
+    const compiled = compile(code);
     if (!compiled.ok) {
       const where = compiled.line === undefined ? "" : ` (line ${compiled.line}, column ${compiled.column})`;
       send("error", `${compiled.message}${where}`);
       return;
     }
     try {
+      const modules = await loadImports(compiled.code, options.modules, options.lazyModules ?? {});
       const exports: { default?: unknown } = {};
-      new Function("require", "exports", compiled.code)(require, exports);
+      new Function("require", "exports", compiled.code)(createModuleRequire(modules), exports);
       const Example = exports.default;
       if (typeof Example !== "function") throw new Error("The example must export a React component as default.");
       options.render(() => createElement(Boundary, null, createElement(Example as ComponentType)));
     } catch (error) {
       send("error", stringify(error));
     }
+  };
+
+  window.addEventListener("message", async event => {
+    if (event.source !== window.parent || event.origin !== parentOrigin || !isParentMessage(event.data)) return;
+    runId = event.data.runId;
+    await run(event.data.code);
+    post({ type: "started", runId: event.data.runId });
   });
 
   post({ type: "ready" });

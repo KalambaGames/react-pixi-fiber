@@ -51,8 +51,9 @@ send CORS headers. If it does not, the preview stays blank.
    `feature("Name", "Title")` for a feature, `integration("Name", "Title")` for an integration example, or
    `compat(6, "Name", "Title")` for a migration example. The first argument of `compat` is 6 or 7. Keep the entries in
    alphabetical order. Each group has its own part of the list.
-3. If the example imports a new package or asset path, add it to `src/modules.ts`. The runner resolves only the imports
-   in this map.
+3. If the example imports a new package or asset path, add it to `src/modules.ts`. Put a large package that only some
+   examples use in `lazyModules`. The runner downloads it only when the example code names it. Put all other imports in
+   `modules`. The runner resolves only the imports in these two maps.
 
 ## Why the runner uses a sandbox
 
