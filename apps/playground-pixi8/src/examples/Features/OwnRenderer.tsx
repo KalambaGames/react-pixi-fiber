@@ -100,8 +100,8 @@ function CustomApplicationExample() {
       .init({
         backgroundColor: 0xbb9910,
         canvas,
-        height: 600,
-        width: 800,
+        height: 300,
+        width: 400,
       })
       .then(() => {
         initialized = true;
@@ -127,7 +127,7 @@ function CustomApplicationExample() {
       {app && (
         <Stage app={app}>
           <BunnyTexturesProvider>
-            <RotatingBunny scale={4} x={400} y={300} />
+            <RotatingBunny scale={3} x={200} y={150} />
           </BunnyTexturesProvider>
         </Stage>
       )}

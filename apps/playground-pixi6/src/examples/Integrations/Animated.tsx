@@ -56,8 +56,8 @@ function Bunny({ as: Component = Sprite, texture = 0, ...passedProps }: BunnyPro
 
 const OPTIONS = {
   backgroundColor: 0x1099bb,
-  height: 600,
-  width: 800,
+  height: 300,
+  width: 400,
 };
 
 function BunnyExample() {
@@ -77,14 +77,14 @@ function BunnyExample() {
         interactive
         pointerdown={handleDown}
         pointerup={handleUp}
-        position="400,300"
+        position="200,150"
         rotation={animationProgress.current.interpolate({
           inputRange: [0, 1],
           outputRange: [0, Math.PI * 2],
         })}
         scale={animationProgress.current.interpolate({
           inputRange: [0, 1],
-          outputRange: [1, 8],
+          outputRange: [1, 4],
         })}
       />
     </Stage>

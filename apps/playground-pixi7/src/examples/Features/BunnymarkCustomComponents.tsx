@@ -42,8 +42,8 @@ const Particle = PIXIComponent<ParticleInstance, ParticleProps>(PARTICLE, {
 const maxSize = 200000;
 const bunniesAddedPerFrame = 100;
 const gravity = 0.5;
-const maxX = 800;
-const maxY = 600;
+const maxX = 400;
+const maxY = 300;
 const minX = 0;
 const minY = 0;
 
@@ -168,11 +168,11 @@ const CustomBunnymark = withApp(function CustomBunnymark(props: PixiAppPropertie
             so here's a clickable hit area */}
       <Sprite
         eventMode="static"
-        height={600}
+        height={300}
         onpointerdown={handlePointerDown}
         onpointerup={handlePointerUp}
         texture={PIXI.Texture.EMPTY}
-        width={800}
+        width={400}
       />
     </Fragment>
   );
@@ -180,8 +180,8 @@ const CustomBunnymark = withApp(function CustomBunnymark(props: PixiAppPropertie
 
 const OPTIONS = {
   backgroundColor: 0x1099bb,
-  height: 600,
-  width: 800,
+  height: 300,
+  width: 400,
 };
 
 function CustomBunnymarkExample() {

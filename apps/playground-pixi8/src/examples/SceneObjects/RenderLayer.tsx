@@ -171,8 +171,8 @@ function ColoredBunny({ fill, ...rest }: ColoredBunnyProps) {
 
 const OPTIONS = {
   backgroundColor: 0x1099bb,
-  height: 600,
-  width: 800,
+  height: 300,
+  width: 400,
 };
 
 // A RenderLayer draws the objects attached to it, wherever they are in the tree.
@@ -244,10 +244,10 @@ const onBunnyDragStart = (instance: DraggableContainerInstance) => {
   dragLayer.current?.attach(bunny);
 };
 
-const blueBunnies = Array(10)
+const blueBunnies = Array(6)
   .fill(0)
   .map((i, index) => index);
-const greenBunnies = Array(15)
+const greenBunnies = Array(8)
   .fill(0)
   .map((i, index) => index);
 const evenBunnies = greenBunnies.filter(index => index % 2 === 0);
@@ -284,8 +284,8 @@ function LayeredStage() {
                 key={index}
                 onDragEnd={onBunnyDragEnd}
                 onDragStart={onBunnyDragStart}
-                x={100 + 20 * index}
-                y={100 + 20 * index}
+                x={50 + 20 * index}
+                y={50 + 20 * index}
               >
                 <Rect {...shadowProps} parentLayer={shadowLayer} />
                 <ColoredBunny fill={0x74fa9a} parentLayer={greenLayer} />
@@ -298,8 +298,8 @@ function LayeredStage() {
                 key={index}
                 onDragEnd={onBunnyDragEnd}
                 onDragStart={onBunnyDragStart}
-                x={100 + 20 * index}
-                y={100 + 20 * index}
+                x={50 + 20 * index}
+                y={50 + 20 * index}
               >
                 <Rect {...shadowProps} parentLayer={shadowLayer} />
                 <ColoredBunny fill={0x74fa9a} parentLayer={greenLayer} />
@@ -312,8 +312,8 @@ function LayeredStage() {
                 key={index}
                 onDragEnd={onBunnyDragEnd}
                 onDragStart={onBunnyDragStart}
-                x={400 + 20 * index}
-                y={400 - 20 * index}
+                x={210 + 20 * index}
+                y={210 - 20 * index}
               >
                 <Rect {...shadowProps} parentLayer={shadowLayer} />
                 <ColoredBunny fill={0xbcfdfe} parentLayer={blueLayer} />

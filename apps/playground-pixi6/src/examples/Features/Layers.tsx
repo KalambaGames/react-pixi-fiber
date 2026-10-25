@@ -171,8 +171,8 @@ const LayeredStage = PIXIComponent<LayeredStageInstance, LayeredStageProps>("Lay
 
 const OPTIONS = {
   backgroundColor: 0x1099bb,
-  height: 600,
-  width: 800,
+  height: 300,
+  width: 400,
 };
 
 // Mark parentGroup prop as legal on Container as long as it's a valid display group
@@ -221,10 +221,10 @@ const onBunnyDragStart = (instance: DraggableContainerInstance) => {
   bunny.parentGroup = dragGroup;
 };
 
-const blueBunnies = Array(10)
+const blueBunnies = Array(6)
   .fill(0)
   .map((i, index) => index);
-const greenBunnies = Array(15)
+const greenBunnies = Array(8)
   .fill(0)
   .map((i, index) => index);
 const evenBunnies = greenBunnies.filter(index => index % 2 === 0);
@@ -261,8 +261,8 @@ function LayersExample() {
               key={index}
               onDragEnd={onBunnyDragEnd}
               onDragStart={onBunnyDragStart}
-              x={100 + 20 * index}
-              y={100 + 20 * index}
+              x={50 + 20 * index}
+              y={50 + 20 * index}
             >
               <Rect {...shadowProps} parentGroup={shadowGroup} />
               <ColoredBunny fill={0x74fa9a} parentGroup={greenGroup} />
@@ -275,8 +275,8 @@ function LayersExample() {
               key={index}
               onDragEnd={onBunnyDragEnd}
               onDragStart={onBunnyDragStart}
-              x={100 + 20 * index}
-              y={100 + 20 * index}
+              x={50 + 20 * index}
+              y={50 + 20 * index}
             >
               <Rect {...shadowProps} parentGroup={shadowGroup} />
               <ColoredBunny fill={0x74fa9a} parentGroup={greenGroup} />
@@ -289,8 +289,8 @@ function LayersExample() {
               key={index}
               onDragEnd={onBunnyDragEnd}
               onDragStart={onBunnyDragStart}
-              x={400 + 20 * index}
-              y={400 - 20 * index}
+              x={210 + 20 * index}
+              y={210 - 20 * index}
             >
               <Rect {...shadowProps} parentGroup={shadowGroup} />
               <ColoredBunny fill={0xbcfdfe} parentGroup={blueGroup} />

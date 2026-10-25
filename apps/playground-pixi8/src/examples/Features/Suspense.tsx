@@ -23,8 +23,8 @@ function TextureRenderer({ assetUrl, children }: TextureRendererProps) {
 
 const OPTIONS = {
   backgroundColor: 0x1099bb,
-  height: 600,
-  width: 800,
+  height: 300,
+  width: 400,
 };
 
 function SuspenseExample() {

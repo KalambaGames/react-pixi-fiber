@@ -28,8 +28,8 @@ function Bunny({ as: Component = Sprite, texture = 0, ...passedProps }: BunnyPro
 // Scale mode for all textures, will retain pixelation
 settings.SCALE_MODE = SCALE_MODES.NEAREST;
 
-const WIDTH = 800;
-const HEIGHT = 600;
+const WIDTH = 400;
+const HEIGHT = 300;
 const OPTIONS = {
   backgroundColor: 0x1099bb,
   height: HEIGHT,
@@ -40,19 +40,19 @@ function PointsExample() {
   return (
     <Stage options={OPTIONS}>
       {/* Position via single value of X as string */}
-      <Bunny position="75" />
+      <Bunny position="35" />
       {/* Position via single value of X as number */}
-      <Bunny position={150} />
+      <Bunny position={70} />
       {/* Position via single value of X in array */}
-      <Bunny position={[225]} />
+      <Bunny position={[105]} />
       {/* Position via list of X and Y as comma delimited string */}
-      <Bunny position="300,300" />
+      <Bunny position="140,140" />
       {/* Position via single value of X as string */}
-      <Bunny position={[375, 375]} />
+      <Bunny position={[175, 175]} />
       {/* Position via list of X and Y in array */}
-      <Bunny position={{ x: 450, y: 450 }} />
+      <Bunny position={{ x: 210, y: 210 }} />
       {/* Position via explicit PIXI.Point */}
-      <Bunny position={new Point(525, 525)} />
+      <Bunny position={new Point(245, 245)} />
     </Stage>
   );
 }

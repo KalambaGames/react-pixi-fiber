@@ -122,7 +122,7 @@ const Title = () => {
     }
   }, [title]);
 
-  return <Text ref={pixiText} text={title} x={400} y={0} />;
+  return <Text ref={pixiText} text={title} x={200} y={0} />;
 };
 
 const Animation = () => {
@@ -140,17 +140,17 @@ const Animation = () => {
   return (
     <Fragment>
       <Title />
-      <Rect fill={grayFromNum(number1)} height={250} width={250} x={275} y={175} />
-      <Circle fill={grayFromNum(number2)} radius={100} x={400} y={300} />
-      <Text text={text1} x={0} y={500} />
-      <Text text={text2} x={0} y={550} />
+      <Rect fill={grayFromNum(number1)} height={124} width={124} x={138} y={88} />
+      <Circle fill={grayFromNum(number2)} radius={50} x={200} y={150} />
+      <Text text={text1} x={0} y={226} />
+      <Text text={text2} x={0} y={262} />
     </Fragment>
   );
 };
 
 const HooksExample = () => {
   return (
-    <Stage options={{ backgroundColor: 0xff0000, height: 600, width: 800 }}>
+    <Stage options={{ backgroundColor: 0xff0000, height: 300, width: 400 }}>
       <AnimationContext.Provider value={{ title: "animation" }}>
         <Animation />
       </AnimationContext.Provider>

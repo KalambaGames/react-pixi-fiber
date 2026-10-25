@@ -64,9 +64,9 @@ function CustomApplicationExample() {
 
     const app = new Application({
       backgroundColor: 0xbb9910,
-      height: 600,
+      height: 300,
       view: canvas,
-      width: 800,
+      width: 400,
     });
     setApp(app);
 
@@ -82,7 +82,7 @@ function CustomApplicationExample() {
     <div ref={div}>
       {app && (
         <Stage app={app}>
-          <RotatingBunny scale={4} x={400} y={300} />
+          <RotatingBunny scale={3} x={200} y={150} />
         </Stage>
       )}
     </div>

@@ -80,8 +80,8 @@ const RotatingBunny = withApp(function RotatingBunny({ app, step = 0.1, ...passe
 
 const OPTIONS = {
   backgroundColor: 0x1099bb,
-  height: 600,
-  width: 800,
+  height: 300,
+  width: 400,
 };
 
 function BunnyExample() {
@@ -89,11 +89,11 @@ function BunnyExample() {
     <Stage options={OPTIONS}>
       <BunnyTexturesProvider>
         <Container>
-          <RotatingBunny label="regular" step={0.1} texture={0} x={400} y={300} />
-          <RotatingBunny label="cool" step={0.2} texture={1} x={200} y={200} />
-          <RotatingBunny label="sport" step={-0.25} texture={2} x={200} y={400} />
-          <RotatingBunny label="cyborg" step={-0.1} texture={3} x={600} y={200} />
-          <RotatingBunny label="astronaut" step={-0.02} texture={4} x={600} y={400} />
+          <RotatingBunny label="regular" step={0.1} texture={0} x={200} y={150} />
+          <RotatingBunny label="cool" step={0.2} texture={1} x={100} y={100} />
+          <RotatingBunny label="sport" step={-0.25} texture={2} x={100} y={200} />
+          <RotatingBunny label="cyborg" step={-0.1} texture={3} x={300} y={100} />
+          <RotatingBunny label="astronaut" step={-0.02} texture={4} x={300} y={200} />
         </Container>
       </BunnyTexturesProvider>
     </Stage>

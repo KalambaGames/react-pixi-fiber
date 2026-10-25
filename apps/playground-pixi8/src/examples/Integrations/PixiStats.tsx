@@ -16,8 +16,8 @@ import bunnysImage from "./assets/bunnys.png";
 const maxSize = 200000;
 const bunniesAddedPerFrame = 100;
 const gravity = 0.5;
-const maxX = 800;
-const maxY = 600;
+const maxX = 400;
+const maxY = 300;
 const minX = 0;
 const minY = 0;
 
@@ -151,11 +151,11 @@ const Bunnymark = withApp(function Bunnymark({ app, overlay }: PixiAppProperties
             so here's a clickable hit area */}
       <Sprite
         eventMode="static"
-        height={600}
+        height={300}
         onpointerdown={handlePointerDown}
         onpointerup={handlePointerUp}
         texture={Texture.EMPTY}
-        width={800}
+        width={400}
       />
     </Fragment>
   );
@@ -163,8 +163,8 @@ const Bunnymark = withApp(function Bunnymark({ app, overlay }: PixiAppProperties
 
 const OPTIONS = {
   backgroundColor: 0x1099bb,
-  height: 600,
-  width: 800,
+  height: 300,
+  width: 400,
 };
 
 function PixiStatsExample() {
@@ -172,8 +172,12 @@ function PixiStatsExample() {
   return (
     <div style={{ position: "relative", width: OPTIONS.width }}>
       <Stage options={OPTIONS}>{overlay && <Bunnymark overlay={overlay} />}</Stage>
-      {/* The stats panel shows FPS, MS and MB, and DC (draw calls) and TC (textures). A click switches the panel. */}
-      <div ref={setOverlay} style={{ position: "absolute", right: 0, top: 0 }} />
+      {/* The stats panel shows FPS, MS and MB, and DC (draw calls) and TC (textures). A click switches the panel.
+       * pixi-stats draws it at 200 × 120 px, so the overlay shows it at half size. */}
+      <div
+        ref={setOverlay}
+        style={{ position: "absolute", right: 0, top: 0, transform: "scale(0.5)", transformOrigin: "top right" }}
+      />
     </div>
   );
 }

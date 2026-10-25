@@ -27,16 +27,16 @@ function Bunny({ as: Component = Sprite, texture = 0, ...passedProps }: BunnyPro
 
 const OPTIONS = {
   backgroundColor: 0x1099bb,
-  height: 600,
-  width: 800,
+  height: 300,
+  width: 400,
 };
 
 function CanvasPropsExample() {
   return (
     <>
       <style>{".bordered { border: 5px solid #222; }"}</style>
-      <Stage className="bordered" options={OPTIONS} style={{ transform: "scale(0.5)" }}>
-        <Bunny x={400} y={300} />
+      <Stage className="bordered" options={OPTIONS} style={{ borderRadius: 16 }}>
+        <Bunny x={200} y={150} />
       </Stage>
     </>
   );
