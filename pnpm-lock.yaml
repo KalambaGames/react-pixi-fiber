@@ -82,6 +82,9 @@ importers:
       leva:
         specifier: ^0.10.1
         version: 0.10.1(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+      matter-js:
+        specifier: ^0.20.0
+        version: 0.20.0
       motion:
         specifier: ^14.6.0
         version: 14.6.0(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
@@ -110,6 +113,9 @@ importers:
       '@tailwindcss/vite':
         specifier: 4.3.3
         version: 4.3.3(vite@8.3.1(@types/node@26.6.3)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(yaml@2.9.1))
+      '@types/matter-js':
+        specifier: ^0.20.2
+        version: 0.20.2
       '@types/pixi.js':
         specifier: ^4.8.9
         version: 4.8.9
@@ -149,6 +155,9 @@ importers:
       leva:
         specifier: ^0.10.1
         version: 0.10.1(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+      matter-js:
+        specifier: ^0.20.0
+        version: 0.20.0
       motion:
         specifier: ^14.6.0
         version: 14.6.0(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
@@ -177,6 +186,9 @@ importers:
       '@tailwindcss/vite':
         specifier: 4.3.3
         version: 4.3.3(vite@8.3.1(@types/node@26.6.3)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(yaml@2.9.1))
+      '@types/matter-js':
+        specifier: ^0.20.2
+        version: 0.20.2
       '@types/react':
         specifier: ^19.2.0
         version: 19.3.0
@@ -246,6 +258,9 @@ importers:
       leva:
         specifier: ^0.10.1
         version: 0.10.1(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+      matter-js:
+        specifier: ^0.20.0
+        version: 0.20.0
       motion:
         specifier: ^14.6.0
         version: 14.6.0(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
@@ -271,6 +286,9 @@ importers:
       '@tailwindcss/vite':
         specifier: 4.3.3
         version: 4.3.3(vite@8.3.1(@types/node@26.6.3)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(yaml@2.9.1))
+      '@types/matter-js':
+        specifier: ^0.20.2
+        version: 0.20.2
       '@types/react':
         specifier: ^19.2.0
         version: 19.3.0
@@ -310,6 +328,9 @@ importers:
       leva:
         specifier: ^0.10.1
         version: 0.10.1(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+      matter-js:
+        specifier: ^0.20.0
+        version: 0.20.0
       motion:
         specifier: ^14.6.0
         version: 14.6.0(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
@@ -335,6 +356,9 @@ importers:
       '@tailwindcss/vite':
         specifier: 4.3.3
         version: 4.3.3(vite@8.3.1(@types/node@26.6.3)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(yaml@2.9.1))
+      '@types/matter-js':
+        specifier: ^0.20.2
+        version: 0.20.2
       '@types/react':
         specifier: ^19.2.0
         version: 19.3.0
@@ -371,6 +395,9 @@ importers:
       leva:
         specifier: ^0.10.1
         version: 0.10.1(@types/react-dom@19.3.0(@types/react@19.3.0))(@types/react@19.3.0)(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+      matter-js:
+        specifier: ^0.20.0
+        version: 0.20.0
       motion:
         specifier: ^14.6.0
         version: 14.6.0(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
@@ -396,6 +423,9 @@ importers:
       '@tailwindcss/vite':
         specifier: 4.3.3
         version: 4.3.3(vite@8.3.1(@types/node@26.6.3)(esbuild@0.28.2)(jiti@2.7.0)(terser@5.51.2)(yaml@2.9.1))
+      '@types/matter-js':
+        specifier: ^0.20.2
+        version: 0.20.2
       '@types/react':
         specifier: ^19.2.0
         version: 19.3.0
@@ -2846,6 +2876,9 @@ packages:
   '@types/estree@1.0.9':
     resolution: {integrity: sha512-GhdPgy1el4/ImP05X05Uw4cw2/M93BCUmnEvWZNStlCzEKME4Fkk+YpoA5OiHNQmoS7Cafb8Xa3Pya8m1Qrzeg==}
 
+  '@types/matter-js@0.20.2':
+    resolution: {integrity: sha512-3PPKy3QxvZ89h9+wdBV2488I1JLVs7DEpIkPvgO8JC1mUdiVSO37ZIvVctOTD7hIq8OAL2gJ3ugGSuUip6DhCw==}
+
   '@types/node@24.19.0':
     resolution: {integrity: sha512-zY+5tKxXdhGh1PYI0ac+7juvEu4OI6vWtVVoj5i2m42jxAY1U+zHGt6QCyOFwykdP62sM3MJ9stoYYUw5aCWew==}
 
@@ -3954,6 +3987,9 @@ packages:
   math-intrinsics@1.1.0:
     resolution: {integrity: sha512-/IXtbwEk5HTPyEwyKX6hGkYXxM9nbj64B+ilVJnC/R6B0pH5G4V3b0pVbL7DBj4tkhBAppbQUlf6F6Xl9LHu1g==}
     engines: {node: '>= 0.4'}
+
+  matter-js@0.20.0:
+    resolution: {integrity: sha512-iC9fYR7zVT3HppNnsFsp9XOoQdQN2tUyfaKg4CHLH8bN+j6GT4Gw7IH2rP0tflAebrHFw730RR3DkVSZRX8hwA==}
 
   mdn-data@2.27.1:
     resolution: {integrity: sha512-9Yubnt3e8A0OKwxYSXyhLymGW4sCufcLG6VdiDdUGVkPhpqLxlvP5vl1983gQjJl3tqbrM731mjaZaP68AgosQ==}
@@ -6979,6 +7015,8 @@ snapshots:
 
   '@types/estree@1.0.9': {}
 
+  '@types/matter-js@0.20.2': {}
+
   '@types/node@24.19.0':
     dependencies:
       undici-types: 7.24.6
@@ -7918,6 +7956,8 @@ snapshots:
   marked@9.1.6: {}
 
   math-intrinsics@1.1.0: {}
+
+  matter-js@0.20.0: {}
 
   mdn-data@2.27.1: {}
 
