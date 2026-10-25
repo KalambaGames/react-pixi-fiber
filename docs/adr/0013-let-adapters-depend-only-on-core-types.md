@@ -24,7 +24,7 @@ apps  →  adapters  →  core (types only)
 
 1. **The core depends on no adapter.** It declares only `react` as a peer dependency.
 2. **An adapter imports only types from the core** (`import type ... from "react-pixi-fiber"`). The built JavaScript of an adapter contains no `import` or `require` of the core. The adapter declares the core as a peer dependency with a caret range, because its declarations import types from the core.
-3. **An adapter depends on no other adapter.** A React adapter declares only `react` and the core as peers. A PixiJS adapter declares only `pixi.js` and the core as peers.
+3. **An adapter depends on no other adapter.** A React adapter declares only `react` and the core as peers. A PixiJS adapter declares only `pixi.js` and the core as peers. When a PixiJS major ships no typings, its adapter can also declare the package of those typings as an optional peer. An example is `@types/pixi.js` for PixiJS 4.
 4. **React, PixiJS, and the core are always peer dependencies**, never regular dependencies. The React adapters bundle their `react-reconciler`, so no other runtime dependency remains (see [0011](0011-use-one-react-adapter-for-each-react-major.md)).
 5. **Adapters share no runtime code.** When two adapters need the same code, each adapter has its own copy. A small helper of the core that an adapter needs at run time, such as `warning`, is also copied.
 6. **Tests share utilities by relative path**, not by a dependency (see [0004](0004-test-each-package-with-its-own-react-and-pixijs.md)).

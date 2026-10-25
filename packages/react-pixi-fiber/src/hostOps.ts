@@ -5,6 +5,7 @@ import {
   translate,
   updateProperties,
 } from "./ReactPixiFiberComponent";
+import { getDefaultValue } from "./PixiPropertyOperations";
 import { validateProperties as validateUnknownProperties } from "./ReactPixiFiberUnknownPropertyHook";
 import { getBoundBehavior } from "./registry";
 import { getStrictModeBit } from "./configure";
@@ -87,7 +88,12 @@ export function hideInstance(instance: any): void {
 }
 
 export function unhideInstance(instance: any, props: Record<string, unknown>): void {
-  instance.visible = typeof props.visible !== "undefined" ? props.visible : true;
+  if (typeof props.visible !== "undefined") {
+    instance.visible = props.visible;
+    return;
+  }
+  const defaultValue = getDefaultValue(instance, "visible");
+  instance.visible = typeof defaultValue !== "undefined" ? defaultValue : true;
 }
 
 // Development only: validates under a <StrictMode> ancestor, found on the fiber with the React adapter's mode bit.

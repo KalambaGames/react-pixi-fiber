@@ -17,3 +17,8 @@ export const sprite = (
   />
 );
 export const container = <Container interactive={false} pointerdown={event => event.global} />;
+
+// @ts-expect-error `buttonMode` takes a boolean.
+export const invalidButtonMode = <Sprite buttonMode="yes" />;
+// @ts-expect-error `click` takes an event handler.
+export const invalidClick = <Sprite click={1} />;

@@ -23,11 +23,11 @@ export const NUMERIC = 3;
 export const POSITIVE_NUMERIC = 4;
 
 // An attribute that must be vector or parse as a vector.
-// When falsy, it should be removed.
+// When it does not parse, it should be removed. `null` is written, and throws as it does in PixiJS.
 export const VECTOR = 5;
 
-// An attribute that must be function
-// When falsy, it should be removed.
+// An attribute that must be function or `null`.
+// When it is anything else, it should be removed.
 export const CALLBACK = 6;
 
 export function shouldIgnoreAttribute(type: string, name: string, propertyInfo: PropertyInfoRecord | null): boolean {
@@ -71,12 +71,13 @@ export function shouldRemoveAttribute(
   if (propertyInfo !== null) {
     switch (propertyInfo.type) {
       case CALLBACK:
-        return typeof value !== "function";
+        return value !== null && typeof value !== "function";
       case NUMERIC:
         return isNaN(value);
       case POSITIVE_NUMERIC:
         return isNaN(value) || value < 0;
       case VECTOR:
+        if (value === null) return false;
         const vector = parsePoint(value);
         return vector.length === 0 || vector.findIndex(x => isNaN(x)) !== -1;
     }

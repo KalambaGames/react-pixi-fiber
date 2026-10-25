@@ -36,7 +36,7 @@ When a prop arrives as `undefined` or with an invalid value after construction, 
 
 So a tag with a `defaults` entry gets the same value when the consumer never passes the prop and when the consumer removes it. A prop that the constructor consumes (`text`, `texture`, `style`) records the initial prop value. The `defaults` option gives these props a real default.
 
-In development inside `<StrictMode>`, an invalid value prints a warning that names the value.
+In development inside `<StrictMode>`, an invalid value prints a warning that names the value, once for each prop name (see [0009](0009-throw-for-impossible-operations-and-warn-for-mistakes.md)).
 
 ## Considered Alternatives
 

@@ -14,8 +14,8 @@
     "@react-pixi-fiber/pixi-7": "workspace:*",
     "@react-pixi-fiber/pixi-8": "workspace:*",
     "@react-pixi-fiber/react-18": "workspace:*",
-    "react": "^18.3.1",
+    "react": "18.3.1",
     "react-pixi-fiber": "workspace:*",
-    "react-test-renderer": "^18.3.1"
+    "react-test-renderer": "18.3.1"
   }
 }

@@ -22,7 +22,7 @@ When a major release renames or replaces a public API, the old API stays for tha
 
 A deprecated API:
 
-- calls, or maps to, its replacement. It has no separate implementation.
+- calls, or maps to, its replacement. It has no separate implementation. The exception is an API whose replacement behaves differently. That API keeps its own implementation until the next major. An example is the `width` and `height` props of `Stage`: they size `app.stage`, but the `options` prop sizes the renderer.
 - prints one development warning for each deprecated name, the first time a consumer uses it. The warning names the replacement and the major that removes the old name.
 - has `@deprecated` JSDoc that names the replacement, so editors show it as deprecated.
 - resolves by the same rule in every place that looks it up. For example, a deprecated tag resolves to the same tag for instance creation, for defaults, and for prop validation.

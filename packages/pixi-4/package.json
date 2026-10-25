@@ -49,8 +49,8 @@
     }
   },
   "devDependencies": {
-    "@types/pixi.js": "^4.8.9",
-    "pixi.js": "^4.8.9",
+    "@types/pixi.js": "4.8.9",
+    "pixi.js": "4.8.9",
     "react-pixi-fiber": "workspace:*"
   },
   "scripts": {

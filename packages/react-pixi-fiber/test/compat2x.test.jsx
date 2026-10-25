@@ -19,6 +19,8 @@ import {
   usePixiTicker,
   withApp,
 } from "../src/index";
+import pixi6 from "@react-pixi-fiber/pixi-6";
+import { registerAdapterComponents } from "../src/registry";
 
 // 2.x code, unchanged, against react-18 and pixi-6. The deprecation warnings are module-level once guards, and this
 // file is the first in its module graph to use each deprecated name.
@@ -113,6 +115,28 @@ describe("2.x compatibility", () => {
     expect(stage.children[0].leftWidth).toBe(1);
     unmount(stage);
     expect(messages(error).filter(message => /NineSlicePlane/.test(message))).toEqual([]);
+  });
+
+  it("renders NineSlicePlane as NineSliceSprite when the adapter has no NineSlicePlane, warning once", () => {
+    const dev = __DEV__ ? 1 : 0;
+    const { NineSlicePlane: _, ...components } = pixi6().components;
+    registerAdapterComponents(components);
+    try {
+      const stage = new PIXI.Container();
+      render(
+        <>
+          <NineSlicePlane texture={PIXI.Texture.WHITE} leftWidth={1} />
+          <NineSlicePlane texture={PIXI.Texture.WHITE} leftWidth={2} />
+        </>,
+        stage
+      );
+      expect(stage.children[0]).toBeInstanceOf(PIXI.NineSlicePlane);
+      expect(stage.children.map(child => child.leftWidth)).toEqual([1, 2]);
+      unmount(stage);
+      expect(countMatching(error, /Tag `NineSlicePlane` is deprecated, use `NineSliceSprite`/)).toBe(dev);
+    } finally {
+      registerAdapterComponents(pixi6().components);
+    }
   });
 
   it("renders the Stage from createStageClass with width and height, warning once each", async () => {

@@ -34,6 +34,11 @@ describe("pixi8", () => {
     for (const tag of Object.keys(adapter.components))
       expect(typeof adapter.components[tag].create, tag).toBe("function");
   });
+  it("lists origin as a point", () => {
+    expect(adapter.properties.vector).toContain("origin");
+    expect(adapter.properties.untypedContainer).not.toContain("origin");
+  });
+
   it("lists the on-prefixed event properties as callbacks", () => {
     expect(adapter.properties.callback).toContain("onclick");
     expect(adapter.properties.callback).not.toContain("click");
@@ -88,8 +93,8 @@ describe("pixi8", () => {
       "`pixi8` takes no `components`. Pass them to `pixi8WithComponents` from `@react-pixi-fiber/pixi-8`."
     );
   });
-  it("has no translateProps without compat", () => {
-    expect(adapter.translateProps).toBeUndefined();
+  it("has no translateProps without compat in production", () => {
+    expect(adapter.translateProps === undefined).toBe(!__DEV__);
   });
 });
 

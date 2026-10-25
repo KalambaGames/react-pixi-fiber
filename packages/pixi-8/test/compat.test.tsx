@@ -131,3 +131,22 @@ describe("2.x props on pixi8({ compat })", () => {
     expect(translated).toHaveLength(__DEV__ ? 5 : 0);
   });
 });
+
+describe("pixi8() without compat", () => {
+  afterEach(() => vi.restoreAllMocks());
+  it("warns once in development per PixiJS 6 prop that PixiJS 8 ignores, naming the compat modules", () => {
+    const error = vi.spyOn(console, "error").mockImplementation(() => {});
+    const adapter = pixi8();
+    const props = { buttonMode: true, click: () => {}, interactive: true, x: 1 };
+    expect(adapter.translateProps?.("Sprite", props) ?? props).toBe(props);
+    adapter.translateProps?.("Sprite", { buttonMode: false, click: () => {} });
+    const messages = error.mock.calls.map(c => String(c[0])).filter(m => /PixiJS 8 ignores/.test(m));
+    expect(messages).toHaveLength(__DEV__ ? 2 : 0);
+    if (__DEV__) {
+      expect(messages[0]).toMatch(
+        /`buttonMode` on `<Sprite \/>`.*`@react-pixi-fiber\/pixi-8\/compat\/pixi6`.*`@react-pixi-fiber\/pixi-8\/compat\/pixi7`/
+      );
+      expect(messages[1]).toMatch(/`click` on `<Sprite \/>`/);
+    }
+  });
+});

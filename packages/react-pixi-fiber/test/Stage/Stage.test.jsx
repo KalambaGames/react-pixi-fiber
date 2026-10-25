@@ -499,7 +499,9 @@ describe("Stage", () => {
     tree.update(<FreshStage width={2} height={2} />);
     expect(
       error.mock.calls.filter(c =>
-        /`width` and `height` props of `Stage` are deprecated. They size `app.stage`, not the renderer/.test(c[0])
+        /`width` and `height` props of `Stage` are deprecated. They size `app.stage`, not the renderer.*They will be removed in 4\.0\.0\./.test(
+          c[0]
+        )
       )
     ).toHaveLength(__DEV__ ? 1 : 0);
     tree.unmount();

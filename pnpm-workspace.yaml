@@ -75,14 +75,18 @@ packageExtensions:
       "@pixi/core": ^7
 # @pixi/layout 1.0 imports @pixi/mesh-extras and @pixi/sprite-tiling without declaring them.
   "@pixi/layout@1":
-    dependencies:
-      "@pixi/mesh-extras": ^7.3.1
-      "@pixi/sprite-tiling": ^7.3.1
+    peerDependencies:
+      "@pixi/mesh-extras": ^7
+      "@pixi/sprite-tiling": ^7
 # @pixi/tilemap 4 imports @pixi/core and @pixi/display without declaring them.
   "@pixi/tilemap@4":
     peerDependencies:
       "@pixi/core": ^7
       "@pixi/display": ^7
+# @pixi/ui 1 imports @pixi/mesh-extras without declaring it.
+  "@pixi/ui@1":
+    peerDependencies:
+      "@pixi/mesh-extras": ^7
 # pixi-viewport 5.0 imports @pixi/core, @pixi/display, @pixi/events and @pixi/math without declaring them, so it would get the hoisted PixiJS 6 copies.
   pixi-viewport@5:
     peerDependencies:

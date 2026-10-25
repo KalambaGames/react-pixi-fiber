@@ -104,7 +104,28 @@ describe("usePixiTicker", () => {
           <TestComponent />
         </AppContext.Provider>
       )
-    ).toThrow("`usePixiTicker` needs an `app` with a `ticker`.");
+    ).toThrow(
+      expect.objectContaining({
+        message: "`usePixiTicker` needs an `app` with a `ticker`.",
+        name: "Invariant Violation",
+      })
+    );
+    error.mockRestore();
+  });
+});
+
+describe("usePixiApp outside of Stage", () => {
+  it("throws an invariant violation", () => {
+    const TestComponent = () => {
+      usePixiApp();
+
+      return null;
+    };
+    const error = vi.spyOn(console, "error").mockImplementation(() => {});
+
+    expect(() => renderer.create(<TestComponent />)).toThrow(
+      expect.objectContaining({ message: expect.stringMatching(/children of <Stage \/>/), name: "Invariant Violation" })
+    );
     error.mockRestore();
   });
 });
