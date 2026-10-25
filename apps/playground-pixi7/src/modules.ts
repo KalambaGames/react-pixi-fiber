@@ -6,11 +6,13 @@ import * as jsxRuntime from "react/jsx-runtime";
 import * as reactDom from "react-dom";
 import * as reactPixiFiber from "react-pixi-fiber";
 import bunnys from "./examples/assets/bunnys.png";
+import sounds from "./examples/assets/sounds.mp3";
 import tinyTown from "./examples/assets/tiny-town.png";
 import type { LazyModules } from "playground-shell/runner";
 
 export const modules: Record<string, unknown> = {
   "./assets/bunnys.png": bunnys,
+  "./assets/sounds.mp3": sounds,
   "./assets/tiny-town.png": tinyTown,
   "@pixi/layers": layers,
   "@react-pixi-fiber/pixi-7": pixi7,
@@ -23,6 +25,7 @@ export const modules: Record<string, unknown> = {
 
 export const lazyModules: LazyModules = {
   "@pixi/layout": () => import("@pixi/layout"),
+  "@pixi/sound": () => import("@pixi/sound"),
   "@pixi/tilemap": () => import("@pixi/tilemap"),
   "@pixi/ui": () => import("@pixi/ui"),
   "@react-spring/core": () => import("@react-spring/core"),

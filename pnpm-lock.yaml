@@ -96,6 +96,9 @@ importers:
       pixi-layers:
         specifier: ^0.1.10
         version: 0.1.10
+      pixi-sound:
+        specifier: ^2.1.5
+        version: 2.1.5(pixi.js@4.8.9)
       pixi-tilemap:
         specifier: ^1.2.8
         version: 1.2.8
@@ -160,10 +163,19 @@ importers:
       '@pixi/graphics':
         specifier: 5.3.12
         version: 5.3.12
+      '@pixi/loaders':
+        specifier: 5.3.12
+        version: 5.3.12
       '@pixi/math':
         specifier: 5.3.12
         version: 5.3.12
       '@pixi/sprite':
+        specifier: 5.3.12
+        version: 5.3.12
+      '@pixi/ticker':
+        specifier: 5.3.12
+        version: 5.3.12
+      '@pixi/utils':
         specifier: 5.3.12
         version: 5.3.12
       '@react-pixi-fiber/pixi-5':
@@ -193,6 +205,9 @@ importers:
       pixi-layers:
         specifier: ^0.3.1
         version: 0.3.1
+      pixi-sound:
+        specifier: ^3.0.5
+        version: 3.0.5(@pixi/core@5.3.12)(@pixi/loaders@5.3.12)(@pixi/ticker@5.3.12)(@pixi/utils@5.3.12)
       pixi-tilemap:
         specifier: ^2.1.4
         version: 2.1.4(@pixi/constants@5.3.12)(@pixi/core@5.3.12)(@pixi/display@5.3.12)(@pixi/graphics@5.3.12)(@pixi/math@5.3.12)(@pixi/sprite@5.3.12)
@@ -263,6 +278,9 @@ importers:
       '@pixi/layers':
         specifier: ^1.0.11
         version: 1.0.11(a3026cbf589a39f19084b0810d27e160)
+      '@pixi/loaders':
+        specifier: 6.5.10
+        version: 6.5.10(@pixi/constants@6.5.10)(@pixi/core@6.5.10)(@pixi/utils@6.5.10)
       '@pixi/math':
         specifier: 6.5.10
         version: 6.5.10
@@ -272,6 +290,9 @@ importers:
       '@pixi/settings':
         specifier: 6.5.10
         version: 6.5.10(@pixi/constants@6.5.10)
+      '@pixi/sound':
+        specifier: ^4.4.1
+        version: 4.4.1(@pixi/core@6.5.10)(@pixi/loaders@6.5.10(@pixi/constants@6.5.10)(@pixi/core@6.5.10)(@pixi/utils@6.5.10))(@pixi/ticker@6.5.10(@pixi/extensions@6.5.10)(@pixi/settings@6.5.10(@pixi/constants@6.5.10)))(@pixi/utils@6.5.10)
       '@pixi/sprite':
         specifier: 6.5.10
         version: 6.5.10(@pixi/constants@6.5.10)(@pixi/core@6.5.10)(@pixi/display@6.5.10(@pixi/constants@6.5.10)(@pixi/core@6.5.10)(@pixi/math@6.5.10)(@pixi/settings@6.5.10(@pixi/constants@6.5.10))(@pixi/utils@6.5.10))(@pixi/math@6.5.10)(@pixi/settings@6.5.10(@pixi/constants@6.5.10))(@pixi/utils@6.5.10)
@@ -360,6 +381,9 @@ importers:
       '@pixi/layout':
         specifier: ^1.0.1
         version: 1.0.1(@pixi/assets@7.4.3(@pixi/core@7.4.3))(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))(@pixi/graphics@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))(@pixi/sprite@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))))(@pixi/mesh@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3)))(@pixi/sprite@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3)))(@pixi/text@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))(@pixi/sprite@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))))
+      '@pixi/sound':
+        specifier: ^5.2.3
+        version: 5.2.3(@pixi/assets@7.4.3(@pixi/core@7.4.3))(@pixi/core@7.4.3)
       '@pixi/tilemap':
         specifier: ^4.1.0
         version: 4.1.0(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))
@@ -439,6 +463,9 @@ importers:
       '@pixi/layout':
         specifier: ^3.2.1
         version: 3.2.1(@types/react@19.3.0)(pixi.js@8.21.0)(react@19.3.0)(yoga-layout@3.2.1)
+      '@pixi/sound':
+        specifier: ^6.0.1
+        version: 6.0.1(pixi.js@8.21.0)
       '@pixi/tilemap':
         specifier: ^5.0.2
         version: 5.0.2(pixi.js@8.21.0)
@@ -1817,6 +1844,26 @@ packages:
 
   '@pixi/settings@7.4.3':
     resolution: {integrity: sha512-SmGK8smc0PxRB9nr0UJioEtE9hl4gvj9OedCvZx3bxBwA3omA5BmP3CyhQfN8XJ29+o2OUL01r3zAPVol4l4lA==}
+
+  '@pixi/sound@4.4.1':
+    resolution: {integrity: sha512-M8pC/5NZ5OHIngGD9lWjxaSSzAEED1eFnWJUo+uHkQezX2v2n98jEZ5DLyEW/O0NPDceOEWC+NKtitCMcRN23A==}
+    engines: {node: '>=12', npm: '>=7', yarn: please-use-npm}
+    peerDependencies:
+      '@pixi/core': '>=5 <7'
+      '@pixi/loaders': '>=5 <7'
+      '@pixi/ticker': '>=5 <7'
+      '@pixi/utils': '>=5 <7'
+
+  '@pixi/sound@5.2.3':
+    resolution: {integrity: sha512-PMWZv3su6ykBUA6roN5OYMOCdl03eunK4iCB4rBbhxCM2qt6h0MFQNymr/DLBOa6AjV3ilOseHLu/9s/YKxYZw==}
+    peerDependencies:
+      '@pixi/assets': ^7.0.0
+      '@pixi/core': ^7.0.0
+
+  '@pixi/sound@6.0.1':
+    resolution: {integrity: sha512-hpFlQSScAR2L/CsEoIvDi7s1oGsu8y9Zd742Vd3982N+q3IF2vFuIfV9HN4ryjlGnhCT8yBlEgs1gp4G9Rt9TA==}
+    peerDependencies:
+      pixi.js: ^8.0.0
 
   '@pixi/sprite-animated@5.3.12':
     resolution: {integrity: sha512-WkGdGRfqboXFzMZ/SM6pCVukYmG2E2IlpcFz7aEeWvKL2Icm4YtaCBpHHDU07vvA6fP6JrstlCx1RyTENtOeGA==}
@@ -4300,6 +4347,20 @@ packages:
   pixi-layers@0.3.1:
     resolution: {integrity: sha512-sLqkg4xnlKKjKceTgyNEvb2Fh7A1OmbsZRTHVnnsqMmhkVLVUgRNZX6ZflTne0pgGOal6EXp1bmns4geXZsY7A==}
 
+  pixi-sound@2.1.5:
+    resolution: {integrity: sha512-vnmkyDJvMqnx8d05YuAW2IRQ/cnJQmoz0iWb2g+oxcjJwbjjG/7v/8hzzlsgSmJjvPl4AuwG/1/Jr3l8gyROXA==}
+    peerDependencies:
+      pixi.js: '>=4'
+
+  pixi-sound@3.0.5:
+    resolution: {integrity: sha512-I3qDfaDI3xSwMuH8ZbhIyoZiRv0jEDxR60D2rBZTTvlK5owxo5Sx4vDaQlrIyETilTU0xvBtiwh7fPGKBOsCTw==}
+    deprecated: package renamed to @pixi/sound
+    peerDependencies:
+      '@pixi/core': ^5.0.2
+      '@pixi/loaders': ^5.0.2
+      '@pixi/ticker': ^5.0.1
+      '@pixi/utils': ^5.0.1
+
   pixi-stats@5.1.7:
     resolution: {integrity: sha512-h0FQnZfGPuTg5rVKkCbWD1aLni7sVn+ZaRIzoUsNZzK8FyXI2xARBiILOK76KKjhzS9rAJcneUpXOvzo+wIM2Q==}
 
@@ -6134,6 +6195,22 @@ snapshots:
       '@pixi/constants': 7.4.3
       '@types/css-font-loading-module': 0.0.12
       ismobilejs: 1.1.1
+
+  '@pixi/sound@4.4.1(@pixi/core@6.5.10)(@pixi/loaders@6.5.10(@pixi/constants@6.5.10)(@pixi/core@6.5.10)(@pixi/utils@6.5.10))(@pixi/ticker@6.5.10(@pixi/extensions@6.5.10)(@pixi/settings@6.5.10(@pixi/constants@6.5.10)))(@pixi/utils@6.5.10)':
+    dependencies:
+      '@pixi/core': 6.5.10(@pixi/constants@6.5.10)(@pixi/extensions@6.5.10)(@pixi/math@6.5.10)(@pixi/runner@6.5.10)(@pixi/settings@6.5.10(@pixi/constants@6.5.10))(@pixi/ticker@6.5.10(@pixi/extensions@6.5.10)(@pixi/settings@6.5.10(@pixi/constants@6.5.10)))(@pixi/utils@6.5.10)
+      '@pixi/loaders': 6.5.10(@pixi/constants@6.5.10)(@pixi/core@6.5.10)(@pixi/utils@6.5.10)
+      '@pixi/ticker': 6.5.10(@pixi/extensions@6.5.10)(@pixi/settings@6.5.10(@pixi/constants@6.5.10))
+      '@pixi/utils': 6.5.10(@pixi/constants@6.5.10)(@pixi/core@6.5.10)(@pixi/settings@6.5.10(@pixi/constants@6.5.10))
+
+  '@pixi/sound@5.2.3(@pixi/assets@7.4.3(@pixi/core@7.4.3))(@pixi/core@7.4.3)':
+    dependencies:
+      '@pixi/assets': 7.4.3(@pixi/core@7.4.3)
+      '@pixi/core': 7.4.3
+
+  '@pixi/sound@6.0.1(pixi.js@8.21.0)':
+    dependencies:
+      pixi.js: 8.21.0
 
   '@pixi/sprite-animated@5.3.12':
     dependencies:
@@ -8413,6 +8490,17 @@ snapshots:
       '@types/pixi.js': 4.8.9
 
   pixi-layers@0.3.1: {}
+
+  pixi-sound@2.1.5(pixi.js@4.8.9):
+    dependencies:
+      pixi.js: 4.8.9
+
+  pixi-sound@3.0.5(@pixi/core@5.3.12)(@pixi/loaders@5.3.12)(@pixi/ticker@5.3.12)(@pixi/utils@5.3.12):
+    dependencies:
+      '@pixi/core': 5.3.12
+      '@pixi/loaders': 5.3.12
+      '@pixi/ticker': 5.3.12
+      '@pixi/utils': 5.3.12
 
   pixi-stats@5.1.7: {}
 
