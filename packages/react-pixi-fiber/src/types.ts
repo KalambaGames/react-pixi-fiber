@@ -18,6 +18,24 @@ export type PixiPoint = PixiTypes extends { Point: infer T } ? T : PointLikeObje
 export type InteractionEvent = PixiTypes extends { InteractionEvent: infer T } ? T : never;
 
 /**
+ * Setter types
+ */
+
+// A prop is applied by assignment, so PixiJS runs the setter, but a mapped type reads the getter type. An adapter lists
+// `[Instance, SetterTypes]` pairs, the most specific class first, for the setters that accept more than their getters
+// return.
+type SetterTypeList = PixiTypes extends { SetterTypes: infer L } ? L : [];
+type FirstSetterTypes<T, L> = L extends [[infer I, infer S], ...infer Rest]
+  ? T extends I
+    ? S
+    : FirstSetterTypes<T, Rest>
+  : {};
+// The setter types of the first pair that `T` extends, `{}` when none does.
+export type SetterTypesOf<T> = FirstSetterTypes<T, SetterTypeList>;
+// Widens each property of `T` that `S` lists to accept the setter type too. Keys only in `S` are not added.
+export type WithSetterTypes<T, S> = { [K in keyof T]: K extends keyof S ? T[K] | Exclude<S[K], undefined> : T[K] };
+
+/**
  * Interactivity
  */
 
@@ -139,8 +157,12 @@ export interface PixiComponent<P = {}, I = P> {
 }
 
 // Takes a Display Object type and updates its fields to be used with `ReactPixiFiber`. `PixiExtraProps` adds the props
-// the adapter declares for every tag.
-export type DisplayObjectProps<T> = PropsWithReactChildren<Partial<WithPointLike<T>>> & PixiExtraProps;
+// the adapter declares for every tag. `S` is passed when `T` is not the class itself, see `PIXIComponentProps`.
+// Point props come from the getter types: a setter type such as `{ toString(): string }` of `text` accepts a point too.
+export type DisplayObjectProps<T, S = SetterTypesOf<T>> = PropsWithReactChildren<
+  Partial<WithSetterTypes<WithPointLike<T>, Omit<S, PointProperties<T>>>>
+> &
+  PixiExtraProps;
 export type Props<T> = DisplayObjectProps<T>;
 
 export type AnimatedSpriteProps = Props<InstanceOf<"AnimatedSprite">> & {
@@ -180,8 +202,10 @@ export type ParticleContainerProps = Props<InstanceOf<"ParticleContainer">> & {
   properties?: Partial<Record<"alpha" | "position" | "rotation" | "scale" | "tint" | "uvs" | "vertices", boolean>>;
 };
 export type SpriteProps = Props<InstanceOf<"Sprite">>;
-// `style` stays loose here; an adapter exports a `TextProps` with its own style types.
-export type TextProps = Omit<Props<InstanceOf<"Text">>, "style"> & { style?: unknown };
+// `style` takes the setter type when the adapter lists setter types, and stays loose when it does not.
+export type TextProps = PixiTypes extends { SetterTypes: unknown }
+  ? Props<InstanceOf<"Text">>
+  : Omit<Props<InstanceOf<"Text">>, "style"> & { style?: unknown };
 export type TilingSpriteProps = Props<InstanceOf<"TilingSprite">>;
 
 /**
@@ -320,7 +344,8 @@ export type PIXIComponentInstance<T extends object, P> = T;
 export type DisplayObjectCreator<T extends object, P> = (props: P) => PIXIComponentInstance<T, P>;
 
 // Props accepted by a `PIXIComponent`: props defined on the component overwrite props of underlying DisplayObject.
-export type PIXIComponentProps<T extends object, P> = P & DisplayObjectProps<Omit<T, keyof P>>;
+// The setter types come from `T`: the `Omit` copy loses the private members a class match needs.
+export type PIXIComponentProps<T extends object, P> = P & DisplayObjectProps<Omit<T, keyof P>, SetterTypesOf<T>>;
 
 // `this` available inside `applyProps`, see `registry.ts`.
 // `applyDisplayObjectProps` is already bound to `type` and `displayObject`.
