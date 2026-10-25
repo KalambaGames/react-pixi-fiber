@@ -27,6 +27,12 @@ declare module "react-pixi-fiber" {
     Application: PIXI.Application;
     ApplicationOptions: Partial<PIXI.IApplicationOptions>;
     Point: PIXI.Point | PIXI.ObservablePoint | PIXI.IPointData;
+    // The setters that accept more than their getters return. `HTMLText` comes first: the first pair the instance
+    // extends wins.
+    SetterTypes: [
+      [PIXI.HTMLText, { style: PIXI.HTMLTextStyle | PIXI.TextStyle | Partial<PIXI.ITextStyle> }],
+      [PIXI.Text, { style: PIXI.TextStyle | Partial<PIXI.ITextStyle>; text: string | number }],
+    ];
   }
 }
 
@@ -48,7 +54,5 @@ export type SimpleRopeProps = Props<PIXI.SimpleRope> & {
   points?: PIXI.IPoint[];
   textureScale?: number;
 };
-// `Text` props with `style` narrowed to the PixiJS 7 text style types.
-export type TextProps = Omit<Props<PIXI.Text>, "style"> & {
-  style?: PIXI.TextStyle | Partial<PIXI.ITextStyle>;
-};
+// `Text` props, with `style` widened to the setter type by `SetterTypes`.
+export type TextProps = Props<PIXI.Text>;

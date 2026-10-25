@@ -50,7 +50,7 @@ Import the tags of this adapter from this package. `<NineSlicePlane />` is not a
 | Events | The PixiJS 8 handler properties as props: `onclick`, `onpointerdown`, …, with `eventMode` to make an object interactive |
 | Ticker | A `usePixiTicker` callback receives the PixiJS 8 `Ticker`, not a delta: read `ticker.deltaTime` |
 | `tint` | Not type-checked in development: PixiJS 8 accepts a number, a color string or an array |
-| TypeScript | Importing the package types the props of every tag from the PixiJS 8 classes |
+| TypeScript | Importing the package types the props of every tag from the PixiJS 8 classes. A prop takes what the PixiJS setter takes, read from the options type of the class, for example `style={{ fill: "white" }}` on `Text`, or `layout` from `@pixi/layout` on every Container. A `PIXIComponent` gets the same props from its instance type |
 
 ### Choosing the classes
 

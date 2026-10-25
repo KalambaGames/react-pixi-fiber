@@ -11,7 +11,7 @@ import {
 import type { PIXIComponentBehavior, PIXIComponentProps, PixiComponent } from "./types";
 
 // Register a component. Returns `type`, which is the tag to render (a component in the type system).
-export function PIXIComponent<T extends object, P>(
+export function PIXIComponent<T extends object, P = {}>(
   type: string,
   behavior: PIXIComponentBehavior<T, P>
 ): PixiComponent<PIXIComponentProps<T, P>, T> {
@@ -25,7 +25,7 @@ export function PIXIComponent<T extends object, P>(
 
 let warnedCustomPIXIComponent = false;
 /** @deprecated Use `PIXIComponent(type, behavior)`. Removed in 4.0.0. */
-export function CustomPIXIComponent<T extends object, P>(
+export function CustomPIXIComponent<T extends object, P = {}>(
   behavior: PIXIComponentBehavior<T, P>,
   type: string
 ): PixiComponent<PIXIComponentProps<T, P>, T> {

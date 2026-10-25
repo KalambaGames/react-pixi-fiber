@@ -29,6 +29,29 @@ declare module "react-pixi-fiber" {
     Application: PIXI.Application;
     ApplicationOptions: Partial<PIXI.ApplicationOptions>;
     Point: PIXI.Point | PIXI.ObservablePoint | PIXI.PointData;
+    // The options type of a class declares what its setters accept, including what plugins add. The first pair the
+    // instance extends wins, so a subclass comes before its parent.
+    SetterTypes: [
+      [PIXI.AnimatedSprite, PIXI.AnimatedSpriteOptions],
+      [PIXI.TilingSprite, PIXI.TilingSpriteOptions],
+      [PIXI.NineSliceSprite, PIXI.NineSliceSpriteOptions],
+      [PIXI.Sprite, PIXI.SpriteOptions],
+      [PIXI.HTMLText, PIXI.HTMLTextOptions],
+      [PIXI.BitmapText, PIXI.TextOptions],
+      [PIXI.Text, PIXI.TextOptions],
+      [PIXI.PerspectiveMesh, PIXI.PerspectivePlaneOptions],
+      [PIXI.MeshPlane, PIXI.MeshPlaneOptions],
+      [PIXI.MeshRope, PIXI.MeshRopeOptions],
+      [PIXI.MeshSimple, PIXI.SimpleMeshOptions],
+      [PIXI.Mesh, PIXI.MeshOptions],
+      // `GraphicsOptions` does not declare the fill and stroke setters.
+      [PIXI.Graphics, PIXI.GraphicsOptions & { fillStyle: PIXI.FillInput; strokeStyle: PIXI.StrokeStyle }],
+      [PIXI.Particle, PIXI.ParticleOptions],
+      [PIXI.ParticleContainer, PIXI.ParticleContainerOptions],
+      [PIXI.DOMContainer, PIXI.DOMContainerOptions],
+      [PIXI.RenderContainer, PIXI.RenderContainerOptions],
+      [PIXI.Container, PIXI.ContainerOptions],
+    ];
   }
 }
 
