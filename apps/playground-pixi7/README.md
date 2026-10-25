@@ -46,10 +46,11 @@ send CORS headers. If it does not, the preview stays blank.
 
 1. Create a TSX file in the folder of its sidebar group in `src/examples/`: `DisplayObjects/`, `Features/`,
    `Integrations/` or `Migration/`. The file has one default-exported function component.
-2. In `src/examples/index.ts`, add `import Name from "./DisplayObjects/Name.tsx?raw"`. Then add a helper call to the
-   `examples` list. Use `example("Name", Name)` for a Display Object, `feature("Name", "Title", Name)` for a feature,
-   `integration("Name", "Title", Name)` for an integration example, or `compat("Name", "Title", Name)` for a migration
-   example. Keep the imports and the entries in alphabetical order. Each group has its own part of the list.
+2. In `src/examples/index.ts`, add a helper call to the `examples` list. The helper finds the source by the name of the
+   file, so the name and the file name must be the same. Use `example("Name")` for a Display Object,
+   `feature("Name", "Title")` for a feature, `integration("Name", "Title")` for an integration example, or
+   `compat("Name", "Title")` for a migration example. Keep the entries in alphabetical order. Each group has its own
+   part of the list.
 3. If the example imports a new package or asset path, add it to `src/modules.ts`. The runner resolves only the imports
    in this map.
 

@@ -13,16 +13,15 @@ globalThis.IS_REACT_ACT_ENVIRONMENT = true;
 // CodeMirror measures text ranges, which jsdom does not lay out.
 Range.prototype.getClientRects = () => ({ item: () => null, length: 0, [Symbol.iterator]: [][Symbol.iterator] });
 
-const examples: Example[] = [
-  {
-    code: "code",
-    configure: { code: "configure();", summary: "React 19 and PixiJS 8" },
-    group: "Scene Objects",
-    id: "first",
-    runner: "runner.html",
-    title: "First",
-  },
-];
+const example = (id: string, title: string): Example => ({
+  configure: { code: "configure();", summary: "React 19 and PixiJS 8" },
+  group: "Scene Objects",
+  id,
+  load: async () => "code",
+  runner: "runner.html",
+  title,
+});
+let examples: Example[];
 
 let container: HTMLDivElement;
 let root: Root;
@@ -40,6 +39,7 @@ const render = async () => {
 const log = () => container.querySelector("[role=log]")?.textContent ?? "";
 
 beforeEach(() => {
+  examples = [example("first", "First")];
   localStorage.clear();
   mediaListeners = [];
   vi.stubGlobal(
@@ -172,6 +172,46 @@ describe("Playground", () => {
     );
     act(() => toggle?.click());
     expect(container.textContent).toContain("configure();");
+  });
+
+  it("shows a skeleton until the example source loads", async () => {
+    let finish!: (code: string) => void;
+    examples[0].load = () =>
+      new Promise(resolve => {
+        finish = resolve;
+      });
+    await render();
+    expect(container.querySelector("[data-slot=skeleton]")).not.toBeNull();
+    expect(container.querySelector(".cm-editor")).toBeNull();
+    await act(async () => finish("code"));
+    expect(container.querySelector(".cm-editor")).not.toBeNull();
+    expect(container.querySelector("[data-slot=skeleton]")).toBeNull();
+  });
+
+  it("tells the reader when the example source cannot load", async () => {
+    vi.spyOn(console, "error").mockImplementation(() => {});
+    examples[0].load = () => Promise.reject(new TypeError("Failed to fetch dynamically imported module"));
+    await render();
+    expect(container.textContent).toContain("This example could not load.");
+    expect(container.querySelector("[data-slot=skeleton]")).toBeNull();
+    const reload = [...container.querySelectorAll("button")].find(button => button.textContent === "Reload");
+    expect(reload).toBeDefined();
+  });
+
+  it("opens the last selected example when the hash changes during a load", async () => {
+    let finishFirst!: (code: string) => void;
+    examples = [example("first", "First"), example("second", "Second")];
+    examples[0].load = () =>
+      new Promise(resolve => {
+        finishFirst = resolve;
+      });
+    examples[1].load = async () => "second code";
+    await render();
+    window.history.replaceState(null, "", "#second");
+    await act(async () => window.dispatchEvent(new HashChangeEvent("hashchange")));
+    await act(async () => finishFirst("first code"));
+    const content = container.querySelector(".cm-content") as HTMLElement;
+    expect(EditorView.findFromDOM(content)?.state.doc.toString()).toBe("second code");
   });
 
   it("copies the setup code", async () => {
