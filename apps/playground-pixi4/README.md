@@ -44,12 +44,14 @@ send CORS headers. If it does not, the preview stays blank.
 
 ## Add an example
 
-1. Create a TSX file in `src/examples/`. The file has one default-exported function component.
-2. In `src/examples/index.ts`, add `import Name from "./Name.tsx?raw"`. Then add a helper call to the `examples` list.
-   Use `example("Name", Name)` for a Display Object or `feature("Name", "Title", Name)` for a feature.
-   Keep the imports and the entries in alphabetical order. Each group has its own part of the list.
-3. If the example imports a new package or asset path, add it to `src/modules.ts`. The runner resolves only the
-   imports in this map.
+1. Create a TSX file in the folder of its sidebar group in `src/examples/`: `DisplayObjects/`, `Features/` or
+   `Integrations/`. The file has one default-exported function component.
+2. In `src/examples/index.ts`, add `import Name from "./DisplayObjects/Name.tsx?raw"`. Then add a helper call to the
+   `examples` list. Use `example("Name", Name)` for a Display Object, `feature("Name", "Title", Name)` for a feature, or
+   `integration("Name", "Title", Name)` for an integration example. Keep the imports and the entries in alphabetical
+   order. Each group has its own part of the list.
+3. If the example imports a new package or asset path, add it to `src/modules.ts`. The runner resolves only the imports
+   in this map.
 
 ## Why the runner uses a sandbox
 

@@ -44,13 +44,15 @@ send CORS headers. If it does not, the preview stays blank.
 
 ## Add an example
 
-1. Create a TSX file in `src/examples/`. The file has one default-exported function component.
-2. In `src/examples/index.ts`, add `import Name from "./Name.tsx?raw"`. Then add a helper call to the `examples` list.
-   Use `example("Name", Name)` for a Scene Object, `feature("Name", "Title", Name)` for a feature, or
-   `compat(6, "Name", "Title", Name)` for a migration example. The first argument of `compat` is 6 or 7.
-   Keep the imports and the entries in alphabetical order. Each group has its own part of the list.
-3. If the example imports a new package or asset path, add it to `src/modules.ts`. The runner resolves only the
-   imports in this map.
+1. Create a TSX file in the folder of its sidebar group in `src/examples/`: `SceneObjects/`, `Features/`,
+   `Integrations/` or `Migration/`. The file has one default-exported function component.
+2. In `src/examples/index.ts`, add `import Name from "./SceneObjects/Name.tsx?raw"`. Then add a helper call to the
+   `examples` list. Use `example("Name", Name)` for a Scene Object, `feature("Name", "Title", Name)` for a feature,
+   `integration("Name", "Title", Name)` for an integration example, or `compat(6, "Name", "Title", Name)` for a
+   migration example. The first argument of `compat` is 6 or 7. Keep the imports and the entries in alphabetical order.
+   Each group has its own part of the list.
+3. If the example imports a new package or asset path, add it to `src/modules.ts`. The runner resolves only the imports
+   in this map.
 
 ## Why the runner uses a sandbox
 
