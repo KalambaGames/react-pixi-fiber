@@ -100,6 +100,9 @@ importers:
       react-pixi-fiber:
         specifier: workspace:*
         version: link:../../packages/react-pixi-fiber
+      zustand:
+        specifier: ^5.0.16
+        version: 5.0.16(@types/react@19.3.0)(react@19.3.0)
     devDependencies:
       '@tailwindcss/vite':
         specifier: 4.3.3
@@ -161,6 +164,9 @@ importers:
       react-pixi-fiber:
         specifier: workspace:*
         version: link:../../packages/react-pixi-fiber
+      zustand:
+        specifier: ^5.0.16
+        version: 5.0.16(@types/react@19.3.0)(react@19.3.0)
     devDependencies:
       '@tailwindcss/vite':
         specifier: 4.3.3
@@ -249,6 +255,9 @@ importers:
       react-pixi-fiber:
         specifier: workspace:*
         version: link:../../packages/react-pixi-fiber
+      zustand:
+        specifier: ^5.0.16
+        version: 5.0.16(@types/react@19.3.0)(react@19.3.0)
     devDependencies:
       '@tailwindcss/vite':
         specifier: 4.3.3
@@ -307,6 +316,9 @@ importers:
       react-pixi-fiber:
         specifier: workspace:*
         version: link:../../packages/react-pixi-fiber
+      zustand:
+        specifier: ^5.0.16
+        version: 5.0.16(@types/react@19.3.0)(react@19.3.0)
     devDependencies:
       '@tailwindcss/vite':
         specifier: 4.3.3
@@ -362,6 +374,9 @@ importers:
       react-pixi-fiber:
         specifier: workspace:*
         version: link:../../packages/react-pixi-fiber
+      zustand:
+        specifier: ^5.0.16
+        version: 5.0.16(@types/react@19.3.0)(react@19.3.0)
     devDependencies:
       '@tailwindcss/vite':
         specifier: 4.3.3
@@ -4670,6 +4685,24 @@ packages:
   yuku-parser@0.8.7:
     resolution: {integrity: sha512-vRD9nwt4L3aYpxNqeSC4WqLv58xrXef0Ong1Mc45CTXTIpvLafx7JO05sczmQZwdLEZvywrLOGdNC5+Rp5N1BQ==}
 
+  zustand@5.0.16:
+    resolution: {integrity: sha512-Uv7e327ihlCfayfja3hDc0M64Upev1LWBKpRobdK4NyovDDPeeX4imWXc/wzC1yc6fkYPoAY/ncKVPAs2jrtQw==}
+    engines: {node: '>=12.20.0'}
+    peerDependencies:
+      '@types/react': '>=18.0.0'
+      immer: '>=9.0.6'
+      react: '>=18.0.0'
+      use-sync-external-store: '>=1.2.0'
+    peerDependenciesMeta:
+      '@types/react':
+        optional: true
+      immer:
+        optional: true
+      react:
+        optional: true
+      use-sync-external-store:
+        optional: true
+
 snapshots:
 
   '@acemir/cssom@0.9.31': {}
@@ -8691,3 +8724,8 @@ snapshots:
       '@yuku-parser/binding-linux-x64-musl': 0.8.7
       '@yuku-parser/binding-win32-arm64': 0.8.7
       '@yuku-parser/binding-win32-x64': 0.8.7
+
+  zustand@5.0.16(@types/react@19.3.0)(react@19.3.0):
+    optionalDependencies:
+      '@types/react': 19.3.0
+      react: 19.3.0

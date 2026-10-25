@@ -70,6 +70,7 @@ export const examples: Example[] = [
   integration("GSAP", "GSAP"),
   integration("Motion", "Motion"),
   integration("ReactSpring", "react-spring"),
+  integration("Zustand", "zustand"),
   compat(6, "MigratingFromPixi6", "Migrating from PixiJS 6"),
   compat(7, "MigratingFromPixi7", "Migrating from PixiJS 7"),
 ];

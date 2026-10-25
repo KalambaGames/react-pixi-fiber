@@ -60,4 +60,5 @@ export const examples: Example[] = [
   integration("GSAP", "GSAP"),
   integration("Motion", "Motion"),
   integration("ReactSpring", "react-spring"),
+  integration("Zustand", "zustand"),
 ];

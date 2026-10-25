@@ -25,4 +25,5 @@ export const lazyModules: LazyModules = {
   gsap: () => import("gsap"),
   "gsap/PixiPlugin": () => import("gsap/PixiPlugin"),
   motion: () => import("motion"),
+  zustand: () => import("zustand"),
 };
