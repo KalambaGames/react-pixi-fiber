@@ -292,6 +292,31 @@ describe("Playground sidebar", () => {
     expect(container.querySelector("[data-sidebar=content]")?.textContent).toContain("No examples match");
   });
 
+  it("marks the examples that have a saved edit", async () => {
+    createStore(8, localStorage).save("sprite", "edited code", "code");
+    await render();
+    expect(container.querySelector('a[href="#sprite"] [aria-label=Edited]')).not.toBeNull();
+    expect(container.querySelector('a[href="#first"] [aria-label=Edited]')).toBeNull();
+  });
+
+  it("marks the current example as edited in the sidebar and the breadcrumb once the edit is saved", async () => {
+    await render();
+    const content = container.querySelector(".cm-content") as HTMLElement;
+    act(() => EditorView.findFromDOM(content)?.dispatch({ changes: { from: 0, insert: "edited " } }));
+    act(() => window.dispatchEvent(new PageTransitionEvent("pagehide")));
+    expect(container.querySelector('a[href="#first"] [aria-label=Edited]')).not.toBeNull();
+    expect(container.querySelector("[data-slot=breadcrumb]")?.textContent).toContain("Edited");
+  });
+
+  it("removes the edited marks when the example is reset", async () => {
+    createStore(8, localStorage).save("first", "edited code", "code");
+    await render();
+    const reset = [...container.querySelectorAll("button")].find(button => button.textContent === "Reset");
+    await act(async () => reset?.click());
+    expect(container.querySelector('a[href="#first"] [aria-label=Edited]')).toBeNull();
+    expect(container.querySelector("[data-slot=breadcrumb]")?.textContent).not.toContain("Edited");
+  });
+
   it("closes the other groups again when the filter is cleared", async () => {
     await render();
     filter("sprite");

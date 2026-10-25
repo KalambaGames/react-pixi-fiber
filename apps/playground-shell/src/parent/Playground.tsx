@@ -1,4 +1,4 @@
-import { type ReactNode, useEffect, useRef, useState } from "react";
+import { type ReactNode, useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { createPortal } from "react-dom";
 import { type GroupProps, type Layout as PanelLayout, useDefaultLayout, usePanelRef } from "react-resizable-panels";
 import { toast } from "sonner";
@@ -228,11 +228,13 @@ function Panels({
 
 function Session({
   dark,
+  edited,
   onTheme,
   resolved,
   store,
 }: {
   dark: boolean;
+  edited: boolean;
   onTheme: (theme: Theme) => void;
   resolved: Resolved;
   store: CodeStore;
@@ -340,6 +342,7 @@ function Session({
     <div className="relative flex min-h-0 flex-1 flex-col">
       <TopBar
         dark={dark}
+        edited={edited}
         example={example}
         layout={layout}
         shareUrl={shareUrl}
@@ -413,6 +416,14 @@ export function Playground({ examples, pixiMajor }: { examples: Example[]; pixiM
   const [sidebarOpen, setSidebarOpen] = useSidebarOpen();
   const [resolved, setResolved] = useState<{ id: number; value: Resolved } | null>(null);
   const [failed, setFailed] = useState(false);
+  // The examples with a saved edit, one id per line, so the snapshot compares as a string.
+  const editedIds = useSyncExternalStore(store.subscribe, () =>
+    examples
+      .filter(example => store.isEdited(example.id))
+      .map(example => example.id)
+      .join("\n")
+  );
+  const edited = new Set(editedIds.split("\n"));
 
   useEffect(() => {
     let latest = 0;
@@ -443,6 +454,7 @@ export function Playground({ examples, pixiMajor }: { examples: Example[]; pixiM
   return (
     <SidebarProvider open={sidebarOpen} onOpenChange={setSidebarOpen}>
       <AppSidebar
+        edited={edited}
         examples={examples}
         pixiMajor={pixiMajor}
         selectedId={resolved?.value.example.id ?? parseHash(window.location.hash).exampleId ?? ""}
@@ -456,7 +468,14 @@ export function Playground({ examples, pixiMajor }: { examples: Example[]; pixiM
             />
           </div>
         ) : resolved ? (
-          <Session key={resolved.id} dark={dark} resolved={resolved.value} store={store} onTheme={setTheme} />
+          <Session
+            key={resolved.id}
+            dark={dark}
+            edited={edited.has(resolved.value.example.id)}
+            resolved={resolved.value}
+            store={store}
+            onTheme={setTheme}
+          />
         ) : (
           <SessionSkeleton />
         )}

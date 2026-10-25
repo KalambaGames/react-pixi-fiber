@@ -19,6 +19,7 @@ import {
   SidebarMenuSubItem,
   useSidebar,
 } from "./components/ui/sidebar";
+import { EditedDot } from "./EditedDot";
 import logo from "./logo.svg";
 import type { Example, ExampleGroup } from "./Playground";
 
@@ -42,7 +43,7 @@ function HoverSection({
   name,
 }: {
   icon: LucideIcon;
-  links: { active: boolean; href: string; label: string }[];
+  links: { active: boolean; edited?: boolean; href: string; label: string }[];
   name: string;
 }) {
   return (
@@ -64,7 +65,10 @@ function HoverSection({
             {links.map(link => (
               <SidebarMenuSubItem key={link.href}>
                 <SidebarMenuSubButton asChild className={linkClass} isActive={link.active}>
-                  <a href={link.href}>{link.label}</a>
+                  <a href={link.href}>
+                    {link.label}
+                    {link.edited && <EditedDot label="Edited" />}
+                  </a>
                 </SidebarMenuSubButton>
               </SidebarMenuSubItem>
             ))}
@@ -76,10 +80,12 @@ function HoverSection({
 }
 
 export function AppSidebar({
+  edited,
   examples,
   pixiMajor,
   selectedId,
 }: {
+  edited: Set<string>;
   examples: Example[];
   pixiMajor: number;
   selectedId: string;
@@ -152,6 +158,7 @@ export function AppSidebar({
                   icon={icon}
                   links={items.map(example => ({
                     active: example.id === selectedId,
+                    edited: edited.has(example.id),
                     href: buildHash(example.id),
                     label: example.title,
                   }))}
@@ -189,6 +196,7 @@ export function AppSidebar({
                             <SidebarMenuSubButton asChild className={linkClass} isActive={example.id === selectedId}>
                               <a href={buildHash(example.id)} onClick={() => setOpenMobile(false)}>
                                 {example.title}
+                                {edited.has(example.id) && <EditedDot label="Edited" />}
                               </a>
                             </SidebarMenuSubButton>
                           </SidebarMenuSubItem>

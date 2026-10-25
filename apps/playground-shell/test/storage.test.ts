@@ -27,6 +27,28 @@ describe("createStore", () => {
     expect(store.load("sprite", "newer")?.changedUpstream).toBe(true);
   });
 
+  it("tells which examples have a saved edit and reports saves and resets", () => {
+    const store = createStore(8, memoryStorage());
+    const changes: number[] = [];
+    const unsubscribe = store.subscribe(() => changes.push(changes.length));
+    store.save("sprite", "edited", "original");
+    expect(store.isEdited("sprite")).toBe(true);
+    expect(store.isEdited("text")).toBe(false);
+    store.reset("sprite");
+    expect(store.isEdited("sprite")).toBe(false);
+    unsubscribe();
+    store.save("text", "edited", "original");
+    expect(changes).toHaveLength(2);
+  });
+
+  it("drops the saved edit when the code matches the original again", () => {
+    const store = createStore(8, memoryStorage());
+    store.save("sprite", "edited", "original");
+    store.save("sprite", "original", "original");
+    expect(store.isEdited("sprite")).toBe(false);
+    expect(store.load("sprite", "original")).toBeNull();
+  });
+
   it("keeps majors apart", () => {
     const storage = memoryStorage();
     createStore(8, storage).save("sprite", "eight", "o");

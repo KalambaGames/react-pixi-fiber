@@ -4,6 +4,9 @@ export interface CodeStore {
   load(id: string, original: string): { changedUpstream: boolean; code: string; originalHash: string } | null;
   save(id: string, code: string, original: string, originalHash?: string): void;
   reset(id: string): void;
+  isEdited(id: string): boolean;
+  // Saves and resets call the listener, so a view of the edited examples can update.
+  subscribe(listener: () => void): () => void;
   markRunning(id: string): void;
   clearRunning(id: string): void;
   wasRunning(id: string): boolean;
@@ -42,6 +45,10 @@ export function createStore(pixiMajor: number, storage: Storage | null = default
   const key = (id: string) => `playground:pixi-${pixiMajor}:${id}`;
   const runningKey = `playground:pixi-${pixiMajor}-running`;
   const { get, set } = safeStorage(storage);
+  const listeners = new Set<() => void>();
+  const changed = () => {
+    for (const listener of listeners) listener();
+  };
   return {
     load(id, original) {
       try {
@@ -57,10 +64,20 @@ export function createStore(pixiMajor: number, storage: Storage | null = default
       }
     },
     save(id, code, original, originalHash = hashCode(original)) {
-      set(key(id), JSON.stringify({ code, originalHash }));
+      // Code that matches the original again is not an edit.
+      set(key(id), code === original ? null : JSON.stringify({ code, originalHash }));
+      changed();
     },
     reset(id) {
       set(key(id), null);
+      changed();
+    },
+    isEdited(id) {
+      return get(key(id)) !== null;
+    },
+    subscribe(listener) {
+      listeners.add(listener);
+      return () => listeners.delete(listener);
     },
     markRunning(id) {
       set(runningKey, id);
