@@ -74,6 +74,7 @@ export const examples: Example[] = [
   integration("Motion", "Motion"),
   integration("PixiStats", "pixi-stats"),
   integration("ReactSpring", "react-spring"),
+  integration("Tilemap", "Tilemap"),
   integration("UI", "UI"),
   integration("Viewport", "Viewport"),
   integration("Zustand", "zustand"),

@@ -6,10 +6,12 @@ import * as jsxRuntime from "react/jsx-runtime";
 import * as reactDom from "react-dom";
 import * as reactPixiFiber from "react-pixi-fiber";
 import bunnys from "./examples/assets/bunnys.png";
+import tinyTown from "./examples/assets/tiny-town.png";
 import type { LazyModules } from "playground-shell/runner";
 
 export const modules: Record<string, unknown> = {
   "./assets/bunnys.png": bunnys,
+  "./assets/tiny-town.png": tinyTown,
   "@pixi/layers": layers,
   "@react-pixi-fiber/pixi-6": pixi6,
   "pixi.js": pixi,
@@ -20,6 +22,7 @@ export const modules: Record<string, unknown> = {
 };
 
 export const lazyModules: LazyModules = {
+  "@pixi/tilemap": () => import("@pixi/tilemap"),
   "@react-spring/core": () => import("@react-spring/core"),
   animated: () => import("animated"),
   gsap: () => import("gsap"),

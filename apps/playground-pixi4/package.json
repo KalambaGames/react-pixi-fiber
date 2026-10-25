@@ -13,6 +13,7 @@
     "matter-js": "^0.20.0",
     "motion": "^14.6.0",
     "pixi-layers": "^0.1.10",
+    "pixi-tilemap": "^1.2.8",
     "pixi-viewport": "^3.23.2",
     "pixi.js": "^4.8.9",
     "playground-shell": "workspace:*",
