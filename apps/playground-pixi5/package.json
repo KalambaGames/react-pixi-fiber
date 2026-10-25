@@ -9,6 +9,7 @@
     "@react-spring/core": "^10.1.2",
     "animated": "^0.2.2",
     "gsap": "^3.15.0",
+    "motion": "^14.6.0",
     "pixi-layers": "^0.3.1",
     "pixi.js": "^5.3.12",
     "playground-shell": "workspace:*",
