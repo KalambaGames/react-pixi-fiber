@@ -32,7 +32,7 @@ The tests of each package have these scopes:
 
 - **Core:** the full behavior suite runs against one real React adapter and one real PixiJS adapter, the development pair. A 2.x compatibility suite (`test/compat2x.test.jsx`) runs 2.x usage against the 3.0.0 core.
 - **React adapters:** render, unmount, DevTools injection, and synchronous commit. The tests wrap the real reconciler and give it a host tree of plain objects, not real PixiJS.
-- **PixiJS adapters:** components, property tables, application creation, and compat translation, against the real PixiJS version of the adapter. One React adapter renders the components.
+- **PixiJS adapters:** components, property tables, application creation, and compat translation, against the real PixiJS version of the adapter. When the adapter has behavior that only a render shows, for example a compat translation or event props, one React adapter renders its components. The other adapters get their render check from the smoke suite.
 
 One smoke suite lives in the test utilities of the core, as a function. It mounts a `Stage`, renders a `Sprite`, changes a prop, reorders children, and unmounts. A private app, `apps/test-matrix`, holds one package for each React major. Each package pins its own `react` and `react-test-renderer`. Each package runs the smoke suite with its React adapter and every PixiJS adapter. So every adapter pair runs the smoke suite, and only the smoke suite.
 
