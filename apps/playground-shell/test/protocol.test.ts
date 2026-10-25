@@ -11,6 +11,11 @@ describe("isParentMessage", () => {
 });
 
 describe("isRunnerMessage", () => {
+  it("accepts started messages with a run id only", () => {
+    expect(isRunnerMessage({ type: "started", runId: 1 })).toBe(true);
+    expect(isRunnerMessage({ type: "started" })).toBe(false);
+  });
+
   it("accepts ready and console and rejects everything else", () => {
     expect(isRunnerMessage({ type: "ready" })).toBe(true);
     expect(isRunnerMessage({ type: "console", runId: 1, level: "warn", text: "t" })).toBe(true);

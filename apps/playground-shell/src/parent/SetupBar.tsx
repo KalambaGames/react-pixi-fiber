@@ -24,6 +24,7 @@ export function SetupBar({ code, dark, summary }: { code: string; dark: boolean;
         </Button>
       </CollapsibleTrigger>
       <CollapsibleContent className="relative">
+        <Editor dark={dark} readOnly value={code} />
         <Button
           aria-label="Copy setup"
           className="absolute top-1 right-1"
@@ -33,7 +34,6 @@ export function SetupBar({ code, dark, summary }: { code: string; dark: boolean;
         >
           <Copy />
         </Button>
-        <Editor dark={dark} readOnly value={code} />
       </CollapsibleContent>
     </Collapsible>
   );

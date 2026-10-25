@@ -3,8 +3,8 @@ import * as jsxRuntime from "react/jsx-runtime";
 import * as React from "react";
 import { act } from "react";
 import { createRoot } from "react-dom/client";
-import { afterEach, describe, expect, it, vi } from "vitest";
-import { canRun, compile, createModuleRequire, startRunner } from "../src/runner";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import { canRun, compile, createModuleRequire, loadImports, startRunner } from "../src/runner";
 
 function evaluate(source: string, modules: Record<string, unknown>) {
   const result = compile(source);
@@ -49,9 +49,49 @@ describe("createModuleRequire", () => {
   });
 });
 
+describe("loadImports", () => {
+  it("loads a lazy module the code imports before it runs", async () => {
+    const loader = vi.fn(async () => ({ default: "G" }));
+    const other = vi.fn(async () => ({}));
+    const result = compile('import g from "gsap"; export default g;');
+    if (!result.ok) throw new Error(result.message);
+    const loaded = await loadImports(result.code, { react: React }, { gsap: loader, other });
+    expect(loaded).toEqual({ gsap: { default: "G" }, react: React });
+    expect(loader).toHaveBeenCalledOnce();
+    expect(other).not.toHaveBeenCalled();
+  });
+
+  it("leaves unknown names to the require error", async () => {
+    expect(await loadImports("require('nope'); require(\"react\");", { react: React }, {})).toEqual({ react: React });
+  });
+
+  it("gives up on a lazy module that does not load in 30 seconds", async () => {
+    vi.useFakeTimers();
+    try {
+      const loading = loadImports("require('gsap');", {}, { gsap: () => new Promise(() => {}) });
+      const failed = expect(loading).rejects.toThrow('Cannot load "gsap".');
+      await vi.advanceTimersByTimeAsync(30_000);
+      await failed;
+      await expect(loading.catch(error => error.cause.message)).resolves.toBe("It did not load in 30 seconds.");
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+});
+
 describe("startRunner", () => {
   const originalConsole = { ...console };
+  // Each runner listens on the window, so a runner from an earlier test would also take the later runs.
+  const listeners: Parameters<typeof window.addEventListener>[] = [];
+  beforeEach(() => {
+    const add = window.addEventListener.bind(window);
+    vi.spyOn(window, "addEventListener").mockImplementation((...args: Parameters<typeof window.addEventListener>) => {
+      listeners.push(args);
+      add(...args);
+    });
+  });
   afterEach(() => {
+    for (const args of listeners.splice(0)) window.removeEventListener(...args);
     vi.unstubAllGlobals();
     vi.restoreAllMocks();
     Object.assign(console, originalConsole);
@@ -73,7 +113,7 @@ describe("startRunner", () => {
     expect(render).not.toHaveBeenCalled();
   });
 
-  it("runs code from the parent only", () => {
+  it("runs code from the parent only", async () => {
     vi.stubGlobal("origin", "null");
     const post = vi.spyOn(window.parent, "postMessage").mockImplementation(() => {});
     const render = vi.fn();
@@ -87,14 +127,18 @@ describe("startRunner", () => {
     expect(render).not.toHaveBeenCalled();
 
     window.dispatchEvent(new MessageEvent("message", { data, origin: location.origin, source: window.parent }));
-    expect(render).toHaveBeenCalledTimes(1);
+    await vi.waitFor(() => expect(render).toHaveBeenCalledTimes(1));
+    expect(post).toHaveBeenCalledWith({ type: "started", runId: 7 }, "*");
 
     const bad = { type: "run", runId: 8, code: "import x from 'nope'; export default x;" };
     window.dispatchEvent(new MessageEvent("message", { data: bad, origin: location.origin, source: window.parent }));
-    expect(post).toHaveBeenCalledWith(
-      expect.objectContaining({ type: "console", runId: 8, level: "error", text: expect.stringContaining("nope") }),
-      "*"
+    await vi.waitFor(() =>
+      expect(post).toHaveBeenCalledWith(
+        expect.objectContaining({ type: "console", runId: 8, level: "error", text: expect.stringContaining("nope") }),
+        "*"
+      )
     );
+    expect(post).toHaveBeenCalledWith({ type: "started", runId: 8 }, "*");
 
     const cycle: Record<string, unknown> = {};
     cycle.self = cycle;
@@ -103,6 +147,9 @@ describe("startRunner", () => {
     console.warn("100%% %s", "sure");
     console.info("plain", 1, "two");
     console.log("%d", Symbol("x"));
+    const looped = new Error("looped");
+    looped.cause = looped;
+    console.error(looped);
     expect(post).toHaveBeenCalledWith(
       { type: "console", runId: 8, level: "log", text: 'hi {"self":"[Circular]"}' },
       "*"
@@ -111,6 +158,10 @@ describe("startRunner", () => {
     expect(post).toHaveBeenCalledWith(expect.objectContaining({ level: "warn", text: "100% sure" }), "*");
     expect(post).toHaveBeenCalledWith(expect.objectContaining({ level: "info", text: "plain 1 two" }), "*");
     expect(post).toHaveBeenCalledWith(expect.objectContaining({ level: "log", text: "NaN" }), "*");
+    expect(post).toHaveBeenCalledWith(
+      expect.objectContaining({ level: "error", text: expect.stringMatching(/Caused by: \[Circular\]$/) }),
+      "*"
+    );
   });
 
   it("reports a render error once", async () => {
@@ -126,7 +177,10 @@ describe("startRunner", () => {
     await act(async () =>
       window.dispatchEvent(new MessageEvent("message", { data, origin: location.origin, source: window.parent }))
     );
-    const errors = post.mock.calls.filter(([message]) => (message as { runId?: number }).runId === 9);
+    const errors = post.mock.calls.filter(([message]) => {
+      const { level, runId } = message as { level?: string; runId?: number };
+      return runId === 9 && level === "error";
+    });
     expect(errors).toEqual([[expect.objectContaining({ level: "error", text: expect.stringContaining("boom") }), "*"]]);
     const next = { type: "run", runId: 10, code: "export default () => { console.log('again'); return null; };" };
     await act(async () =>
@@ -134,6 +188,48 @@ describe("startRunner", () => {
     );
     expect(post).toHaveBeenCalledWith(expect.objectContaining({ runId: 10, text: "again" }), "*");
     act(() => root.unmount());
+  });
+
+  const run = (runId: number, code: string) =>
+    window.dispatchEvent(
+      new MessageEvent("message", {
+        data: { type: "run", runId, code },
+        origin: location.origin,
+        source: window.parent,
+      })
+    );
+
+  it("runs code that names a lazy module only in a string", async () => {
+    vi.stubGlobal("origin", "null");
+    const post = vi.spyOn(window.parent, "postMessage").mockImplementation(() => {});
+    const render = vi.fn();
+    startRunner({ lazyModules: { gsap: async () => ({}) }, modules: {}, render });
+    run(11, "export default () => \"require('gsap')\";");
+    await vi.waitFor(() => expect(post).toHaveBeenCalledWith({ type: "started", runId: 11 }, "*"));
+    expect(render).toHaveBeenCalledOnce();
+    expect(post).not.toHaveBeenCalledWith(expect.objectContaining({ level: "error" }), "*");
+  });
+
+  it("reports a failed lazy load and posts started", async () => {
+    vi.stubGlobal("origin", "null");
+    const post = vi.spyOn(window.parent, "postMessage").mockImplementation(() => {});
+    const render = vi.fn();
+    startRunner({ lazyModules: { gsap: () => Promise.reject(new Error("offline")) }, modules: {}, render });
+    run(12, 'import g from "gsap"; export default g;');
+    await vi.waitFor(() => expect(post).toHaveBeenCalledWith({ type: "started", runId: 12 }, "*"));
+    const errors = post.mock.calls.filter(([message]) => (message as { level?: string }).level === "error");
+    expect(errors).toEqual([
+      [expect.objectContaining({ runId: 12, text: expect.stringMatching(/gsap[\s\S]*offline/) }), "*"],
+    ]);
+    expect(render).not.toHaveBeenCalled();
+  });
+
+  it("posts started after a compile error", async () => {
+    vi.stubGlobal("origin", "null");
+    const post = vi.spyOn(window.parent, "postMessage").mockImplementation(() => {});
+    startRunner({ modules: {}, render: vi.fn() });
+    run(13, "const a = <b>");
+    await vi.waitFor(() => expect(post).toHaveBeenCalledWith({ type: "started", runId: 13 }, "*"));
   });
 
   it("logs objects to a limited depth", () => {

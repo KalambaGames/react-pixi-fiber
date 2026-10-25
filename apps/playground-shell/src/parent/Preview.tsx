@@ -1,15 +1,18 @@
 import { type CSSProperties, type RefObject, useLayoutEffect, useRef, useState } from "react";
+import { Skeleton } from "./components/ui/skeleton";
 
 // A browser reloads an iframe that moves to a new parent, so the frame stays in one place and covers the slot
 // of the current layout. A layout switch then keeps the example running.
 export function Preview({
   iframeKey,
   iframeRef,
+  loading,
   slot,
   src,
 }: {
   iframeKey: number;
   iframeRef: RefObject<HTMLIFrameElement | null>;
+  loading: boolean;
   slot: HTMLElement | null;
   src: string;
 }) {
@@ -53,6 +56,11 @@ export function Preview({
         src={src}
         title="Example preview"
       />
+      {loading && (
+        <div className="absolute inset-0 bg-background">
+          <Skeleton className="size-full rounded-none" />
+        </div>
+      )}
     </div>
   );
 }

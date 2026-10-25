@@ -6,10 +6,10 @@ import { createStore } from "../src/storage";
 import { memoryStorage } from "./memoryStorage";
 
 const example = (id: string): Example => ({
-  code: `${id} original`,
   configure: { code: "", summary: "" },
   group: "Scene Objects",
   id,
+  load: async () => `${id} original`,
   runner: "runner.html",
   title: id,
 });
@@ -18,6 +18,22 @@ const examples = [example("first"), example("second")];
 afterEach(() => window.history.replaceState(null, "", "#"));
 
 describe("resolve", () => {
+  it("loads the example source and gives it as the original", async () => {
+    window.history.replaceState(null, "", "#second");
+    expect(await resolve(examples, createStore(8, memoryStorage()), window.location.hash)).toMatchObject({
+      code: "second original",
+      original: "second original",
+    });
+  });
+
+  it("loads the source also for a shared link, for the stale check", async () => {
+    window.history.replaceState(null, "", `#second&code=${await encodeCode("shared")}`);
+    expect(await resolve(examples, createStore(8, memoryStorage()), window.location.hash)).toMatchObject({
+      code: "shared",
+      original: "second original",
+    });
+  });
+
   it("loads the saved edit when a share link cannot be read", async () => {
     const store = createStore(8, memoryStorage());
     store.save("second", "my edit", "older original");

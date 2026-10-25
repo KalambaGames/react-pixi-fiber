@@ -1,4 +1,4 @@
-import { type ReactNode, useEffect, useRef, useState } from "react";
+import { type ReactNode, useEffect, useRef, useState, useSyncExternalStore } from "react";
 import { createPortal } from "react-dom";
 import { type GroupProps, type Layout as PanelLayout, useDefaultLayout, usePanelRef } from "react-resizable-panels";
 import { toast } from "sonner";
@@ -8,6 +8,7 @@ import { AppSidebar } from "./AppSidebar";
 import { Banner } from "./Banner";
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "./components/ui/resizable";
 import { SidebarInset, SidebarProvider } from "./components/ui/sidebar";
+import { Skeleton } from "./components/ui/skeleton";
 import { Toaster } from "./components/ui/sonner";
 import { ConsolePanel } from "./ConsolePanel";
 import { Editor } from "./Editor";
@@ -24,10 +25,10 @@ import { useTheme, type Theme } from "./useTheme";
 export type ExampleGroup = "Display Objects" | "Features" | "Integrations" | "Migration" | "Scene Objects";
 
 export interface Example {
-  code: string;
   configure: { code: string; summary: string };
   group: ExampleGroup;
   id: string;
+  load: () => Promise<string>;
   runner: string;
   title: string;
 }
@@ -38,6 +39,7 @@ interface Resolved {
   example: Example;
   held: boolean;
   notices: string[];
+  original: string;
   staleHash: string | null;
 }
 
@@ -47,24 +49,26 @@ export async function resolve(examples: Example[], store: CodeStore, hash: strin
   const example = known ?? examples[0];
   const shared = known ? parsed.code : null;
   if (!known) window.history.replaceState(null, "", buildHash(example.id));
+  const original = await example.load();
   if (shared !== null) {
     try {
       const code = await decodeCode(shared);
       const held = store.wasRunning(example.id);
-      return { banner: "shared", code, example, held, notices: [], staleHash: null };
+      return { banner: "shared", code, example, held, notices: [], original, staleHash: null };
     } catch {
       window.history.replaceState(null, "", buildHash(example.id));
     }
   }
-  const saved = store.load(example.id, example.code);
+  const saved = store.load(example.id, original);
   const held = saved !== null && store.wasRunning(example.id);
   const notices = shared === null ? [] : ["This link holds code that cannot be read."];
   return {
     banner: null,
-    code: saved?.code ?? example.code,
+    code: saved?.code ?? original,
     example,
     held,
     notices,
+    original,
     staleHash: saved?.changedUpstream ? saved.originalHash : null,
   };
 }
@@ -224,11 +228,13 @@ function Panels({
 
 function Session({
   dark,
+  edited,
   onTheme,
   resolved,
   store,
 }: {
   dark: boolean;
+  edited: boolean;
   onTheme: (theme: Theme) => void;
   resolved: Resolved;
   store: CodeStore;
@@ -244,7 +250,7 @@ function Session({
   };
   const [shareUrl, setShareUrl] = useState<string | null>(null);
   const [layout, setLayout] = useLayout();
-  const { entries, iframeKey, iframeRef, restart } = useRunner(example.runner, code, {
+  const { entries, iframeKey, iframeRef, loading, restart } = useRunner(example.runner, code, {
     held: resolved.held,
     onRun: () => {
       store.markRunning(example.id);
@@ -264,7 +270,8 @@ function Session({
 
   const flush = () => {
     clearTimeout(timer.current);
-    if (pending.current !== null) store.save(example.id, pending.current, example.code, staleHash.current ?? undefined);
+    if (pending.current !== null)
+      store.save(example.id, pending.current, resolved.original, staleHash.current ?? undefined);
     pending.current = null;
   };
   const drop = () => {
@@ -303,8 +310,8 @@ function Session({
   const reset = () => {
     drop();
     store.reset(example.id);
-    setCode(example.code);
-    restart(example.code);
+    setCode(resolved.original);
+    restart(resolved.original);
     setStale(null);
     leaveShared();
   };
@@ -335,6 +342,7 @@ function Session({
     <div className="relative flex min-h-0 flex-1 flex-col">
       <TopBar
         dark={dark}
+        edited={edited}
         example={example}
         layout={layout}
         shareUrl={shareUrl}
@@ -384,7 +392,20 @@ function Session({
         </>,
         editorHost
       )}
-      <Preview iframeKey={iframeKey} iframeRef={iframeRef} slot={previewSlot} src={example.runner} />
+      <Preview iframeKey={iframeKey} iframeRef={iframeRef} loading={loading} slot={previewSlot} src={example.runner} />
+    </div>
+  );
+}
+
+// Stands in for the session while the first example source loads.
+function SessionSkeleton() {
+  return (
+    <div className="flex min-h-0 flex-1 flex-col gap-2 p-2">
+      <Skeleton className="h-8" />
+      <div className="flex min-h-0 flex-1 gap-2 max-md:flex-col">
+        <Skeleton className="flex-1" />
+        <Skeleton className="flex-1" />
+      </div>
     </div>
   );
 }
@@ -394,14 +415,33 @@ export function Playground({ examples, pixiMajor }: { examples: Example[]; pixiM
   const { dark, setTheme, theme } = useTheme();
   const [sidebarOpen, setSidebarOpen] = useSidebarOpen();
   const [resolved, setResolved] = useState<{ id: number; value: Resolved } | null>(null);
+  const [failed, setFailed] = useState(false);
+  // The examples with a saved edit, one id per line, so the snapshot compares as a string.
+  const editedIds = useSyncExternalStore(store.subscribe, () =>
+    examples
+      .filter(example => store.isEdited(example.id))
+      .map(example => example.id)
+      .join("\n")
+  );
+  const edited = new Set(editedIds.split("\n"));
 
   useEffect(() => {
     let latest = 0;
     const load = () => {
       const call = ++latest;
-      resolve(examples, store, window.location.hash).then(value => {
-        if (call === latest) setResolved(previous => ({ id: (previous?.id ?? 0) + 1, value }));
-      });
+      resolve(examples, store, window.location.hash).then(
+        value => {
+          if (call !== latest) return;
+          setFailed(false);
+          setResolved(previous => ({ id: (previous?.id ?? 0) + 1, value }));
+        },
+        // An offline browser or a newer deploy without the old chunks cannot load the source.
+        error => {
+          if (call !== latest) return;
+          console.error(error);
+          setFailed(true);
+        }
+      );
     };
     load();
     window.addEventListener("hashchange", load);
@@ -411,12 +451,34 @@ export function Playground({ examples, pixiMajor }: { examples: Example[]; pixiM
     };
   }, [examples, store]);
 
-  if (!resolved) return null;
   return (
     <SidebarProvider open={sidebarOpen} onOpenChange={setSidebarOpen}>
-      <AppSidebar examples={examples} pixiMajor={pixiMajor} selectedId={resolved.value.example.id} />
+      <AppSidebar
+        edited={edited}
+        examples={examples}
+        pixiMajor={pixiMajor}
+        selectedId={resolved?.value.example.id ?? parseHash(window.location.hash).exampleId ?? ""}
+      />
       <SidebarInset className="h-[calc(100svh-1rem)] overflow-hidden max-md:h-auto max-md:overflow-visible">
-        <Session key={resolved.id} dark={dark} resolved={resolved.value} store={store} onTheme={setTheme} />
+        {failed ? (
+          <div className="p-2">
+            <Banner
+              text="This example could not load. Check the connection and reload the page."
+              actions={[{ label: "Reload", onClick: () => window.location.reload() }]}
+            />
+          </div>
+        ) : resolved ? (
+          <Session
+            key={resolved.id}
+            dark={dark}
+            edited={edited.has(resolved.value.example.id)}
+            resolved={resolved.value}
+            store={store}
+            onTheme={setTheme}
+          />
+        ) : (
+          <SessionSkeleton />
+        )}
       </SidebarInset>
       <Toaster theme={theme} />
     </SidebarProvider>

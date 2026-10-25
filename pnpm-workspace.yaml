@@ -13,3 +13,80 @@ packageExtensions:
   react-resizable-panels:
     peerDependencies:
       "@types/react": "*"
+# PixiJS 6 and 7 sub-packages import these without declaring them, so they would get whichever copy pnpm hoists.
+  "@pixi/accessibility@6":
+    peerDependencies:
+      "@pixi/math": ^6
+  "@pixi/canvas-renderer@6":
+    peerDependencies:
+      "@pixi/display": ^6
+      "@pixi/graphics": ^6
+  "@pixi/canvas-renderer@7":
+    peerDependencies:
+      "@pixi/display": ^7
+      "@pixi/graphics": ^7
+      "@pixi/settings": ^7
+      "@pixi/utils": ^7
+  "@pixi/display@6":
+    peerDependencies:
+      "@pixi/core": ^6
+  "@pixi/extract@6":
+    peerDependencies:
+      "@pixi/display": ^6
+  "@pixi/extract@7":
+    peerDependencies:
+      "@pixi/display": ^7
+  "@pixi/filter-color-matrix@6":
+    peerDependencies:
+      "@pixi/utils": ^6
+  "@pixi/filter-displacement@6":
+    peerDependencies:
+      "@pixi/constants": ^6
+  "@pixi/mesh-extras@6":
+    peerDependencies:
+      "@pixi/display": ^6
+  "@pixi/mesh-extras@7":
+    peerDependencies:
+      "@pixi/display": ^7
+  "@pixi/mixin-cache-as-bitmap@7":
+    peerDependencies:
+      "@pixi/constants": ^7
+      "@pixi/math": ^7
+  "@pixi/mixin-get-global-position@7":
+    peerDependencies:
+      "@pixi/math": ^7
+  "@pixi/sprite-animated@6":
+    peerDependencies:
+      "@pixi/display": ^6
+  "@pixi/sprite-animated@7":
+    peerDependencies:
+      "@pixi/display": ^7
+  "@pixi/text@6":
+    peerDependencies:
+      "@pixi/display": ^6
+  "@pixi/text@7":
+    peerDependencies:
+      "@pixi/display": ^7
+  "@pixi/utils@6":
+    peerDependencies:
+      "@pixi/core": ^6
+  "@pixi/utils@7":
+    peerDependencies:
+      "@pixi/core": ^7
+# @pixi/layout 1.0 imports @pixi/mesh-extras and @pixi/sprite-tiling without declaring them.
+  "@pixi/layout@1":
+    dependencies:
+      "@pixi/mesh-extras": ^7.3.1
+      "@pixi/sprite-tiling": ^7.3.1
+# @pixi/tilemap 4 imports @pixi/core and @pixi/display without declaring them.
+  "@pixi/tilemap@4":
+    peerDependencies:
+      "@pixi/core": ^7
+      "@pixi/display": ^7
+# pixi-viewport 5.0 imports @pixi/core, @pixi/display, @pixi/events and @pixi/math without declaring them, so it would get the hoisted PixiJS 6 copies.
+  pixi-viewport@5:
+    peerDependencies:
+      "@pixi/core": ^7
+      "@pixi/display": ^7
+      "@pixi/events": ^7
+      "@pixi/math": ^7

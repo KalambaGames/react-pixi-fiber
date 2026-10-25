@@ -14,11 +14,14 @@ export function useRunner(
   entries: ConsoleEntry[];
   iframeKey: number;
   iframeRef: RefObject<HTMLIFrameElement | null>;
+  loading: boolean;
   restart: (code: string) => void;
 } {
   const iframeRef = useRef<HTMLIFrameElement | null>(null);
   const [iframeKey, setIframeKey] = useState(0);
   const [entries, setEntries] = useState<ConsoleEntry[]>([]);
+  // A held run does not start until Run, so it shows the empty preview instead of a skeleton.
+  const [loading, setLoading] = useState(!held);
   const runId = useRef(1);
   const applied = useRef(code);
   const ready = useRef(false);
@@ -32,6 +35,7 @@ export function useRunner(
     holding.current = false;
     runId.current += 1;
     setEntries([]);
+    setLoading(true);
     setIframeKey(key => key + 1);
   };
 
@@ -46,8 +50,9 @@ export function useRunner(
   useEffect(() => {
     ready.current = false;
     const timer = setTimeout(() => {
-      if (!ready.current)
-        setEntries(previous => [...previous, { level: "system", text: "The preview did not start." }]);
+      if (ready.current) return;
+      setLoading(false);
+      setEntries(previous => [...previous, { level: "system", text: "The preview did not start (yet)." }]);
     }, READY_TIMEOUT_MS);
     return () => clearTimeout(timer);
   }, [iframeKey]);
@@ -63,7 +68,11 @@ export function useRunner(
         runStarted.current?.();
         const run: ParentMessage = { type: "run", runId: runId.current, code: applied.current };
         target.postMessage(run, "*");
-      } else if (message.runId === runId.current) {
+      } else if (message.runId !== runId.current) {
+        return;
+      } else if (message.type === "started") {
+        setLoading(false);
+      } else {
         setEntries(previous => [...previous, { level: message.level, text: message.text }].slice(-MAX_ENTRIES));
       }
     };
@@ -71,5 +80,5 @@ export function useRunner(
     return () => window.removeEventListener("message", onMessage);
   }, []);
 
-  return { entries, iframeKey, iframeRef, restart };
+  return { entries, iframeKey, iframeRef, loading, restart };
 }

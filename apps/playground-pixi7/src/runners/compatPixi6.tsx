@@ -4,7 +4,7 @@ import compat from "@react-pixi-fiber/pixi-7/compat/pixi6";
 import { createRoot } from "react-dom/client";
 import { configure } from "react-pixi-fiber";
 import { startRunner } from "playground-shell/runner";
-import { modules } from "../modules";
+import { lazyModules, modules } from "../modules";
 
 configure({ react: react19(), pixi: pixi7({ compat }) });
 
@@ -12,4 +12,4 @@ const container = document.getElementById("root");
 if (!container) throw new Error("Missing #root");
 const root = createRoot(container);
 
-startRunner({ modules, render: Component => root.render(<Component />) });
+startRunner({ lazyModules, modules, render: Component => root.render(<Component />) });

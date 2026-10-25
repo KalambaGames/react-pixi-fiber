@@ -13,16 +13,15 @@ globalThis.IS_REACT_ACT_ENVIRONMENT = true;
 // CodeMirror measures text ranges, which jsdom does not lay out.
 Range.prototype.getClientRects = () => ({ item: () => null, length: 0, [Symbol.iterator]: [][Symbol.iterator] });
 
-const examples: Example[] = [
-  {
-    code: "code",
-    configure: { code: "configure();", summary: "React 19 and PixiJS 8" },
-    group: "Scene Objects",
-    id: "first",
-    runner: "runner.html",
-    title: "First",
-  },
-];
+const example = (id: string, title: string): Example => ({
+  configure: { code: "configure();", summary: "React 19 and PixiJS 8" },
+  group: "Scene Objects",
+  id,
+  load: async () => "code",
+  runner: "runner.html",
+  title,
+});
+let examples: Example[];
 
 let container: HTMLDivElement;
 let root: Root;
@@ -40,6 +39,7 @@ const render = async () => {
 const log = () => container.querySelector("[role=log]")?.textContent ?? "";
 
 beforeEach(() => {
+  examples = [example("first", "First")];
   localStorage.clear();
   mediaListeners = [];
   vi.stubGlobal(
@@ -174,6 +174,45 @@ describe("Playground", () => {
     expect(container.textContent).toContain("configure();");
   });
 
+  it("shows a skeleton until the example source loads", async () => {
+    let finish!: (code: string) => void;
+    examples[0].load = () =>
+      new Promise(resolve => {
+        finish = resolve;
+      });
+    await render();
+    expect(container.querySelector("[data-slot=skeleton]")).not.toBeNull();
+    expect(container.querySelector(".cm-editor")).toBeNull();
+    await act(async () => finish("code"));
+    expect(container.querySelector(".cm-editor")).not.toBeNull();
+  });
+
+  it("tells the reader when the example source cannot load", async () => {
+    vi.spyOn(console, "error").mockImplementation(() => {});
+    examples[0].load = () => Promise.reject(new TypeError("Failed to fetch dynamically imported module"));
+    await render();
+    expect(container.textContent).toContain("This example could not load.");
+    expect(container.querySelector("[data-slot=skeleton]")).toBeNull();
+    const reload = [...container.querySelectorAll("button")].find(button => button.textContent === "Reload");
+    expect(reload).toBeDefined();
+  });
+
+  it("opens the last selected example when the hash changes during a load", async () => {
+    let finishFirst!: (code: string) => void;
+    examples = [example("first", "First"), example("second", "Second")];
+    examples[0].load = () =>
+      new Promise(resolve => {
+        finishFirst = resolve;
+      });
+    examples[1].load = async () => "second code";
+    await render();
+    window.history.replaceState(null, "", "#second");
+    await act(async () => window.dispatchEvent(new HashChangeEvent("hashchange")));
+    await act(async () => finishFirst("first code"));
+    const content = container.querySelector(".cm-content") as HTMLElement;
+    expect(EditorView.findFromDOM(content)?.state.doc.toString()).toBe("second code");
+  });
+
   it("copies the setup code", async () => {
     const writeText = vi.fn(() => Promise.resolve());
     vi.stubGlobal("navigator", { ...navigator, clipboard: { writeText } });
@@ -182,6 +221,115 @@ describe("Playground", () => {
     await act(async () => setup?.click());
     await act(async () => container.querySelector<HTMLButtonElement>("[aria-label='Copy setup']")?.click());
     expect(writeText).toHaveBeenCalledWith("configure();");
+  });
+});
+
+describe("Playground sidebar", () => {
+  const titles = () =>
+    [...container.querySelectorAll<HTMLAnchorElement>("[data-sidebar=content] a")].map(link => link.textContent);
+  const groupLabel = (name: string) =>
+    [...container.querySelectorAll<HTMLElement>("[data-sidebar=menu-button]")].find(
+      button => button.textContent === name
+    );
+  const filter = (text: string) =>
+    act(() => {
+      const input = container.querySelector<HTMLInputElement>("[data-sidebar=input]") as HTMLInputElement;
+      Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value")?.set?.call(input, text);
+      input.dispatchEvent(new Event("input", { bubbles: true }));
+    });
+
+  beforeEach(() => {
+    examples = [
+      example("first", "First"),
+      example("sprite", "Sprite"),
+      { ...example("bunnymark", "Bunnymark"), group: "Features" },
+      { ...example("sprite-props", "Sprite props"), group: "Features" },
+      { ...example("tilemap", "Tilemap"), group: "Integrations" },
+    ];
+  });
+
+  it("opens only the group of the current example", async () => {
+    await render();
+    expect(titles()).toEqual(["First", "Sprite"]);
+  });
+
+  it("shows that a group label is clickable", async () => {
+    await render();
+    expect(groupLabel("Features")?.className).toContain("cursor-pointer");
+  });
+
+  it("marks the current example with the primary color", async () => {
+    await render();
+    const current = container.querySelector<HTMLElement>("[data-sidebar=menu-sub-button][data-active=true]");
+    expect(current?.textContent).toBe("First");
+    expect(current?.className).toContain("data-[active=true]:bg-sidebar-primary");
+  });
+
+  it("opens a group when its label is clicked", async () => {
+    await render();
+    act(() => groupLabel("Features")?.click());
+    expect(titles()).toEqual(["First", "Sprite", "Bunnymark", "Sprite props"]);
+  });
+
+  it("opens the group of the example that the hash moves to", async () => {
+    await render();
+    window.history.replaceState(null, "", "#tilemap");
+    await act(async () => window.dispatchEvent(new HashChangeEvent("hashchange")));
+    expect(titles()).toContain("Tilemap");
+  });
+
+  it("filters the examples by title, ignoring case, and hides the groups without matches", async () => {
+    await render();
+    filter("SPRITE");
+    expect(titles()).toEqual(["Sprite", "Sprite props"]);
+    expect(groupLabel("Integrations")).toBeUndefined();
+  });
+
+  it("says so when no example matches the filter", async () => {
+    await render();
+    filter("zzz");
+    expect(titles()).toEqual([]);
+    expect(container.querySelector("[data-sidebar=content]")?.textContent).toContain("No examples match");
+  });
+
+  it("marks the examples that have a saved edit", async () => {
+    createStore(8, localStorage).save("sprite", "edited code", "code");
+    await render();
+    expect(container.querySelector('a[href="#sprite"] [aria-label=Edited]')).not.toBeNull();
+    expect(container.querySelector('a[href="#first"] [aria-label=Edited]')).toBeNull();
+  });
+
+  it("marks the current example as edited in the sidebar and the breadcrumb once the edit is saved", async () => {
+    await render();
+    const content = container.querySelector(".cm-content") as HTMLElement;
+    act(() => EditorView.findFromDOM(content)?.dispatch({ changes: { from: 0, insert: "edited " } }));
+    act(() => window.dispatchEvent(new PageTransitionEvent("pagehide")));
+    expect(container.querySelector('a[href="#first"] [aria-label=Edited]')).not.toBeNull();
+    expect(container.querySelector("[data-slot=breadcrumb]")?.textContent).toContain("Edited");
+  });
+
+  it("removes the edited marks when the example is reset", async () => {
+    createStore(8, localStorage).save("first", "edited code", "code");
+    await render();
+    const reset = [...container.querySelectorAll("button")].find(button => button.textContent === "Reset");
+    await act(async () => reset?.click());
+    expect(container.querySelector('a[href="#first"] [aria-label=Edited]')).toBeNull();
+    expect(container.querySelector("[data-slot=breadcrumb]")?.textContent).not.toContain("Edited");
+  });
+
+  it("closes the other groups again when the filter is cleared", async () => {
+    await render();
+    filter("sprite");
+    filter("");
+    expect(titles()).toEqual(["First", "Sprite"]);
+  });
+
+  it("keeps the group of the current example open after a label click while filtering", async () => {
+    await render();
+    filter("sprite");
+    act(() => groupLabel("Scene Objects")?.click());
+    filter("");
+    expect(titles()).toEqual(["First", "Sprite"]);
   });
 });
 

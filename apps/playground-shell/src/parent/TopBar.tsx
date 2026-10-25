@@ -13,6 +13,7 @@ import { Separator } from "./components/ui/separator";
 import { SidebarTrigger } from "./components/ui/sidebar";
 import { ToggleGroup, ToggleGroupItem } from "./components/ui/toggle-group";
 import { Tooltip, TooltipContent, TooltipTrigger } from "./components/ui/tooltip";
+import { EditedDot } from "./EditedDot";
 import type { Example } from "./Playground";
 import type { Layout } from "./useLayout";
 
@@ -25,6 +26,7 @@ const layouts: { icon: LucideIcon; label: string; value: Layout }[] = [
 
 export function TopBar({
   dark,
+  edited,
   example,
   layout,
   onLayout,
@@ -35,6 +37,7 @@ export function TopBar({
   shareUrl,
 }: {
   dark: boolean;
+  edited: boolean;
   example: Example;
   layout: Layout;
   onLayout: (layout: Layout) => void;
@@ -54,6 +57,12 @@ export function TopBar({
           <BreadcrumbSeparator />
           <BreadcrumbItem>
             <BreadcrumbPage className="truncate">{example.title}</BreadcrumbPage>
+            {edited && (
+              <span className="flex shrink-0 items-center gap-1.5 text-muted-foreground text-xs">
+                <EditedDot />
+                Edited
+              </span>
+            )}
           </BreadcrumbItem>
         </BreadcrumbList>
       </Breadcrumb>
