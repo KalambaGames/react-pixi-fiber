@@ -21,7 +21,7 @@ import { useRunner } from "./useRunner";
 import { useSidebarOpen } from "./useSidebarOpen";
 import { useTheme, type Theme } from "./useTheme";
 
-export type ExampleGroup = "Display Objects" | "Features" | "Migration" | "Scene Objects";
+export type ExampleGroup = "Display Objects" | "Features" | "Integrations" | "Migration" | "Scene Objects";
 
 export interface Example {
   code: string;

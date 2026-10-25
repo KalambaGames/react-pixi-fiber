@@ -43,6 +43,11 @@ const feature = (name: string, title: string, code: string): Example => ({
   id: name.toLowerCase(),
 });
 
+const integration = (name: string, title: string, code: string): Example => ({
+  ...feature(name, title, code),
+  group: "Integrations",
+});
+
 const compat = (name: string, title: string, code: string): Example => ({
   ...feature(name, title, code),
   configure: setup(7, 6),
@@ -65,7 +70,6 @@ export const examples: Example[] = [
   example("Sprite", Sprite),
   example("Text", Text),
   example("TilingSprite", TilingSprite),
-  feature("Animated", "Animated", Animated),
   feature("Bunnymark", "Bunnymark", Bunnymark),
   feature("BunnymarkCustomComponents", "Bunnymark with custom components", BunnymarkCustomComponents),
   feature("CanvasProps", "Canvas props", CanvasProps),
@@ -78,5 +82,6 @@ export const examples: Example[] = [
   feature("PIXIProperty", "PIXIProperty", PIXIProperty),
   feature("PointLikeProps", "Point-like props", PointLikeProps),
   feature("Suspense", "Suspense", Suspense),
+  integration("Animated", "Animated", Animated),
   compat("MigratingFromPixi6", "Migrating from PixiJS 6", MigratingFromPixi6),
 ];

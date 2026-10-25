@@ -1,4 +1,4 @@
-import { Blocks, ChevronRight, CircleFadingArrowUp, type LucideIcon, Package, Sparkles } from "lucide-react";
+import { Blocks, ChevronRight, CircleFadingArrowUp, type LucideIcon, Package, Puzzle, Sparkles } from "lucide-react";
 import { buildHash } from "../share";
 import { versionHref, versions } from "../versions";
 import { HoverCard, HoverCardContent, HoverCardTrigger } from "./components/ui/hover-card";
@@ -25,6 +25,7 @@ const groups: { icon: LucideIcon; name: ExampleGroup }[] = [
   { icon: Blocks, name: "Scene Objects" },
   { icon: Blocks, name: "Display Objects" },
   { icon: Sparkles, name: "Features" },
+  { icon: Puzzle, name: "Integrations" },
   { icon: CircleFadingArrowUp, name: "Migration" },
 ];
 
