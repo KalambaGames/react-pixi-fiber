@@ -12,6 +12,7 @@
     "leva": "^0.10.1",
     "matter-js": "^0.20.0",
     "motion": "^14.6.0",
+    "pixi-stats": "^5.1.7",
     "pixi.js": "^8.21.0",
     "playground-shell": "workspace:*",
     "react": "19.3.0",

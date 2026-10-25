@@ -401,6 +401,9 @@ importers:
       motion:
         specifier: ^14.6.0
         version: 14.6.0(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+      pixi-stats:
+        specifier: ^5.1.7
+        version: 5.1.7
       pixi.js:
         specifier: ^8.21.0
         version: 8.21.0
@@ -4130,6 +4133,9 @@ packages:
 
   pixi-layers@0.3.1:
     resolution: {integrity: sha512-sLqkg4xnlKKjKceTgyNEvb2Fh7A1OmbsZRTHVnnsqMmhkVLVUgRNZX6ZflTne0pgGOal6EXp1bmns4geXZsY7A==}
+
+  pixi-stats@5.1.7:
+    resolution: {integrity: sha512-h0FQnZfGPuTg5rVKkCbWD1aLni7sVn+ZaRIzoUsNZzK8FyXI2xARBiILOK76KKjhzS9rAJcneUpXOvzo+wIM2Q==}
 
   pixi.js@4.8.9:
     resolution: {integrity: sha512-YcepG5/bXLAVTSTXaMIU9NeSzwyPq/oMu2oQi6L6iE5giwng02ixVCKgc6/eMv3zl2Ho+teSOLC8R5Wp3jBvLA==}
@@ -8073,6 +8079,8 @@ snapshots:
       '@types/pixi.js': 4.8.9
 
   pixi-layers@0.3.1: {}
+
+  pixi-stats@5.1.7: {}
 
   pixi.js@4.8.9:
     dependencies:
