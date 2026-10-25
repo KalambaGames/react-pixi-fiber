@@ -1,18 +1,12 @@
 // The import applies the layout mixin to every PixiJS container, so it comes before the Stage creates the app.
 import "@pixi/layout";
-import type { LayoutStyles } from "@pixi/layout";
 import { LayoutContainer } from "@pixi/layout/components";
-import { Text as PixiText, type TextStyleOptions } from "pixi.js";
 import { useState } from "react";
-import { PIXIComponent, Stage } from "react-pixi-fiber";
+import { PIXIComponent, Stage, Text } from "react-pixi-fiber";
 
 // A container that draws the background color and the rounded corners of its layout. The `layout` prop takes the
 // styles that Yoga applies to it and to its children.
-const Box = PIXIComponent<LayoutContainer, { layout: LayoutStyles }>("Box", { create: () => new LayoutContainer() });
-// A text that takes part in the layout, so Yoga knows its size.
-const Label = PIXIComponent<PixiText, { style: TextStyleOptions; text: string }>("Label", {
-  create: () => new PixiText({ layout: true }),
-});
+const Box = PIXIComponent<LayoutContainer>("Box", { create: () => new LayoutContainer() });
 
 const text = { fill: "white", fontFamily: "Arial", fontSize: 16 } as const;
 const levels = Array.from({ length: 12 }, (_, index) => index + 1);
@@ -46,7 +40,7 @@ export default function LayoutExample() {
               width: "90%",
             }}
           >
-            <Label style={{ ...text, fontSize: 22, fontWeight: "bold" }} text="SELECT LEVEL" />
+            <Text layout style={{ ...text, fontSize: 22, fontWeight: "bold" }} text="SELECT LEVEL" />
             <Box layout={{ flexDirection: "row", flexWrap: "wrap", gap: 8, justifyContent: "center" }}>
               {levels.map(level => (
                 <Box
@@ -60,7 +54,7 @@ export default function LayoutExample() {
                     width: 40,
                   }}
                 >
-                  <Label style={text} text={String(level)} />
+                  <Text layout style={text} text={String(level)} />
                 </Box>
               ))}
             </Box>
@@ -77,7 +71,7 @@ export default function LayoutExample() {
                     justifyContent: "center",
                   }}
                 >
-                  <Label style={text} text={label} />
+                  <Text layout style={text} text={label} />
                 </Box>
               ))}
             </Box>
