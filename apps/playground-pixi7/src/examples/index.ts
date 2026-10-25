@@ -65,5 +65,6 @@ export const examples: Example[] = [
   feature("SmokeTest", "Smoke test"),
   feature("Suspense", "Suspense"),
   integration("Animated", "Animated"),
+  integration("GSAP", "GSAP"),
   compat("MigratingFromPixi6", "Migrating from PixiJS 6"),
 ];

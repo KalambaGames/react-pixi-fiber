@@ -18,6 +18,7 @@
     "@react-pixi-fiber/pixi-6": "workspace:*",
     "@react-pixi-fiber/react-19": "workspace:*",
     "animated": "^0.2.2",
+    "gsap": "^3.15.0",
     "pixi.js": "^6.5.10",
     "playground-shell": "workspace:*",
     "react": "19.3.0",

@@ -73,6 +73,9 @@ importers:
       animated:
         specifier: ^0.2.2
         version: 0.2.2(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+      gsap:
+        specifier: ^3.15.0
+        version: 3.15.0
       pixi-layers:
         specifier: ^0.1.10
         version: 0.1.10
@@ -125,6 +128,9 @@ importers:
       animated:
         specifier: ^0.2.2
         version: 0.2.2(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+      gsap:
+        specifier: ^3.15.0
+        version: 3.15.0
       pixi-layers:
         specifier: ^0.3.1
         version: 0.3.1
@@ -207,6 +213,9 @@ importers:
       animated:
         specifier: ^0.2.2
         version: 0.2.2(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+      gsap:
+        specifier: ^3.15.0
+        version: 3.15.0
       pixi.js:
         specifier: ^6.5.10
         version: 6.5.10
@@ -256,6 +265,9 @@ importers:
       animated:
         specifier: ^0.2.2
         version: 0.2.2(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+      gsap:
+        specifier: ^3.15.0
+        version: 3.15.0
       pixi.js:
         specifier: ^7.4.3
         version: 7.4.3
@@ -302,6 +314,9 @@ importers:
       animated:
         specifier: ^0.2.2
         version: 0.2.2(react-dom@19.3.0(react@19.3.0))(react@19.3.0)
+      gsap:
+        specifier: ^3.15.0
+        version: 3.15.0
       pixi.js:
         specifier: ^8.21.0
         version: 8.21.0
@@ -1407,6 +1422,7 @@ packages:
 
   '@pixi/layers@1.0.11':
     resolution: {integrity: sha512-E9jVR7kWMbBBhyaoX4Vi/rZAk4QFMDFiwvZF5xXZ2sBKh1/2aaTD2oQB3QHtekQ0IYXjyxgRRVEpeYTlZgz5xA==}
+    engines: {node: '>=14', npm: '>=7'}
     peerDependencies:
       '@pixi/canvas-renderer': ^6.0.4
       '@pixi/constants': ^6.0.4
@@ -3473,6 +3489,9 @@ packages:
 
   graceful-fs@4.2.11:
     resolution: {integrity: sha512-RbJ5/jmFcNNCcDV5o9eTnBLJ/HszWV0P73bc+Ff4nS/rJj+YaS6IGyiOL0VoBYX+l1Wrl3k63h/KrH+nhJ0XvQ==}
+
+  gsap@3.15.0:
+    resolution: {integrity: sha512-dMW4CWBTUK1AEEDeZc1g4xpPGIrSf9fJF960qbTZmN/QwZIWY5wgliS6JWl9/25fpTGJrMRtSjGtOmPnfjZB+A==}
 
   has-flag@4.0.0:
     resolution: {integrity: sha512-EykJT/Q1KjTWctppgIAgfSO0tKVuZUjhgMr17kqTumMl6Afv3EISleU7qZUzoXDFTAHTDC4NOoG/ZxU3EvlMPQ==}
@@ -7295,6 +7314,8 @@ snapshots:
   gopd@1.2.0: {}
 
   graceful-fs@4.2.11: {}
+
+  gsap@3.15.0: {}
 
   has-flag@4.0.0: {}
 
