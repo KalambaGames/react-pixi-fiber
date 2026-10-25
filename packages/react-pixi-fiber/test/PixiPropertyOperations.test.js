@@ -34,6 +34,7 @@ async function withDefaults(defaults) {
     return { getPixiAdapter: () => ({ ...adapter, defaults }), getStrictModeBit: () => strictModeBit };
   });
   return {
+    ...(await import("../src/hostOps")),
     ...(await import("../src/PixiPropertyOperations")),
     ...(await import("../src/ReactPixiFiberComponent")),
     ...(await import("../src/PIXIComponent")),
@@ -135,6 +136,46 @@ describe("PixiPropertyOperations", () => {
       const warnings = error.mock.calls.filter(c => /Received `-1` for prop `alpha`/.test(String(c[0])));
       expect(warnings).toHaveLength(__DEV__ ? 1 : 0);
     });
+    it("warns once for each prop name about invalid values", () => {
+      const error = vi.spyOn(console, "error").mockImplementation(() => {});
+      const strict = { mode: strictModeBit, return: null };
+      const first = new PIXI.Sprite(PIXI.Texture.WHITE);
+      const second = new PIXI.Sprite(PIXI.Texture.WHITE);
+      setValueForProperty("Sprite", first, "rotation", "spin", strict);
+      setValueForProperty("Sprite", first, "rotation", "spin", strict);
+      setValueForProperty("Sprite", second, "rotation", "turn", strict);
+      const warnings = error.mock.calls.filter(c => /for prop `rotation`/.test(String(c[0])));
+      expect(warnings).toHaveLength(__DEV__ ? 1 : 0);
+    });
+    it("resets an invalid value of a point prop that the adapter table does not list", () => {
+      const error = vi.spyOn(console, "error").mockImplementation(() => {});
+      const strict = { mode: strictModeBit, return: null };
+      const instance = new PIXI.Container();
+      instance.offset = new PIXI.Point(1, 2);
+      setValueForProperty("Container", instance, "offset", "a,b", strict);
+      expect([instance.offset.x, instance.offset.y]).toEqual([1, 2]);
+      setValueForProperty("Container", instance, "offset", [3, 4, 5], strict);
+      expect([instance.offset.x, instance.offset.y]).toEqual([1, 2]);
+      const warnings = error.mock.calls.filter(c => /for prop `offset`/.test(String(c[0])));
+      expect(warnings).toHaveLength(__DEV__ ? 1 : 0);
+    });
+    it("writes null to a point prop and lets the PixiJS setter throw", () => {
+      const sprite = new PIXI.Sprite(PIXI.Texture.WHITE);
+      expect(() => setValueForProperty("Sprite", sprite, "scale", null)).toThrow(TypeError);
+      const instance = new PIXI.Container();
+      instance.offset = new PIXI.Point(1, 2);
+      setValueForProperty("Container", instance, "offset", null);
+      expect(instance.offset).toBeNull();
+    });
+    it("writes null to a callback prop without a warning", () => {
+      const error = vi.spyOn(console, "error").mockImplementation(() => {});
+      const strict = { mode: strictModeBit, return: null };
+      const sprite = new PIXI.Sprite(PIXI.Texture.WHITE);
+      setValueForProperty("Sprite", sprite, "click", () => {}, strict);
+      setValueForProperty("Sprite", sprite, "click", null, strict);
+      expect(sprite.click).toBeNull();
+      expect(error).not.toHaveBeenCalled();
+    });
     it("ignores an undefined value when nothing was recorded and no override exists", () => {
       const instance = new PIXI.Container();
       setValueForProperty("Container", instance, "nothingHere", undefined);
@@ -190,6 +231,15 @@ describe("PixiPropertyOperations", () => {
       const instance = mount(m, "Sprite", { alpha: 1 });
       m.setValueForProperty("Sprite", instance, "alpha", undefined);
       expect(instance.alpha).toBe(mount(m, "Sprite", {}).alpha);
+    });
+    it("keeps the default of visible when a hidden instance is revealed", async () => {
+      const m = await withDefaults({ Sprite: { visible: false } });
+      const instance = mount(m, "Sprite", {});
+      m.hideInstance(instance);
+      m.unhideInstance(instance, {});
+      expect(instance.visible).toBe(false);
+      m.unhideInstance(instance, { visible: true });
+      expect(instance.visible).toBe(true);
     });
     it("passes the filled props to create", async () => {
       const m = await withDefaults({ Text: { text: "default" } });

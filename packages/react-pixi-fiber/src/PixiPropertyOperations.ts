@@ -4,7 +4,28 @@ import { getPixiAdapter, getStackAddendum, getStrictModeBit } from "./configure"
 import { getRecordedDefault, recordDefault } from "./defaults";
 import { getOwn, getPropertyInfo, shouldIgnoreAttribute, shouldRemoveAttribute } from "./PixiProperty";
 import { getInstanceTag } from "./registry";
-import { findStrictRoot, setPixiValue } from "./utils";
+import { findStrictRoot, parsePoint, setPixiValue } from "./utils";
+
+const warnedInvalid = new Set<string>();
+
+/**
+ * The value a prop returns to: the adapter's `defaults` entry for the tag the instance was created as, else the value
+ * PixiJS had before the core first wrote the prop.
+ */
+export function getDefaultValue(instance: Record<string, any>, propName: string, type?: string): unknown {
+  // A deprecated tag records the tag it maps to, a user tag records itself.
+  const tag = getInstanceTag(instance) ?? type;
+  const override = tag === undefined ? undefined : getOwn(getOwn(getPixiAdapter().defaults, tag), propName);
+  return typeof override !== "undefined" ? override : getRecordedDefault(instance, propName);
+}
+
+// A value that cannot set the point a prop holds, also for a point prop that the adapter table does not list.
+function isInvalidPoint(instance: Record<string, any>, propName: string, value: unknown): boolean {
+  const pixi = getPixiAdapter();
+  if (value == null || !pixi.isPoint(instance[propName]) || pixi.isPoint(value)) return false;
+  const coordinates = parsePoint(value);
+  return coordinates.length === 0 || coordinates.length > 2 || coordinates.some(x => isNaN(x));
+}
 
 /**
  * Sets the value for a property on a PIXI.DisplayObject instance.
@@ -37,17 +58,16 @@ export function setValueForProperty(
   recordDefault(instance, propName, pixi.isPoint);
 
   let shouldIgnoreValue = false;
-  if (shouldRemoveAttribute(type, propName, value, propertyInfo)) {
-    // `undefined` is also how a removed prop arrives, so only an invalid value warns.
+  if (shouldRemoveAttribute(type, propName, value, propertyInfo) || isInvalidPoint(instance, propName, value)) {
+    // `undefined` is also how a removed prop arrives, so only an invalid value warns, once for each prop name.
     const received = value;
-    // The tag the instance was created as: a deprecated tag records the tag it maps to, a user tag records itself.
-    const tag = getInstanceTag(instance) ?? type;
-    const override = getOwn(getOwn(pixi.defaults, tag), propName);
-    const defaultValue = typeof override !== "undefined" ? override : getRecordedDefault(instance, propName);
+    const shouldWarn = strictRoot != null && typeof received !== "undefined" && !warnedInvalid.has(propName);
+    if (shouldWarn) warnedInvalid.add(propName);
+    const defaultValue = getDefaultValue(instance, propName, type);
     // A default can itself be `undefined` (`mask`, `filters`, custom props); a name the instance does not have is ignored.
     if (typeof defaultValue !== "undefined" || propName in instance) {
       value = defaultValue;
-      if (strictRoot != null && typeof received !== "undefined") {
+      if (shouldWarn) {
         warning(
           false,
           "Received `%s` for prop `%s` on `<%s />`. Resetting it to its default `%s`.%s",
@@ -60,7 +80,7 @@ export function setValueForProperty(
       }
     } else {
       shouldIgnoreValue = true;
-      if (strictRoot != null && typeof received !== "undefined") {
+      if (shouldWarn) {
         warning(
           false,
           "Received `%s` for prop `%s` on `<%s />`. Cannot determine default value. Ignoring.%s",

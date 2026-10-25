@@ -156,11 +156,12 @@ describe("setPixiValue", () => {
     expect(obj.test).toEqual(value);
   });
 
-  it("throws if current value is point and next value is not point-like", () => {
+  it("assigns null to a point prop, so the PixiJS setter decides whether it accepts it", () => {
     const obj = {
       test: new PIXI.Point(0, 0),
     };
-    expect(() => setPixiValue(obj, "test", false, adapter)).toThrow();
+    setPixiValue(obj, "test", null, adapter);
+    expect(obj.test).toBeNull();
   });
 });
 

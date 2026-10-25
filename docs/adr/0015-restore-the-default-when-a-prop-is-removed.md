@@ -16,7 +16,7 @@ A consumer can remove a prop between two renders: `<Sprite alpha={0.5} />` becom
 
 The core commits a removed prop as `undefined`. The default resolution of [0014](0014-take-default-values-from-pixijs-or-the-adapter.md) then applies.
 
-The core writes an explicit `null` as `null`.
+The core writes an explicit `null` as `null`, also on a point prop. The PixiJS setter of a point prop throws for `null`, and the core lets that error reach the consumer. A point field without a setter, for example on a custom component, stores `null`.
 
 A removed prop prints no warning, because the diff cannot tell a removed prop from `prop={undefined}`. React DOM does not warn about `undefined` either.
 
@@ -34,3 +34,4 @@ The diff would mark removed props, so the core could warn about `prop={undefined
 
 - Code that relied on a removal writing `null` now sees the default. The changelog of the major lists this change.
 - A `prop={undefined}` that a consumer writes by mistake prints no warning in development
+- A `null` on a point prop fails with the `TypeError` of PixiJS, as it does without react-pixi-fiber. But that error does not name the prop, so the consumer finds the prop through the stack trace.

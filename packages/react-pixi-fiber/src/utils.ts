@@ -1,5 +1,3 @@
-import invariant from "./invariant";
-import { getStackAddendum } from "./configure";
 import type { PixiAdapter } from "./types";
 
 /* Helper Methods */
@@ -96,22 +94,14 @@ export function setPixiValue(instance: any, propName: string, value: unknown, pi
   if (isPointType(instance[propName], pixi) && isPointType(value, pixi)) {
     // Just copy the data if a Point type is being assigned to a Point type
     copyPoint(instance, propName, value, pixi);
-  } else if (isPointType(instance[propName], pixi)) {
-    // Parse value if a non-Point type is being assigned to a Point type
+  } else if (isPointType(instance[propName], pixi) && value != null) {
+    // Parse value if a non-Point type is being assigned to a Point type. `setValueForProperty` resets a value that
+    // does not parse, so the coordinates are valid here.
     const coordinateData = parsePoint(value);
-
-    invariant(
-      typeof coordinateData !== "undefined" && coordinateData.length > 0 && coordinateData.length < 3,
-      "The property `%s` is a PIXI.Point or PIXI.ObservablePoint and must be set to a comma-separated string of " +
-        "either 1 or 2 coordinates, a 1 or 2 element array containing coordinates, or a PIXI Point/ObservablePoint. " +
-        "If only one coordinate is given then X and Y will be set to the provided value.%s",
-      propName,
-      getStackAddendum()
-    );
-
     instance[propName].set(coordinateData.shift(), coordinateData.shift());
   } else {
-    // Just assign the value directly if a non-Point type is being assigned to a non-Point type
+    // Assign anything else directly. `null` on a point prop reaches the PixiJS setter, which throws when it cannot
+    // hold it.
     instance[propName] = value;
   }
 }
