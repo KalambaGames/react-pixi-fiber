@@ -26,7 +26,7 @@ Changesets inserts a release above the first header that starts with a version n
 
 ## Releasing
 
-Every user-visible change adds a changeset with `pnpm changeset`. The release runs `pnpm version-packages`, commits the result, then runs `pnpm release`.
+Every user-visible change adds a changeset with `pnpm changeset`. The release runs `pnpm version-packages`, commits the result as `chore(release): prepare <version>`, then runs `pnpm release`.
 
 Changesets versions every package on its own. The adapters peer `react-pixi-fiber` with a caret range (`^3.0.0`); `.changeset/config.json` sets `onlyUpdatePeerDependentsWhenOutOfRange`, so a core release inside that range does not bump the adapters.
 
