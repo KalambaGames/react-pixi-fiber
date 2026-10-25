@@ -1,0 +1,15 @@
+version: 2
+updates:
+  # Run at the workspace root, so that each update also changes pnpm-lock.yaml.
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    # Security updates only.
+    open-pull-requests-limit: 0
+    commit-message:
+      prefix: build
+    groups:
+      security:
+        applies-to: security-updates
+        patterns: ["*"]
