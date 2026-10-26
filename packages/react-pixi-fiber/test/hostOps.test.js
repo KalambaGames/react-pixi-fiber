@@ -1,6 +1,8 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import * as PIXI from "pixi.js";
 import { strictModeBit } from "@react-pixi-fiber/react-18";
+import { recordDefault } from "../src/defaults";
+import { hasFilterChildren } from "../src/filters";
 import * as hostOps from "../src/hostOps";
 import { validateProperties as validateUnknownProperties } from "../src/ReactPixiFiberUnknownPropertyHook";
 import { createRegisteredInstance, normalizeBehavior } from "../src/registry";
@@ -479,6 +481,268 @@ describe("hostOps", () => {
       instance.off("pointerdown", fn);
       container.emit("pointerdown", 43);
       expect(fn).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe("filter children", () => {
+    const filterInstance = (tag = "F", behavior = {}) =>
+      createRegisteredInstance(
+        tag,
+        normalizeBehavior(tag, { create: () => ({ destroy: vi.fn(), enabled: true }), kind: "filter", ...behavior }),
+        {},
+        () => {}
+      );
+
+    // Identity per index: `toEqual` takes two empty Containers as equal.
+    const expectOrder = (actual, expected) => {
+      expect(actual).toHaveLength(expected.length);
+      expected.forEach((item, i) => expect(actual[i]).toBe(item));
+    };
+
+    let parent;
+    beforeEach(() => {
+      parent = new PIXI.Container();
+    });
+
+    it("appends a filter child to parent.filters in order and never to children", () => {
+      const a = filterInstance();
+      const b = filterInstance();
+      hostOps.appendChild(parent, a);
+      hostOps.appendChild(parent, b);
+      expectOrder(parent.filters, [a, b]);
+      expect(parent.children).toHaveLength(0);
+    });
+
+    it("inserts a filter before a filter and before a display object", () => {
+      const c1 = new PIXI.Container();
+      const c2 = new PIXI.Container();
+      const fA = filterInstance();
+      const fB = filterInstance();
+      const fC = filterInstance();
+      hostOps.appendChild(parent, c1);
+      hostOps.appendChild(parent, fA);
+      hostOps.appendChild(parent, c2);
+      hostOps.insertBefore(parent, fB, c2);
+      expectOrder(parent.filters, [fA, fB]);
+      hostOps.insertBefore(parent, fC, fA);
+      expectOrder(parent.filters, [fC, fA, fB]);
+      expectOrder(parent.children, [c1, c2]);
+    });
+
+    it("inserts a display object before a filter at the next display sibling", () => {
+      const c1 = new PIXI.Container();
+      const c2 = new PIXI.Container();
+      const c3 = new PIXI.Container();
+      const fA = filterInstance();
+      hostOps.appendChild(parent, c1);
+      hostOps.appendChild(parent, fA);
+      hostOps.appendChild(parent, c2);
+      hostOps.insertBefore(parent, c3, fA);
+      expectOrder(parent.children, [c1, c3, c2]);
+      expectOrder(parent.filters, [fA]);
+      hostOps.insertBefore(parent, c2, fA);
+      expectOrder(parent.children, [c1, c3, c2]);
+      const c4 = new PIXI.Container();
+      hostOps.insertBefore(parent, c4, fA);
+      expectOrder(parent.children, [c1, c3, c2, c4]);
+    });
+
+    it("appends a display object inserted before a last filter", () => {
+      const c1 = new PIXI.Container();
+      const c2 = new PIXI.Container();
+      const fA = filterInstance();
+      hostOps.appendChild(parent, c1);
+      hostOps.appendChild(parent, fA);
+      hostOps.insertBefore(parent, c2, fA);
+      expectOrder(parent.children, [c1, c2]);
+    });
+
+    it("keeps display order on a reorder around a filter", () => {
+      const c1 = new PIXI.Container();
+      const c2 = new PIXI.Container();
+      const fA = filterInstance();
+      const fB = filterInstance();
+      hostOps.appendChild(parent, c1);
+      hostOps.appendChild(parent, fA);
+      hostOps.appendChild(parent, c2);
+      hostOps.insertBefore(parent, c2, c1);
+      expectOrder(parent.children, [c2, c1]);
+      expectOrder(parent.filters, [fA]);
+      hostOps.insertBefore(parent, fB, c1);
+      expectOrder(parent.filters, [fB, fA]);
+    });
+
+    it("throws for a filter child of a parent without a filters property", () => {
+      const plain = createRegisteredInstance("Plain", normalizeBehavior("Plain", { create: () => ({}) }), {}, () => {});
+      expect(() => hostOps.appendChild(plain, filterInstance())).toThrow(
+        "`<Plain />` has no `filters` property, so it cannot hold filter children."
+      );
+    });
+
+    it("seeds the order from the children a parent holds before its first filter", () => {
+      const c1 = new PIXI.Container();
+      const fA = filterInstance();
+      const fB = filterInstance();
+      parent.addChild(c1);
+      hostOps.appendChild(parent, fA);
+      hostOps.insertBefore(parent, fB, c1);
+      expectOrder(parent.filters, [fB, fA]);
+    });
+
+    // Ops that keep the children outside `children`.
+    const keeper = () => {
+      const ops = { appendChild: vi.fn(), insertBefore: vi.fn(), removeChild: vi.fn() };
+      return createRegisteredInstance(
+        "Keeper",
+        normalizeBehavior("Keeper", { create: () => new PIXI.Container(), ...ops }),
+        {},
+        () => {}
+      );
+    };
+
+    it("seeds the order from the children a parent holds through its own ops", () => {
+      const owner = keeper();
+      const c1 = new PIXI.Container();
+      const fA = filterInstance();
+      const fB = filterInstance();
+      hostOps.appendChild(owner, c1);
+      hostOps.appendChild(owner, fB);
+      hostOps.insertBefore(owner, fA, c1);
+      expectOrder(owner.filters, [fA, fB]);
+    });
+
+    it("seeds the order from the held children as they are after a move to the end", () => {
+      const owner = keeper();
+      const a = new PIXI.Container();
+      const b = new PIXI.Container();
+      const f1 = filterInstance();
+      const f2 = filterInstance();
+      hostOps.appendChild(owner, a);
+      hostOps.appendChild(owner, b);
+      hostOps.appendChild(owner, a);
+      hostOps.insertBefore(owner, f1, b);
+      hostOps.insertBefore(owner, f2, a);
+      expectOrder(owner.filters, [f1, f2]);
+    });
+
+    it("seeds the order from the held children as they are after a move before a sibling", () => {
+      const owner = keeper();
+      const a = new PIXI.Container();
+      const b = new PIXI.Container();
+      const f1 = filterInstance();
+      const f2 = filterInstance();
+      hostOps.appendChild(owner, a);
+      hostOps.appendChild(owner, b);
+      hostOps.insertBefore(owner, b, a);
+      hostOps.insertBefore(owner, f1, b);
+      hostOps.insertBefore(owner, f2, a);
+      expectOrder(owner.filters, [f1, f2]);
+    });
+
+    it("moves a filter without calling afterAdd again", () => {
+      const afterAdd = vi.fn();
+      const c1 = new PIXI.Container();
+      const f = filterInstance("F", { afterAdd });
+      hostOps.appendChild(parent, c1);
+      hostOps.appendChild(parent, f);
+      hostOps.appendChild(parent, f);
+      hostOps.insertBefore(parent, f, c1);
+      expect(afterAdd).toHaveBeenCalledTimes(1);
+      expect(afterAdd).toHaveBeenCalledWith(f);
+      expectOrder(parent.filters, [f]);
+    });
+
+    it("lands in parent.filters under a parent that owns its child operations", () => {
+      const ops = { appendChild: vi.fn(), insertBefore: vi.fn(), removeChild: vi.fn() };
+      const owner = createRegisteredInstance(
+        "Owner",
+        normalizeBehavior("Owner", { create: () => new PIXI.Container(), ...ops }),
+        {},
+        () => {}
+      );
+      const f = filterInstance();
+      hostOps.appendChild(owner, f);
+      expectOrder(owner.filters, [f]);
+      hostOps.removeChild(owner, f);
+      expect(owner.filters).toBeNull();
+      expect(ops.appendChild).not.toHaveBeenCalled();
+      expect(ops.removeChild).not.toHaveBeenCalled();
+    });
+
+    it("removes a filter: beforeRemove, list, destroy() without options, null when empty", () => {
+      const beforeRemove = vi.fn();
+      const a = filterInstance("F", { beforeRemove });
+      const b = filterInstance();
+      hostOps.appendChild(parent, a);
+      hostOps.appendChild(parent, b);
+      hostOps.removeChild(parent, a);
+      expect(beforeRemove).toHaveBeenCalledWith(a);
+      expect(beforeRemove.mock.invocationCallOrder[0]).toBeLessThan(a.destroy.mock.invocationCallOrder[0]);
+      expect(a.destroy).toHaveBeenCalledWith();
+      expectOrder(parent.filters, [b]);
+      hostOps.removeChild(parent, b);
+      expect(parent.filters).toBeNull();
+      expect(hasFilterChildren(parent)).toBe(false);
+    });
+
+    it("forgets a removed display child", () => {
+      const c1 = new PIXI.Container();
+      const c2 = new PIXI.Container();
+      const fA = filterInstance();
+      const fB = filterInstance();
+      hostOps.appendChild(parent, c1);
+      hostOps.appendChild(parent, fA);
+      hostOps.appendChild(parent, c2);
+      hostOps.removeChild(parent, c2);
+      hostOps.appendChild(parent, fB);
+      expectOrder(parent.filters, [fA, fB]);
+      expectOrder(parent.children, [c1]);
+      const c3 = new PIXI.Container();
+      hostOps.insertBefore(parent, c3, fA);
+      expectOrder(parent.children, [c1, c3]);
+    });
+
+    it("drops the order of a cleared container", () => {
+      hostOps.appendChild(parent, filterInstance());
+      expect(hasFilterChildren(parent)).toBe(true);
+      hostOps.clearContainer(parent);
+      expect(hasFilterChildren(parent)).toBe(false);
+    });
+
+    it("throws when a filter gets a child", () => {
+      expect(() => hostOps.appendChild(filterInstance("Glow"), new PIXI.Container())).toThrow(
+        "`<Glow />` takes no children."
+      );
+    });
+
+    it("hides a filter with enabled and restores the prop, the default, or true", () => {
+      const f = filterInstance();
+      hostOps.hideInstance(f);
+      expect(f.enabled).toBe(false);
+      expect("visible" in f).toBe(false);
+      hostOps.unhideInstance(f, { enabled: false });
+      expect(f.enabled).toBe(false);
+      hostOps.unhideInstance(f, {});
+      expect(f.enabled).toBe(true);
+
+      const g = filterInstance();
+      g.enabled = false;
+      recordDefault(g, "enabled", () => false);
+      hostOps.hideInstance(g);
+      hostOps.unhideInstance(g, {});
+      expect(g.enabled).toBe(false);
+    });
+
+    it("skips a filter in a fragment instance", () => {
+      const f = filterInstance("F", { create: () => ({ off: vi.fn(), on: vi.fn() }) });
+      const instance = hostOps.createFragmentInstance(() => [f]);
+      const fn = () => {};
+      instance.on("pointerdown", fn);
+      instance.off("pointerdown", fn);
+      hostOps.commitNewChildToFragmentInstance(f, instance);
+      hostOps.deleteChildFromFragmentInstance(f, instance);
+      expect(f.on).not.toHaveBeenCalled();
+      expect(f.off).not.toHaveBeenCalled();
     });
   });
 });
