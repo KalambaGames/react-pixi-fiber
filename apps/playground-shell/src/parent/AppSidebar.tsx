@@ -1,4 +1,13 @@
-import { Blocks, ChevronRight, CircleFadingArrowUp, type LucideIcon, Package, Puzzle, Sparkles } from "lucide-react";
+import {
+  Atom,
+  Blocks,
+  ChevronRight,
+  CircleFadingArrowUp,
+  type LucideIcon,
+  Package,
+  Puzzle,
+  Sparkles,
+} from "lucide-react";
 import { useState } from "react";
 import { buildHash } from "../share";
 import { versionHref, versions } from "../versions";
@@ -27,7 +36,7 @@ const groups: { icon: LucideIcon; name: ExampleGroup }[] = [
   // PixiJS 8 calls its renderable classes Scene Objects. PixiJS 4 to 7 call them Display Objects.
   { icon: Blocks, name: "Scene Objects" },
   { icon: Blocks, name: "Display Objects" },
-  { icon: Sparkles, name: "Features" },
+  { icon: Atom, name: "Features" },
   { icon: Puzzle, name: "Integrations" },
   { icon: CircleFadingArrowUp, name: "Migration" },
 ];
