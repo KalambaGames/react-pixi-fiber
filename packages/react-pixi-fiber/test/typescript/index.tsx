@@ -26,6 +26,7 @@ import type {
 import {
   AnimatedSprite,
   BitmapText,
+  BlurFilter,
   Container,
   Graphics,
   MeshRope,
@@ -210,6 +211,17 @@ const GlowWithVisible = <Glow visible />;
 // @ts-expect-error a filter has no children
 const GlowWithChildren = <Glow>{null}</Glow>;
 console.log(GlowExample, GlowWithX, GlowWithVisible, GlowWithChildren);
+
+// A built-in filter tag takes the props of its PixiJS class.
+const SpriteWithBlur = (
+  <Sprite>
+    <BlurFilter blur={2} />
+    <BlurFilter kernelSize={7} />
+    {/* @ts-expect-error a filter has no `x` */}
+    <BlurFilter x={1} />
+  </Sprite>
+);
+console.log(SpriteWithBlur);
 
 // Custom properties can be registered on one, many or all component types.
 PIXIProperty(Sprite, "id", value => typeof value === "number");

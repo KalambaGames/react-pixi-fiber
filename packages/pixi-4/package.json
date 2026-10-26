@@ -40,7 +40,7 @@
   "sideEffects": false,
   "peerDependencies": {
     "@types/pixi.js": "^4.8.9",
-    "pixi.js": "^4.4.0",
+    "pixi.js": "^4.6.0",
     "react-pixi-fiber": "^3.0.0-alpha.0"
   },
   "peerDependenciesMeta": {

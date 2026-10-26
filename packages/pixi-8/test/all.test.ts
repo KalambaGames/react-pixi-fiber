@@ -3,11 +3,15 @@ import { describe, expect, it } from "vitest";
 import { allComponents } from "../src/all";
 
 const KEYS = [
+  "AlphaFilter",
   "AnimatedSprite",
   "Application",
   "BitmapText",
+  "BlurFilter",
+  "ColorMatrixFilter",
   "Container",
   "DOMContainer",
+  "DisplacementFilter",
   "Graphics",
   "HTMLText",
   "Mesh",
@@ -15,6 +19,7 @@ const KEYS = [
   "MeshRope",
   "MeshSimple",
   "NineSliceSprite",
+  "NoiseFilter",
   "Particle",
   "ParticleContainer",
   "PerspectiveMesh",
@@ -36,9 +41,12 @@ const NOT_TAGS = [
   "SplitText",
   "ViewContainer",
 ];
+// The filter classes of pixi.js that are no tag: base classes and the internal passes of other filters. The subclasses
+// of `BlendModeFilter` implement the advanced `blendMode` values and are no tag either.
+const NOT_FILTER_TAGS = ["BlendModeFilter", "BlurFilterPass", "Filter", "MaskFilter", "PassthroughFilter"];
 
 describe("allComponents", () => {
-  it("lists the 19 tags and Application, alphabetical", () => {
+  it("lists the 24 tags and Application, alphabetical", () => {
     expect(Object.keys(allComponents)).toEqual(KEYS);
   });
 
@@ -48,7 +56,7 @@ describe("allComponents", () => {
     }
   });
 
-  it("lists every display class of pixi.js that is no entry of NOT_TAGS", () => {
+  it("lists every display and filter class of pixi.js that is no entry of NOT_TAGS or NOT_FILTER_TAGS", () => {
     const display = Object.entries(PIXI)
       .filter(
         ([, value]) =>
@@ -60,6 +68,15 @@ describe("allComponents", () => {
       )
       .map(([key]) => key)
       .filter(key => !NOT_TAGS.includes(key));
-    expect(display.sort()).toEqual(KEYS.filter(key => key !== "Application"));
+    const filters = Object.entries(PIXI)
+      .filter(
+        ([, value]) =>
+          typeof value === "function" &&
+          (value === PIXI.Filter || value.prototype instanceof PIXI.Filter) &&
+          !(value.prototype instanceof PIXI.BlendModeFilter)
+      )
+      .map(([key]) => key)
+      .filter(key => !NOT_FILTER_TAGS.includes(key));
+    expect([...display, ...filters].sort()).toEqual(KEYS.filter(key => key !== "Application"));
   });
 });

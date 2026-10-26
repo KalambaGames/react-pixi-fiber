@@ -13,6 +13,17 @@ function defined<T extends Record<string, unknown>>(options: T): T {
   return out;
 }
 
+// `strength` sets both axes, and PixiJS's `strength` getter throws while they differ. So the props reach the pipeline
+// as the two axes, each falling back to `strength` as in the constructor.
+function blurAxes<P extends Record<string, unknown>>(props: P): P;
+function blurAxes<P extends Record<string, unknown>>(props: P | undefined): P | undefined;
+function blurAxes<P extends Record<string, unknown>>(props: P | undefined): P | undefined {
+  if (props === undefined) return undefined;
+  const { strength, ...rest } = props;
+  if (strength === undefined) return rest as unknown as P;
+  return { ...rest, strengthX: rest.strengthX ?? strength, strengthY: rest.strengthY ?? strength } as unknown as P;
+}
+
 // A particle has no parent pointer, so a prop change finds the container to `update()` here.
 const particleParents = new WeakMap<PIXI.Particle, PIXI.ParticleContainer>();
 
@@ -54,10 +65,32 @@ function changesStaticAttributes(
 }
 
 export const factories: { [K in Pixi8Tag]: Factory<K> } = {
+  AlphaFilter: Ctor => ({ kind: "filter", create: p => new Ctor(defined({ alpha: p.alpha })) }),
   AnimatedSprite: Ctor => ({ create: p => new Ctor(p.textures, p.autoUpdate) }),
   BitmapText: Ctor => ({ create: p => new Ctor(defined({ style: p.style, text: p.text })) }),
+  BlurFilter: Ctor => ({
+    kind: "filter",
+    create: p =>
+      new Ctor(
+        defined({
+          kernelSize: p.kernelSize,
+          quality: p.quality,
+          resolution: p.resolution,
+          strength: p.strength,
+          strengthX: p.strengthX,
+          strengthY: p.strengthY,
+        })
+      ),
+    applyProps(_filter, oldProps, newProps) {
+      this.applyDisplayObjectProps(blurAxes(oldProps), blurAxes(newProps));
+    },
+  }),
+  ColorMatrixFilter: Ctor => ({ kind: "filter", create: () => new Ctor() }),
   Container: Ctor => ({ create: () => new Ctor() }),
   DOMContainer: Ctor => ({ create: p => new Ctor(defined({ anchor: p.anchor, element: p.element })) }),
+  // The constructor keeps a `{ x, y }` scale as is, not as the Point the props write into. So `scale` goes through the
+  // props.
+  DisplacementFilter: Ctor => ({ kind: "filter", create: p => new Ctor(defined({ sprite: p.sprite })) }),
   Graphics: Ctor => ({ create: p => new Ctor(p.context) }),
   HTMLText: Ctor => ({ create: p => new Ctor(defined({ style: p.style, text: p.text })) }),
   Mesh: Ctor => ({
@@ -87,6 +120,7 @@ export const factories: { [K in Pixi8Tag]: Factory<K> } = {
         })
       ),
   }),
+  NoiseFilter: Ctor => ({ kind: "filter", create: p => new Ctor(defined({ noise: p.noise, seed: p.seed })) }),
   Particle: Ctor => ({
     create: p => {
       if (p.texture == null) throw new Error("`Particle` needs a `texture` prop.");

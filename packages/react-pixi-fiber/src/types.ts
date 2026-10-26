@@ -171,6 +171,7 @@ export type FilterProps<T, S = SetterTypesOf<T>> = Partial<
   enabled?: boolean;
 };
 
+export type AlphaFilterProps = FilterProps<InstanceOf<"AlphaFilter">>;
 export type AnimatedSpriteProps = Props<InstanceOf<"AnimatedSprite">> & {
   // `autoUpdate` is not a property on the instance, but is used in constructor
   autoUpdate?: boolean;
@@ -180,7 +181,16 @@ export type BitmapTextProps = Props<InstanceOf<"BitmapText">> & {
   font?: unknown;
   style?: unknown;
 };
+export type BlurFilterProps = FilterProps<InstanceOf<"BlurFilter">> & {
+  // Constructor argument that is not a property on the instance
+  kernelSize?: number;
+};
+export type ColorMatrixFilterProps = FilterProps<InstanceOf<"ColorMatrixFilter">>;
 export type ContainerProps = Props<InstanceOf<"Container">>;
+export type DisplacementFilterProps = FilterProps<InstanceOf<"DisplacementFilter">> & {
+  // Constructor argument that is not a property on the instance
+  sprite: InstanceOf<"Sprite">;
+};
 export type GraphicsProps = Props<InstanceOf<"Graphics">>;
 export type MeshProps = Props<InstanceOf<"Mesh">>;
 export type MeshPlaneProps = Props<InstanceOf<"MeshPlane">> & {
@@ -201,6 +211,7 @@ export type MeshSimpleProps = Props<InstanceOf<"MeshSimple">> & {
 /** @deprecated Renamed to `NineSliceSpriteProps`, removed in 4.0.0 */
 export type NineSlicePlaneProps = NineSliceSpriteProps;
 export type NineSliceSpriteProps = Props<InstanceOf<"NineSliceSprite">>;
+export type NoiseFilterProps = FilterProps<InstanceOf<"NoiseFilter">>;
 export type ParticleContainerProps = Props<InstanceOf<"ParticleContainer">> & {
   // Constructor arguments that are not properties on the instance
   dynamicProperties?: Record<string, boolean>;

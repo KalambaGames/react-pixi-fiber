@@ -10,9 +10,13 @@ import { render as renderLazy, unmount as unmountLazy } from "./render";
 import { configure } from "./configure";
 import { applyDisplayObjectProps, applyProps } from "./ReactPixiFiberComponent";
 import type {
+  AlphaFilterProps,
   AnimatedSpriteProps,
   BitmapTextProps,
+  BlurFilterProps,
+  ColorMatrixFilterProps,
   ContainerProps,
+  DisplacementFilterProps,
   GraphicsProps,
   InstanceOf,
   MeshPlaneProps,
@@ -21,6 +25,7 @@ import type {
   MeshSimpleProps,
   NineSlicePlaneProps,
   NineSliceSpriteProps,
+  NoiseFilterProps,
   ParticleContainerProps,
   PixiComponent,
   SpriteProps,
@@ -79,6 +84,8 @@ export {
 };
 
 // A tag is a string at runtime and a component in the type system.
+export const AlphaFilter = TAGS.AlphaFilter as unknown as PixiComponent<AlphaFilterProps, InstanceOf<"AlphaFilter">>;
+export type AlphaFilter = AlphaFilterProps;
 export const AnimatedSprite = TAGS.AnimatedSprite as unknown as PixiComponent<
   AnimatedSpriteProps,
   InstanceOf<"AnimatedSprite">
@@ -86,8 +93,20 @@ export const AnimatedSprite = TAGS.AnimatedSprite as unknown as PixiComponent<
 export type AnimatedSprite = AnimatedSpriteProps;
 export const BitmapText = TAGS.BitmapText as unknown as PixiComponent<BitmapTextProps, InstanceOf<"BitmapText">>;
 export type BitmapText = BitmapTextProps;
+export const BlurFilter = TAGS.BlurFilter as unknown as PixiComponent<BlurFilterProps, InstanceOf<"BlurFilter">>;
+export type BlurFilter = BlurFilterProps;
+export const ColorMatrixFilter = TAGS.ColorMatrixFilter as unknown as PixiComponent<
+  ColorMatrixFilterProps,
+  InstanceOf<"ColorMatrixFilter">
+>;
+export type ColorMatrixFilter = ColorMatrixFilterProps;
 export const Container = TAGS.Container as unknown as PixiComponent<ContainerProps, InstanceOf<"Container">>;
 export type Container = ContainerProps;
+export const DisplacementFilter = TAGS.DisplacementFilter as unknown as PixiComponent<
+  DisplacementFilterProps,
+  InstanceOf<"DisplacementFilter">
+>;
+export type DisplacementFilter = DisplacementFilterProps;
 export const Graphics = TAGS.Graphics as unknown as PixiComponent<GraphicsProps, InstanceOf<"Graphics">>;
 export type Graphics = GraphicsProps;
 export const Mesh = TAGS.Mesh as unknown as PixiComponent<MeshProps, InstanceOf<"Mesh">>;
@@ -110,6 +129,8 @@ export const NineSliceSprite = TAGS.NineSliceSprite as unknown as PixiComponent<
   InstanceOf<"NineSliceSprite">
 >;
 export type NineSliceSprite = NineSliceSpriteProps;
+export const NoiseFilter = TAGS.NoiseFilter as unknown as PixiComponent<NoiseFilterProps, InstanceOf<"NoiseFilter">>;
+export type NoiseFilter = NoiseFilterProps;
 export const ParticleContainer = TAGS.ParticleContainer as unknown as PixiComponent<
   ParticleContainerProps,
   InstanceOf<"ParticleContainer">

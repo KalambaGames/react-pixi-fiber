@@ -61,7 +61,7 @@ Components import only from `react-pixi-fiber`, so a shared component library do
 | [`@react-pixi-fiber/react-17`](https://www.npmjs.com/package/@react-pixi-fiber/react-17) | `react` ^17.0.2 |
 | [`@react-pixi-fiber/react-18`](https://www.npmjs.com/package/@react-pixi-fiber/react-18) | `react` ^18.3.1 |
 | [`@react-pixi-fiber/react-19`](https://www.npmjs.com/package/@react-pixi-fiber/react-19) | `react` ^19.3.0 |
-| [`@react-pixi-fiber/pixi-4`](https://www.npmjs.com/package/@react-pixi-fiber/pixi-4) | `pixi.js` ^4.4.0 |
+| [`@react-pixi-fiber/pixi-4`](https://www.npmjs.com/package/@react-pixi-fiber/pixi-4) | `pixi.js` ^4.6.0 |
 | [`@react-pixi-fiber/pixi-5`](https://www.npmjs.com/package/@react-pixi-fiber/pixi-5) | `pixi.js` ^5.0.0 |
 | [`@react-pixi-fiber/pixi-6`](https://www.npmjs.com/package/@react-pixi-fiber/pixi-6) | `pixi.js` ^6.0.0 |
 | [`@react-pixi-fiber/pixi-7`](https://www.npmjs.com/package/@react-pixi-fiber/pixi-7) | `pixi.js` ^7.2.0 |
@@ -73,13 +73,13 @@ Each adapter's README lists the features it supports and what changes when you m
 
 ### Which adapters do I need
 
-Read the major version of `react` in your `package.json` for the React adapter (`"react": "^18.3.1"` needs `@react-pixi-fiber/react-18`) and the major version of `pixi.js` for the PixiJS adapter (`"pixi.js": "^7.4.3"` needs `@react-pixi-fiber/pixi-7`). Every PixiJS adapter implements all 13 [tags](#tags).
+Read the major version of `react` in your `package.json` for the React adapter (`"react": "^18.3.1"` needs `@react-pixi-fiber/react-18`). Read the major version of `pixi.js` for the PixiJS adapter (`"pixi.js": "^7.4.3"` needs `@react-pixi-fiber/pixi-7`). Every PixiJS adapter implements the 13 Display Object [tags](#tags).
 
 ### Compatibility matrix
 
 Every React adapter works with every PixiJS adapter:
 
-| | `pixi-4`<br>`pixi.js` ^4.4.0 | `pixi-5`<br>`pixi.js` ^5.0.0 | `pixi-6`<br>`pixi.js` ^6.0.0 | `pixi-7`<br>`pixi.js` ^7.2.0 | `pixi-8`<br>`pixi.js` ^8.9.0 |
+| | `pixi-4`<br>`pixi.js` ^4.6.0 | `pixi-5`<br>`pixi.js` ^5.0.0 | `pixi-6`<br>`pixi.js` ^6.0.0 | `pixi-7`<br>`pixi.js` ^7.2.0 | `pixi-8`<br>`pixi.js` ^8.9.0 |
 | --- | --- | --- | --- | --- | --- |
 | `react-17`, `react` ^17.0.2, `react-reconciler` 0.26.2 | supported | supported | supported | supported | supported |
 | `react-18`, `react` ^18.3.1, `react-reconciler` 0.29.2 | tested | tested | tested | tested | tested |
@@ -101,6 +101,7 @@ Every React adapter works with every PixiJS adapter:
 
 ### PixiJS 4
 
+- `@react-pixi-fiber/pixi-4` needs PixiJS 4.6.0 or newer, the first with `AlphaFilter`.
 - `Mesh` and `MeshSimple` both create `PIXI.mesh.Mesh`, the one mesh class of PixiJS 4.
 - PixiJS 4 ships no typings. For TypeScript, install `@types/pixi.js` 4, an optional peer of `@react-pixi-fiber/pixi-4`.
 
@@ -113,14 +114,14 @@ Every React adapter works with every PixiJS adapter:
 ### PixiJS 8
 
 - `@react-pixi-fiber/pixi-8` needs PixiJS 8.9 or newer, the first with every tag it exports (`DOMContainer`; `ParticleContainer` with `Particle` since 8.5, `PerspectiveMesh` since 8.3, `RenderLayer` since 8.7).
-- `pixi8()` bundles every PixiJS class that the adapter can create. `pixi8WithComponents({ components })` takes the PixiJS classes the app renders, and the bundle holds only those. A tag left out of the list throws at first render, naming the class to add, see [Choosing the classes](../pixi-8/README.md#choosing-the-classes).
+- `pixi8()` bundles every PixiJS class that the adapter can create and the built-in filters. `pixi8WithComponents({ components })` takes the PixiJS classes the app renders, and the bundle holds only those. A tag left out of the list throws at first render, naming the class to add, see [Choosing the classes](../pixi-8/README.md#choosing-the-classes).
 - `Stage` creates the application with the asynchronous `app.init()`, so it renders its children after the application exists. Read the application in [`onInit`](#read-the-application-in-oninit-not-from-the-ref-at-mount).
 - `usePixiTicker` callbacks receive the PixiJS 8 `Ticker`, not a delta: read `ticker.deltaTime`.
 - `tint` accepts color strings as well as numbers.
 - `ParticleContainer` takes `<Particle>` children, imported from `@react-pixi-fiber/pixi-8`, not Scene Objects. A `Particle` needs a `texture` and takes the `Particle` fields as props (`x`, `y`, `scaleX`, `scaleY`, `anchorX`, `anchorY`, `rotation`, `tint`, `alpha`); a change to a prop that is not in the container's `dynamicProperties` calls the container's `update()`. `ParticleContainer` takes `dynamicProperties`, `roundPixels`, `shader` and `texture`, read when it is created.
 - A Suspense boundary inside a `ParticleContainer` does not hide its particles while it shows a fallback (a boundary above the container hides the container), a `ParticleContainer` cannot be the container passed to `render`, and a `<Particle>` under any other container fails inside PixiJS.
 - `pixi8({ compat })`, with `compat` imported from `@react-pixi-fiber/pixi-8/compat/pixi6` (or `/compat/pixi7`, the same module), translates the props that PixiJS 8 renamed: `buttonMode` to `cursor`, `interactive` to `eventMode`, `name` to `label`, `uvRespectAnchor` to `applyAnchorToTexture`, the event names such as `click` and `pointerdown` to `onclick` and `onpointerdown`, and `mousemove`, `pointermove` and `touchmove` to `onglobalmousemove`, `onglobalpointermove` and `onglobaltouchmove`, which run on every move as the 2.x move props did. In development each translated prop warns once and names the replacement. When both the old and the PixiJS 8 prop are passed, the PixiJS 8 prop wins. PixiJS 4 and 5 apps use `compat/pixi6` too. Without the import, `pixi-8` holds no compat code.
-- Compat covers props only. A filter is not a Display Object, so `BlurFilter.blur` (now `strength`) still logs PixiJS's own deprecation warning.
+- Compat does not cover the filter tags. `<BlurFilter blur={2} />` logs PixiJS's own deprecation warning. Use `strength`.
 
 Moved from the PixiJS 7 playground to PixiJS 8 with `compat` from `@react-pixi-fiber/pixi-8/compat/pixi6`, the Sprite, Events and Point-like props examples work after these changes:
 
@@ -253,7 +254,7 @@ Expects **one** the following props:
 
 #### Tags
 
-Each tag names a Display Object concept. The configured PixiJS adapter creates the matching class of your PixiJS version; every adapter implements all 13 tags.
+Each tag names a Display Object concept. The configured PixiJS adapter creates the matching class of your PixiJS version. Every adapter implements the 13 Display Object tags and the 5 filter tags.
 
 A Display Object is an object in the scene graph: a `PIXI.DisplayObject` on PixiJS 4 to 7, a `PIXI.Container` on PixiJS 8, which has no `DisplayObject`. The API names that contain `DisplayObject`, for example `applyDisplayObjectProps` and `DisplayObjectProps`, keep the 2.x names on every PixiJS version.
 
@@ -272,6 +273,8 @@ A Display Object is an object in the scene graph: a `PIXI.DisplayObject` on Pixi
 | `<Sprite />` | a sprite, [`PIXI.Sprite`] |
 | `<Text />` | canvas text, [`PIXI.Text`] |
 | `<TilingSprite />` | a repeating texture, [`PIXI.TilingSprite`] |
+
+The 5 filter tags, child elements that filter their parent, are in [Filters](#filters).
 
 For code that runs on every PixiJS version, use `<MeshSimple texture vertices uvs indices />`. `<Mesh />` takes `geometry` and `shader` on PixiJS 5 and later, and is the texture mesh on PixiJS 4.
 
@@ -516,6 +519,84 @@ function App({ theme }) {
 ```
 
 Keep the number of contexts the same across renders, as with hooks: a change remounts the application. The standalone `render` has no React tree around it, so it cannot bridge; provide the contexts inside the rendered element instead.
+
+### Filters
+
+A filter is a child element of the Display Object it filters. Any Display Object takes filter children: a `Sprite`, a `Container`, a `Graphics`, a `Text`, every object with a `filters` property. A filter element is not a Display Object. The core does not add it to the parent's `children`. It writes the filter into the parent's `filters` array. Display Objects and filters sit side by side in the same JSX, and each goes to its own place:
+
+```jsx harmony
+import { AlphaFilter, BlurFilter, ColorMatrixFilter, Container, NoiseFilter, Sprite } from "react-pixi-fiber";
+
+<Container>
+  {/* container.filters: the noise covers both sprites */}
+  <NoiseFilter noise={0.5} />
+  {/* container.children */}
+  <Sprite texture={bunny} x={100} />
+  <Sprite texture={bunny} x={200}>
+    {/* sprite.filters: only this sprite is blurred and faded */}
+    {/* On PixiJS 8, `strength` instead of `blur`. */}
+    {blurred && <BlurFilter blur={2} />}
+    <AlphaFilter alpha={0.5} />
+  </Sprite>
+  {/* container.filters: after the noise, also over both sprites */}
+  <ColorMatrixFilter />
+</Container>
+```
+
+A filter on a `Container` filters the container, so it covers all the children in one pass. A filter on a `Sprite` filters that sprite alone. The place of a filter among the Display Object children does not matter. A filter before the sprites and a filter after the sprites both filter the whole container. The order among the filters matters: the core writes them into `parent.filters` in JSX order.
+
+The core creates each filter, and it destroys the filter when the element or an ancestor unmounts. A filter takes no children. A filter at the top level of `Stage` or `render` filters the root container.
+
+| Tag | Applies |
+| --- | --- |
+| `<AlphaFilter />` | one alpha to the whole object, so overlapping children do not add up, `PIXI.AlphaFilter` |
+| `<BlurFilter />` | a Gaussian blur, `PIXI.BlurFilter` |
+| `<ColorMatrixFilter />` | a color matrix, with methods such as `grayscale` and `sepia`, `PIXI.ColorMatrixFilter` |
+| `<DisplacementFilter />` | a displacement read from the texture of `sprite`, `PIXI.DisplacementFilter` |
+| `<NoiseFilter />` | random noise, `PIXI.NoiseFilter` |
+
+Every adapter implements the 5 filter tags. The PixiJS 4 to 7 adapters add `FXAAFilter`, imported from the adapter package. PixiJS 8 has no `FXAAFilter`.
+
+The props are the setters of the filter class of your PixiJS version. For example, `BlurFilter` takes `blur` on PixiJS 4 to 7 and `strength` on PixiJS 8.
+
+`enabled` disables a filter without removing it. While a Suspense fallback is visible, the core sets `enabled` to `false`, and restores it after.
+
+`ref` gives the filter instance. Use it to change a value on every frame without a render:
+
+```jsx harmony
+function BlurryBunny() {
+  const blur = useRef(null);
+  usePixiTicker(() => {
+    blur.current.blur = 2 + Math.sin(performance.now() / 500);
+  });
+  return (
+    <Sprite texture={bunny}>
+      <BlurFilter ref={blur} />
+    </Sprite>
+  );
+}
+```
+
+Some options go only to the constructor of the filter. To change one, give the element a new `key`: React then creates a new filter and the core destroys the old one. For example, `DisplacementFilter` reads `sprite` only in its constructor:
+
+```jsx harmony
+<Container>
+  <DisplacementFilter key={mapName} sprite={maps[mapName]} />
+</Container>
+```
+
+On every PixiJS major, `kernelSize` of `BlurFilter` and `sprite` of `DisplacementFilter` are constructor-only. In development, under StrictMode, a change to a prop that the filter did not have before its first write logs a warning.
+
+`PIXIFilter(type, behavior)` registers another filter class, for example one from `pixi-filters`. `behavior` takes the same keys as in [Custom Components](#custom-components): `create`, `applyProps`, `afterAdd` and `beforeRemove`. A function is the `create`:
+
+```ts
+import { PIXIFilter } from "react-pixi-fiber";
+import { GlowFilter as PixiGlowFilter, type GlowFilterOptions } from "pixi-filters";
+
+export const GlowFilter = PIXIFilter("GlowFilter", (props: GlowFilterOptions) => new PixiGlowFilter(props));
+```
+
+A `filters` value on an element with filter children throws: "`<Sprite />` has both a `filters` prop and filter children. Use one: filter children, or the `filters` prop." The throw fires when the first filter child mounts on an element whose `filters` is set. It also fires on a write of the prop while filter children exist. To move an element from the `filters` prop to filter children, give it a new `key`. The `filters` prop stays for filters your app owns: you create the instance, keep it in state and destroy it yourself.
 
 ### Custom Components
 
@@ -997,6 +1078,20 @@ import { AnimatedSprite } from "react-pixi-fiber";
 ```
 
 A component you register under one of these names keeps winning over the built-in tag, with a development warning. Rename your component or remove it and use the built-in one.
+
+### Filters are children
+
+```jsx
+// 2.x
+const blur = useMemo(() => new PIXI.filters.BlurFilter(2), []);
+<Sprite filters={[blur]} />
+// 3.0.0, with `strength` instead of `blur` on PixiJS 8
+<Sprite>
+  <BlurFilter blur={2} />
+</Sprite>
+```
+
+2.x code with the `filters` prop works without a change. Filter children are the documented way, see [Filters](#filters). In 3.0.0, the library destroys the filters that it creates. A filter from the `filters` prop is yours to destroy.
 
 ### Pass the `Stage` size in `options`
 

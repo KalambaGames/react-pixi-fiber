@@ -7,6 +7,7 @@ const mod =
 // because Node finds the named exports of a CommonJS file by static analysis.
 module.exports = mod.default;
 module.exports.default = mod.default;
+module.exports.FXAAFilter = mod.FXAAFilter;
 module.exports.HTMLText = mod.HTMLText;
 module.exports.NineSlicePlane = mod.NineSlicePlane;
 module.exports.SimpleMesh = mod.SimpleMesh;

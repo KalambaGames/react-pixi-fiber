@@ -2,10 +2,12 @@ import * as PIXI from "pixi.js";
 import type { PixiAdapter, PixiComponent } from "react-pixi-fiber";
 import { components } from "./components";
 import { properties } from "./properties";
-import type { NineSlicePlaneProps, PlaneProps, RopeProps } from "./types";
+import type { FXAAFilterProps, NineSlicePlaneProps, PlaneProps, RopeProps } from "./types";
 export * from "./types";
 
 // A tag is a string at runtime and a component in the type system, like the core tags.
+export const FXAAFilter = "FXAAFilter" as unknown as PixiComponent<FXAAFilterProps, PIXI.filters.FXAAFilter>;
+export type FXAAFilter = FXAAFilterProps;
 export const NineSlicePlane = "NineSlicePlane" as unknown as PixiComponent<
   NineSlicePlaneProps,
   PIXI.mesh.NineSlicePlane

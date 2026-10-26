@@ -1,6 +1,6 @@
 import { describe, it, expect, vi } from "vitest";
 import * as PIXI from "pixi.js";
-import { TAGS } from "../../react-pixi-fiber/src/tags";
+import { DISPLAY_OBJECT_TAGS, FILTER_TAGS, TAGS } from "../../react-pixi-fiber/src/tags";
 import react18 from "@react-pixi-fiber/react-18";
 import { configure, PIXIComponent } from "react-pixi-fiber";
 import { createInstance } from "../../react-pixi-fiber/src/ReactPixiFiberComponent";
@@ -28,11 +28,15 @@ const EXTRA_TAGS = {
 
 describe("pixi8", () => {
   const adapter = pixi8();
-  it("implements the 13 core tags and the six PixiJS 8 tags", () => {
+  it("implements the 18 core tags and the six PixiJS 8 tags", () => {
     for (const [name, value] of Object.entries(EXTRA_TAGS)) expect(value).toBe(name);
     expect(Object.keys(adapter.components).sort()).toEqual([...Object.keys(TAGS), ...Object.keys(EXTRA_TAGS)].sort());
     for (const tag of Object.keys(adapter.components))
       expect(typeof adapter.components[tag].create, tag).toBe("function");
+  });
+  it("marks the filter tags, and no Display Object tag, with kind filter", () => {
+    for (const tag of [...Object.keys(FILTER_TAGS)]) expect(adapter.components[tag].kind, tag).toBe("filter");
+    for (const tag of Object.keys(DISPLAY_OBJECT_TAGS)) expect(adapter.components[tag].kind, tag).toBeUndefined();
   });
   it("lists origin as a point", () => {
     expect(adapter.properties.vector).toContain("origin");

@@ -11,11 +11,19 @@ function bitmapTextStyle(props: Record<string, any>) {
 }
 
 export const components: Record<string, Behavior> = {
+  AlphaFilter: { kind: "filter", create: props => new PIXI.AlphaFilter(props.alpha) },
   AnimatedSprite: {
     create: props => new PIXI.AnimatedSprite(props.textures, props.autoUpdate),
   },
   BitmapText: { create: props => new PIXI.BitmapText(props.text, bitmapTextStyle(props)) },
+  BlurFilter: {
+    kind: "filter",
+    create: props => new PIXI.BlurFilter(props.blur, props.quality, props.resolution, props.kernelSize),
+  },
+  ColorMatrixFilter: { kind: "filter", create: () => new PIXI.ColorMatrixFilter() },
   Container: { create: () => new PIXI.Container() },
+  DisplacementFilter: { kind: "filter", create: props => new PIXI.DisplacementFilter(props.sprite, props.scale) },
+  FXAAFilter: { kind: "filter", create: () => new PIXI.FXAAFilter() },
   Graphics: { create: props => new PIXI.Graphics(props.geometry) },
   HTMLText: { create: props => new PIXI.HTMLText(props.text, props.style) },
   Mesh: { create: props => new PIXI.Mesh(props.geometry, props.shader, props.state, props.drawMode) },
@@ -28,6 +36,7 @@ export const components: Record<string, Behavior> = {
     create: props =>
       new PIXI.NineSlicePlane(props.texture, props.leftWidth, props.topHeight, props.rightWidth, props.bottomHeight),
   },
+  NoiseFilter: { kind: "filter", create: props => new PIXI.NoiseFilter(props.noise, props.seed) },
   ParticleContainer: {
     create: props => new PIXI.ParticleContainer(props.maxSize, props.properties, props.batchSize, props.autoResize),
   },

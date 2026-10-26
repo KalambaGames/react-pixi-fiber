@@ -1,7 +1,7 @@
 // Type-checked by `check-types`, not run: a prop accepts what the PixiJS setter accepts, not only the getter type.
 import React from "react";
 import * as PIXI from "pixi.js";
-import { AnimatedSprite, Graphics, PIXIComponent, Text } from "react-pixi-fiber";
+import { AnimatedSprite, BlurFilter, Graphics, PIXIComponent, Text } from "react-pixi-fiber";
 import { HTMLText, Particle } from "../../src/index";
 
 const style = { fill: "white", fontSize: 16 } as const;
@@ -29,3 +29,10 @@ export const particle = <Particle texture={PIXI.Texture.WHITE} tint="red" />;
 
 // @ts-expect-error a key only in the options type does not become a prop
 export const autoPlay = <AnimatedSprite autoPlay textures={[PIXI.Texture.WHITE]} />;
+
+// `BlurFilterOptions` declares `strength`. `blur` is a deprecated setter of the filter, so it still type-checks.
+export const blurStrength = <BlurFilter strength={2} />;
+export const blurKernelSize = <BlurFilter kernelSize={7} />;
+export const blurBlur = <BlurFilter blur={2} />;
+// @ts-expect-error a filter has no Scene Object props
+export const blurX = <BlurFilter x={1} />;

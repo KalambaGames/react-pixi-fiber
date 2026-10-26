@@ -11,6 +11,11 @@ const packageDir = dirname(dirname(fileURLToPath(import.meta.url)));
 // in the directory of `Container`, so its probe is the file path.
 const UNLISTED = [
   "dom/DOMContainer",
+  "filters/defaults/alpha",
+  "filters/defaults/blur",
+  "filters/defaults/color-matrix",
+  "filters/defaults/displacement",
+  "filters/defaults/noise",
   "scene/container/RenderContainer",
   "scene/layers",
   "scene/mesh-perspective",

@@ -4,10 +4,13 @@ import { getPixiAdapter, getStackAddendum, getStrictModeBit } from "./configure"
 import { getRecordedDefault, recordDefault } from "./defaults";
 import { filtersPropWritten } from "./filters";
 import { getOwn, getPropertyInfo, shouldIgnoreAttribute, shouldRemoveAttribute } from "./PixiProperty";
-import { getInstanceTag } from "./registry";
+import { getInstanceTag, isFilterInstance } from "./registry";
 import { findStrictRoot, parsePoint, setPixiValue } from "./utils";
 
 const warnedInvalid = new Set<string>();
+// The filter props that the instance did not have before the core first wrote them: options the constructor reads.
+// A later write of one changes nothing, so an update warns one time.
+const constructorOnly = new WeakMap<object, Set<string>>();
 
 /**
  * The value a prop returns to: the adapter's `defaults` entry for the tag the instance was created as, else the value
@@ -56,6 +59,23 @@ export function setValueForProperty(
   }
 
   if (propName === "filters" && filtersPropWritten(type, instance, value)) return;
+
+  if (__DEV__ && isFilterInstance(instance)) {
+    let names = constructorOnly.get(instance);
+    if (names === undefined) constructorOnly.set(instance, (names = new Set()));
+    if (strictRoot != null && names.has(propName)) {
+      names.delete(propName);
+      warning(
+        false,
+        "`<%s />` reads `%s` only in its constructor. Give the element a new `key` to change it.%s",
+        type,
+        propName,
+        getStackAddendum()
+      );
+    } else if (!(propName in instance)) {
+      names.add(propName);
+    }
+  }
 
   // Remember what PixiJS had before we ever touch this prop, so a removal can restore it.
   recordDefault(instance, propName, pixi.isPoint);

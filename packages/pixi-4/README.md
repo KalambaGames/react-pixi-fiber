@@ -1,6 +1,6 @@
 # @react-pixi-fiber/pixi-4
 
-PixiJS 4 adapter for [react-pixi-fiber](https://github.com/michalochman/react-pixi-fiber). It tells `react-pixi-fiber` how to create the PixiJS 4 Display Objects for all 13 core tags, which props it types, and how to create a `PIXI.Application`.
+PixiJS 4 adapter for [react-pixi-fiber](https://github.com/michalochman/react-pixi-fiber). It tells `react-pixi-fiber` how to create the PixiJS 4 classes for the 13 Display Object tags and the 5 filter tags. It also tells which props it types and how to create a `PIXI.Application`.
 
 Install it next to `react-pixi-fiber`, `pixi.js` 4, for TypeScript `@types/pixi.js` 4 (PixiJS 4 ships no typings, so it is an optional peer) and a React adapter from the [adapter table](../react-pixi-fiber/README.md#setup), then configure once in the app entry, before the first render:
 
@@ -18,15 +18,21 @@ Features that are plain PixiJS work as the [PixiJS 4 documentation](https://pixi
 
 | Tag | Creates |
 | --- | --- |
+| `AlphaFilter` | `PIXI.filters.AlphaFilter` |
 | `AnimatedSprite` | `PIXI.extras.AnimatedSprite` |
 | `BitmapText` | `PIXI.extras.BitmapText` |
+| `BlurFilter` | `PIXI.filters.BlurFilter` |
+| `ColorMatrixFilter` | `PIXI.filters.ColorMatrixFilter` |
 | `Container` | `PIXI.Container` |
+| `DisplacementFilter` | `PIXI.filters.DisplacementFilter`, from `sprite` and `scale` |
+| `FXAAFilter` | `PIXI.filters.FXAAFilter`, a tag of this adapter. Import it from this package |
 | `Graphics` | `PIXI.Graphics`, `nativeLines` is passed to the constructor |
 | `Mesh` | `PIXI.mesh.Mesh`, from `texture`, `vertices`, `uvs`, `indices` and `drawMode` |
 | `MeshPlane`, `Plane` | `PIXI.mesh.Plane` |
 | `MeshRope`, `Rope` | `PIXI.mesh.Rope` |
 | `MeshSimple` | `PIXI.mesh.Mesh`, like `Mesh`: PixiJS 4 has one mesh class |
 | `NineSliceSprite`, `NineSlicePlane` | `PIXI.mesh.NineSlicePlane` |
+| `NoiseFilter` | `PIXI.filters.NoiseFilter` |
 | `ParticleContainer` | `PIXI.particles.ParticleContainer` |
 | `Sprite` | `PIXI.Sprite` |
 | `Text` | `PIXI.Text` |

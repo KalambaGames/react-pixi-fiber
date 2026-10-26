@@ -1,13 +1,18 @@
 import type * as PIXI from "pixi.js";
-import type { InteractionEventTypes, Props } from "react-pixi-fiber";
+import type { FilterProps, InteractionEventTypes, Props } from "react-pixi-fiber";
 
 // Importing this package fills the core's augmentable interfaces with the PixiJS 4 classes.
 declare module "react-pixi-fiber" {
   interface PixiExtraProps extends InteractiveComponent {}
   interface PixiInstances {
+    AlphaFilter: PIXI.filters.AlphaFilter;
     AnimatedSprite: PIXI.extras.AnimatedSprite;
     BitmapText: PIXI.extras.BitmapText;
+    BlurFilter: PIXI.filters.BlurFilter;
+    ColorMatrixFilter: PIXI.filters.ColorMatrixFilter;
     Container: PIXI.Container;
+    DisplacementFilter: PIXI.filters.DisplacementFilter;
+    FXAAFilter: PIXI.filters.FXAAFilter;
     Graphics: PIXI.Graphics;
     Mesh: PIXI.mesh.Mesh;
     MeshPlane: PIXI.mesh.Plane;
@@ -15,6 +20,7 @@ declare module "react-pixi-fiber" {
     MeshSimple: PIXI.mesh.Mesh;
     NineSlicePlane: PIXI.mesh.NineSlicePlane;
     NineSliceSprite: PIXI.mesh.NineSlicePlane;
+    NoiseFilter: PIXI.filters.NoiseFilter;
     ParticleContainer: PIXI.particles.ParticleContainer;
     Plane: PIXI.mesh.Plane;
     Rope: PIXI.mesh.Rope;
@@ -30,6 +36,7 @@ declare module "react-pixi-fiber" {
   }
 }
 
+export type FXAAFilterProps = FilterProps<PIXI.filters.FXAAFilter>;
 export type InteractionCompatibility = Exclude<keyof typeof PIXI.interaction, number | symbol>;
 // PixiJS 4 has no `PIXI.InteractionEvent` value, so its key union is `string`.
 export type InteractionEventCompatibility = string;

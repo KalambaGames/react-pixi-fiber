@@ -308,6 +308,28 @@ describe("PixiPropertyOperations", () => {
       }
     });
 
+    it("warns under StrictMode about an update of a prop the filter did not have before the first write", () => {
+      const error = vi.spyOn(console, "error").mockImplementation(() => {});
+      const strict = { mode: strictModeBit, return: null };
+      const filter = createRegisteredInstance(
+        "Noise",
+        normalizeBehavior("Noise", { create: () => ({ destroy: vi.fn(), enabled: true, noise: 0 }), kind: "filter" }),
+        {},
+        () => {}
+      );
+      setValueForProperty("Noise", filter, "seed", 1);
+      setValueForProperty("Noise", filter, "noise", 0.5);
+      setValueForProperty("Noise", filter, "enabled", false);
+      expect(error).not.toHaveBeenCalled();
+      setValueForProperty("Noise", filter, "noise", 0.75, strict);
+      setValueForProperty("Noise", filter, "enabled", true, strict);
+      expect(error).not.toHaveBeenCalled();
+      setValueForProperty("Noise", filter, "seed", 2, strict);
+      setValueForProperty("Noise", filter, "seed", 3, strict);
+      const warnings = error.mock.calls.filter(c => /reads `seed` only in its constructor/.test(String(c[0])));
+      expect(warnings).toHaveLength(__DEV__ ? 1 : 0);
+    });
+
     it("throws when the first filter child mounts on a parent with a filters value", () => {
       const sprite = createRegisteredInstance(
         "Sprite",

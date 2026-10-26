@@ -1,11 +1,15 @@
 import * as PIXI from "pixi.js";
 
 export const allComponents = {
+  AlphaFilter: PIXI.AlphaFilter,
   AnimatedSprite: PIXI.AnimatedSprite,
   Application: PIXI.Application,
   BitmapText: PIXI.BitmapText,
+  BlurFilter: PIXI.BlurFilter,
+  ColorMatrixFilter: PIXI.ColorMatrixFilter,
   Container: PIXI.Container,
   DOMContainer: PIXI.DOMContainer,
+  DisplacementFilter: PIXI.DisplacementFilter,
   Graphics: PIXI.Graphics,
   HTMLText: PIXI.HTMLText,
   Mesh: PIXI.Mesh,
@@ -13,6 +17,7 @@ export const allComponents = {
   MeshRope: PIXI.MeshRope,
   MeshSimple: PIXI.MeshSimple,
   NineSliceSprite: PIXI.NineSliceSprite,
+  NoiseFilter: PIXI.NoiseFilter,
   Particle: PIXI.Particle,
   ParticleContainer: PIXI.ParticleContainer,
   PerspectiveMesh: PIXI.PerspectiveMesh,
