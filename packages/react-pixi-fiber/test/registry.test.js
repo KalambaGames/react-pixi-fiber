@@ -109,4 +109,20 @@ describe("registry", () => {
     expect(behavior.create).toBe(create);
     expect(behavior.customDisplayObject).toBeUndefined();
   });
+
+  it("keeps kind through normalizeBehavior and onto the bound behavior", () => {
+    const behavior = registry.normalizeBehavior("F", { create: () => ({}), kind: "filter" });
+    expect(behavior.kind).toBe("filter");
+    const instance = registry.createRegisteredInstance("F", behavior, {}, () => {});
+    expect(registry.getBoundBehavior(instance).kind).toBe("filter");
+    expect(registry.isFilterInstance(instance)).toBe(true);
+    expect(registry.isFilterInstance({})).toBe(false);
+  });
+
+  it("names a filter when the create of a filter behavior returns a non-object", () => {
+    const behavior = registry.normalizeBehavior("F", { create: () => 1, kind: "filter" });
+    expect(() => registry.createRegisteredInstance("F", behavior, {}, () => {})).toThrow(
+      "`create` of `F` returned `1`, expected a filter."
+    );
+  });
 });

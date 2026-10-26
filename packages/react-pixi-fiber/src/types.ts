@@ -164,6 +164,12 @@ export type DisplayObjectProps<T, S = SetterTypesOf<T>> = PropsWithReactChildren
 > &
   PixiExtraProps;
 export type Props<T> = DisplayObjectProps<T>;
+// Props of a filter: its own fields and setters, without `children` and the props the adapter adds to every tag.
+export type FilterProps<T, S = SetterTypesOf<T>> = Partial<
+  WithSetterTypes<WithPointLike<T>, Omit<S, PointProperties<T>>>
+> & {
+  enabled?: boolean;
+};
 
 export type AnimatedSpriteProps = Props<InstanceOf<"AnimatedSprite">> & {
   // `autoUpdate` is not a property on the instance, but is used in constructor
@@ -395,6 +401,20 @@ export type PIXIComponentBehavior<T extends object, P> =
   | PIXIComponentBehaviorDefinition<T, P>
   | LegacyPIXIComponentBehaviorDefinition<T, P>
   | DisplayObjectCreator<T, P>;
+
+// `PIXIFilter` `behavior` object.
+export interface PIXIFilterBehaviorDefinition<T extends object, P> {
+  create: (props: P) => T;
+  applyProps?: DisplayObjectPropSetter<T, P>;
+  afterAdd?: (filter: T) => void;
+  beforeRemove?: (filter: T) => void;
+}
+
+// `PIXIFilter` has `behavior` defined either as an object or factory function.
+export type PIXIFilterBehavior<T extends object, P> = PIXIFilterBehaviorDefinition<T, P> | ((props: P) => T);
+
+// Props accepted by a `PIXIFilter`: props defined on the component overwrite props of the underlying filter.
+export type PIXIFilterProps<T extends object, P> = P & FilterProps<Omit<T, keyof P>, SetterTypesOf<T>>;
 
 /** @deprecated Renamed to `PIXIComponentInstance`, removed in 4.0.0 */
 export type CustomDisplayObject<T extends object, P> = PIXIComponentInstance<T, P>;

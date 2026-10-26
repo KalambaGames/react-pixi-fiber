@@ -34,6 +34,7 @@ exports[`ReactPixiFiber public API > should match snapshot 1`] = `
   "NineSlicePlane": "NineSlicePlane",
   "NineSliceSprite": "NineSliceSprite",
   "PIXIComponent": [Function],
+  "PIXIFilter": [Function],
   "PIXIProperty": [Function],
   "ParticleContainer": "ParticleContainer",
   "Sprite": "Sprite",

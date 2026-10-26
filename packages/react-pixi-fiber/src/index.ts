@@ -1,5 +1,6 @@
 import type * as React from "react";
 import { CustomPIXIComponent, CustomPIXIProperty, PIXIComponent, PIXIProperty } from "./PIXIComponent";
+import { PIXIFilter } from "./PIXIFilter";
 import { getInstanceTag } from "./registry";
 import { AppContext, AppProvider, withApp } from "./AppProvider";
 import Stage, { createStageClass } from "./Stage";
@@ -67,6 +68,7 @@ export {
   CustomPIXIProperty,
   getInstanceTag,
   PIXIComponent,
+  PIXIFilter,
   PIXIProperty,
   render,
   Stage,
