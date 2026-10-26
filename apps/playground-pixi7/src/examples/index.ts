@@ -76,6 +76,7 @@ export const examples: Example[] = [
   feature("Suspense", "Suspense"),
   filter("Basic", "Basic"),
   filter("Animated", "Animated"),
+  filter("Controls", "Controls"),
   integration("Animated", "Animated"),
   integration("GSAP", "GSAP"),
   integration("Layout", "Layout"),
