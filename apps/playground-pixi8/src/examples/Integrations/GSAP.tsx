@@ -1,7 +1,7 @@
 import { gsap } from "gsap";
 import { PixiPlugin } from "gsap/PixiPlugin";
 import * as PIXI from "pixi.js";
-import { Assets, Point, Rectangle, Texture, TextureSource } from "pixi.js";
+import { type Application, Assets, Point, Rectangle, Texture, TextureSource } from "pixi.js";
 import { useEffect, useRef, useState } from "react";
 import { Sprite, Stage, Text } from "react-pixi-fiber";
 import bunnys from "./assets/bunnys.png";
@@ -17,12 +17,12 @@ const centerAnchor = new Point(0.5, 0.5);
 const feetAnchor = new Point(0.5, 1);
 
 export default function GSAPExample() {
+  const [app, setApp] = useState<Application>();
   const [textures, setTextures] = useState<Texture[]>();
   const logo = useRef<PIXI.Text>(null);
   const bunnies = useRef<PIXI.Sprite[]>([]);
   const timeline = useRef<gsap.core.Timeline>(null);
 
-  // PixiJS 8 loads the sprite sheet asynchronously, so the intro starts once the bunnies exist.
   useEffect(() => {
     let cancelled = false;
     let created: Texture[] = [];
@@ -43,9 +43,11 @@ export default function GSAPExample() {
     };
   }, []);
 
+  // Stage renders its children after `onInit`, because PixiJS 8 creates the application asynchronously.
+  // The sprite sheet can load before `onInit`, so the intro waits for both.
   // The timeline changes the PixiJS objects directly, so the buttons do not re-render the component.
   useEffect(() => {
-    if (!textures) return;
+    if (!app || !textures) return;
     const intro = gsap
       .timeline()
       .from(logo.current, { duration: 1.2, ease: "bounce.out", pixi: { alpha: 0, y: -60 } })
@@ -59,7 +61,7 @@ export default function GSAPExample() {
     return () => {
       intro.revert();
     };
-  }, [textures]);
+  }, [app, textures]);
 
   const play = () => {
     const intro = timeline.current;
@@ -80,7 +82,7 @@ export default function GSAPExample() {
           Reverse
         </button>
       </div>
-      <Stage options={{ background: 0x1099bb, height: 300, width: 400 }}>
+      <Stage onInit={setApp} options={{ background: 0x1099bb, height: 300, width: 400 }}>
         {textures && (
           <Text
             anchor={centerAnchor}
