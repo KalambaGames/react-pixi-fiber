@@ -17,6 +17,7 @@
     "leva": "0.10.1",
     "matter-js": "0.20.0",
     "motion": "14.6.0",
+    "pixi-filters": "6.1.5",
     "pixi-stats": "5.1.7",
     "pixi-viewport": "6.0.3",
     "pixi.js": "8.21.0",

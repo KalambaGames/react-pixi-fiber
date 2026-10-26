@@ -20,13 +20,22 @@ const example = (title: string, load = source(`./DisplayObjects/${title}.tsx`)):
 
 const feature = (name: string, title: string, load = source(`./Features/${name}.tsx`)): Example => ({
   ...example(title, load),
+  // The id before the group prefix.
+  aliases: [name.toLowerCase()],
   group: "Features",
-  id: name.toLowerCase(),
+  id: `features-${name.toLowerCase()}`,
+});
+
+const filter = (name: string, title: string): Example => ({
+  ...example(title, source(`./Filters/${name}.tsx`)),
+  group: "Filters",
+  id: `filters-${name.toLowerCase()}`,
 });
 
 const integration = (name: string, title: string): Example => ({
   ...feature(name, title, source(`./Integrations/${name}.tsx`)),
   group: "Integrations",
+  id: `integrations-${name.toLowerCase()}`,
 });
 
 export const examples: Example[] = [
@@ -56,6 +65,7 @@ export const examples: Example[] = [
   feature("PointLikeProps", "Point-like props"),
   feature("SmokeTest", "Smoke test"),
   feature("Suspense", "Suspense"),
+  filter("Basic", "Basic"),
   integration("Animated", "Animated"),
   integration("GSAP", "GSAP"),
   integration("Leva", "Leva"),

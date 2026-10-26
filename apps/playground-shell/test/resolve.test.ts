@@ -26,6 +26,15 @@ describe("resolve", () => {
     });
   });
 
+  it("resolves an alias to its example and puts the current id in the address", async () => {
+    const aliased = { ...example("features-second"), aliases: ["second"] };
+    const encoded = await encodeCode("shared");
+    window.history.replaceState(null, "", `#second&code=${encoded}`);
+    const resolved = await resolve([example("first"), aliased], createStore(8, memoryStorage()), window.location.hash);
+    expect(resolved).toMatchObject({ code: "shared", example: { id: "features-second" } });
+    expect(window.location.hash).toBe(`#features-second&code=${encoded}`);
+  });
+
   it("loads the source also for a shared link, for the stale check", async () => {
     window.history.replaceState(null, "", `#second&code=${await encodeCode("shared")}`);
     expect(await resolve(examples, createStore(8, memoryStorage()), window.location.hash)).toMatchObject({
