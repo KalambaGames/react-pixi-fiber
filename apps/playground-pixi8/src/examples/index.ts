@@ -81,6 +81,7 @@ export const examples: Example[] = [
   filter("Controls", "Controls"),
   filter("Stack", "Stack"),
   filter("Unmount", "Unmount"),
+  filter("CustomShader", "Custom shader"),
   integration("Animated", "Animated"),
   integration("GSAP", "GSAP"),
   integration("Layout", "Layout"),
