@@ -596,7 +596,7 @@ import { GlowFilter as PixiGlowFilter, type GlowFilterOptions } from "pixi-filte
 export const GlowFilter = PIXIFilter("GlowFilter", (props: GlowFilterOptions) => new PixiGlowFilter(props));
 ```
 
-A `filters` value on an element with filter children throws: "`<Sprite />` has both a `filters` prop and filter children. Use one: filter children, or the `filters` prop." The throw fires when the first filter child mounts on an element whose `filters` is set. It also fires on a write of the prop while filter children exist. To move an element from the `filters` prop to filter children, give it a new `key`. The `filters` prop stays for filters your app owns: you create the instance, keep it in state and destroy it yourself.
+A `filters` value on an element with filter children throws: "`<Sprite />` has both a `filters` prop and filter children. Use one: filter children, or the `filters` prop." The throw fires when the first filter child mounts on an element whose `filters` is set. It also fires on a write of the prop while filter children exist. To move an element from the `filters` prop to filter children, give it a new `key`. Use the `filters` prop for filters your app owns: you create the instance, keep it in state and destroy it yourself. The Filters prop demo in the playground compares both ways side by side.
 
 ### Custom Components
 
