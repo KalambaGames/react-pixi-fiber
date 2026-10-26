@@ -9,7 +9,12 @@ updates:
     open-pull-requests-limit: 0
     commit-message:
       prefix: build
+    # A major bump needs code changes, so a person makes it.
+    ignore:
+      - dependency-name: "*"
+        update-types: ["version-update:semver-major"]
     groups:
       security:
         applies-to: security-updates
         patterns: ["*"]
+        update-types: ["minor", "patch"]
