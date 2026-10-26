@@ -37,6 +37,7 @@ const groups: { icon: LucideIcon; name: ExampleGroup }[] = [
   { icon: Blocks, name: "Scene Objects" },
   { icon: Blocks, name: "Display Objects" },
   { icon: Atom, name: "Features" },
+  { icon: Sparkles, name: "Filters" },
   { icon: Puzzle, name: "Integrations" },
   { icon: CircleFadingArrowUp, name: "Migration" },
 ];
