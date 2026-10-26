@@ -7,7 +7,15 @@ import {
 } from "./ReactPixiFiberComponent";
 import { getDefaultValue } from "./PixiPropertyOperations";
 import { validateProperties as validateUnknownProperties } from "./ReactPixiFiberUnknownPropertyHook";
-import { displayBefore, forgetChild, forgetChildren, placeChild, placeFilter, removeFilter } from "./filters";
+import {
+  destroyOwnedFilters,
+  displayBefore,
+  forgetChild,
+  forgetChildren,
+  placeChild,
+  placeFilter,
+  removeFilter,
+} from "./filters";
 import { holdChild, isHeldBy, releaseChild } from "./heldChildren";
 import { getBoundBehavior, getInstanceTag, isFilterInstance } from "./registry";
 import { getStrictModeBit } from "./configure";
@@ -71,6 +79,7 @@ export function removeChild(parentInstance: any, child: any): void {
   }
   forgetChild(parentInstance, child);
 
+  destroyOwnedFilters(child);
   // A child that is not a Display Object may have nothing to destroy.
   if (typeof child.destroy === "function") child.destroy({ children: true });
 }

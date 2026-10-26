@@ -702,6 +702,65 @@ describe("hostOps", () => {
       expectOrder(parent.children, [c1, c3]);
     });
 
+    it("destroys the filters of a removed subtree once, before the display objects", () => {
+      const stage = new PIXI.Container();
+      const outer = new PIXI.Container();
+      const inner = new PIXI.Container();
+      const fA = filterInstance();
+      const fB = filterInstance();
+      const destroyOuter = vi.spyOn(outer, "destroy");
+      hostOps.appendChild(stage, outer);
+      hostOps.appendChild(outer, inner);
+      hostOps.appendChild(inner, fA);
+      hostOps.appendChild(outer, fB);
+      hostOps.removeChild(stage, outer);
+      expect(fA.destroy).toHaveBeenCalledTimes(1);
+      expect(fA.destroy).toHaveBeenCalledWith();
+      expect(fB.destroy).toHaveBeenCalledTimes(1);
+      expect(fA.destroy.mock.invocationCallOrder[0]).toBeLessThan(destroyOuter.mock.invocationCallOrder[0]);
+      expect(fB.destroy.mock.invocationCallOrder[0]).toBeLessThan(destroyOuter.mock.invocationCallOrder[0]);
+      expect(outer.destroyed).toBe(true);
+      expect(inner.destroyed).toBe(true);
+      expect(hasFilterChildren(outer)).toBe(false);
+      expect(hasFilterChildren(inner)).toBe(false);
+    });
+
+    it("destroys the filters under the children a parent holds through its own ops", () => {
+      const stage = new PIXI.Container();
+      const owner = keeper();
+      const sprite = new PIXI.Sprite();
+      const f = filterInstance();
+      hostOps.appendChild(stage, owner);
+      hostOps.appendChild(owner, sprite);
+      hostOps.appendChild(sprite, f);
+      hostOps.removeChild(stage, owner);
+      expect(f.destroy).toHaveBeenCalledTimes(1);
+      expect(hasFilterChildren(sprite)).toBe(false);
+    });
+
+    it("calls beforeRemove on the filters of a removed subtree before it destroys them", () => {
+      const stage = new PIXI.Container();
+      const sprite = new PIXI.Sprite();
+      const beforeRemove = vi.fn();
+      const f = filterInstance("F", { beforeRemove });
+      hostOps.appendChild(stage, sprite);
+      hostOps.appendChild(sprite, f);
+      hostOps.removeChild(stage, sprite);
+      expect(beforeRemove).toHaveBeenCalledTimes(1);
+      expect(beforeRemove).toHaveBeenCalledWith(f);
+      expect(beforeRemove.mock.invocationCallOrder[0]).toBeLessThan(f.destroy.mock.invocationCallOrder[0]);
+    });
+
+    it("skips a filter without destroy", () => {
+      const stage = new PIXI.Container();
+      const sprite = new PIXI.Sprite();
+      const f = filterInstance("F", { create: () => ({ enabled: true }) });
+      hostOps.appendChild(stage, sprite);
+      hostOps.appendChild(sprite, f);
+      expect(() => hostOps.removeChild(stage, sprite)).not.toThrow();
+      expect(sprite.destroyed).toBe(true);
+    });
+
     it("drops the order of a cleared container", () => {
       hostOps.appendChild(parent, filterInstance());
       expect(hasFilterChildren(parent)).toBe(true);
@@ -743,6 +802,32 @@ describe("hostOps", () => {
       hostOps.deleteChildFromFragmentInstance(f, instance);
       expect(f.on).not.toHaveBeenCalled();
       expect(f.off).not.toHaveBeenCalled();
+    });
+
+    it("walks a removed subtree only while some parent holds filter children", async () => {
+      // Fresh modules: the other tests leave parents with filter children behind.
+      vi.resetModules();
+      const fresh = await import("../src/hostOps");
+      const registry = await import("../src/registry");
+      const readChildren = vi.fn(() => []);
+      const removed = {
+        get children() {
+          return readChildren();
+        },
+      };
+      const stage = new PIXI.Container();
+      fresh.removeChild(stage, removed);
+      expect(readChildren).not.toHaveBeenCalled();
+
+      const f = registry.createRegisteredInstance(
+        "F",
+        registry.normalizeBehavior("F", { create: () => ({ enabled: true }), kind: "filter" }),
+        {},
+        () => {}
+      );
+      fresh.appendChild(new PIXI.Container(), f);
+      fresh.removeChild(stage, removed);
+      expect(readChildren).toHaveBeenCalled();
     });
   });
 });

@@ -2,6 +2,8 @@ import { describe, it, expect, vi, afterEach } from "vitest";
 import * as PIXI from "pixi.js";
 import * as PixiPropertyOperations from "../src/PixiPropertyOperations";
 import { setValueForProperty } from "../src/PixiPropertyOperations";
+import * as hostOps from "../src/hostOps";
+import { createRegisteredInstance, normalizeBehavior } from "../src/registry";
 import { shouldIgnoreAttribute, shouldRemoveAttribute } from "../src/PixiProperty";
 import { setPixiValue } from "../src/utils";
 import { getPixiAdapter } from "../src/configure";
@@ -269,6 +271,63 @@ describe("PixiPropertyOperations", () => {
       m.createInstance("Custom", props);
       expect(create.mock.calls[0][0]).toBe(props);
       expect(mount(m, "Sprite", {}).alpha).toBe(1);
+    });
+  });
+
+  describe("a filters prop next to filter children", () => {
+    const message = "`<Sprite />` has both a `filters` prop and filter children.";
+    const filterInstance = () =>
+      createRegisteredInstance(
+        "F",
+        normalizeBehavior("F", { create: () => ({ destroy: vi.fn(), enabled: true }), kind: "filter" }),
+        {},
+        () => {}
+      );
+
+    it("throws when the filters prop is written on a parent with filter children, also on the first write", () => {
+      const sprite = new PIXI.Sprite();
+      hostOps.appendChild(sprite, filterInstance());
+      expect(() => setValueForProperty("Sprite", sprite, "filters", [new PIXI.filters.AlphaFilter()])).toThrow(message);
+    });
+
+    it("throws on a later filters value after a skipped removal", () => {
+      const sprite = new PIXI.Sprite();
+      hostOps.appendChild(sprite, filterInstance());
+      setValueForProperty("Sprite", sprite, "filters", undefined);
+      expect(() => setValueForProperty("Sprite", sprite, "filters", [])).toThrow(message);
+    });
+
+    it("skips a null or undefined filters write on a parent with filter children", () => {
+      const sprite = new PIXI.Sprite();
+      const f = filterInstance();
+      hostOps.appendChild(sprite, f);
+      for (const value of [undefined, null]) {
+        expect(() => setValueForProperty("Sprite", sprite, "filters", value)).not.toThrow();
+        expect(sprite.filters).toHaveLength(1);
+        expect(sprite.filters[0]).toBe(f);
+      }
+    });
+
+    it("throws when the first filter child mounts on a parent with a filters value", () => {
+      const sprite = createRegisteredInstance(
+        "Sprite",
+        normalizeBehavior("Sprite", { create: () => new PIXI.Sprite() }),
+        {},
+        () => {}
+      );
+      setValueForProperty("Sprite", sprite, "filters", [new PIXI.filters.AlphaFilter()]);
+      expect(() => hostOps.appendChild(sprite, filterInstance())).toThrow(message);
+    });
+
+    it("takes a filters value after the filter children are removed", () => {
+      const sprite = new PIXI.Sprite();
+      const f = filterInstance();
+      const alpha = new PIXI.filters.AlphaFilter();
+      hostOps.appendChild(sprite, f);
+      hostOps.removeChild(sprite, f);
+      setValueForProperty("Sprite", sprite, "filters", [alpha]);
+      expect(sprite.filters).toHaveLength(1);
+      expect(sprite.filters[0]).toBe(alpha);
     });
   });
 });

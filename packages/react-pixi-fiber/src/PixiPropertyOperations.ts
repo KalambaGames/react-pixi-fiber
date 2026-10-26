@@ -2,6 +2,7 @@
 import warning from "./warning";
 import { getPixiAdapter, getStackAddendum, getStrictModeBit } from "./configure";
 import { getRecordedDefault, recordDefault } from "./defaults";
+import { filtersPropWritten } from "./filters";
 import { getOwn, getPropertyInfo, shouldIgnoreAttribute, shouldRemoveAttribute } from "./PixiProperty";
 import { getInstanceTag } from "./registry";
 import { findStrictRoot, parsePoint, setPixiValue } from "./utils";
@@ -53,6 +54,8 @@ export function setValueForProperty(
   if (shouldIgnoreAttribute(type, propName, propertyInfo)) {
     return;
   }
+
+  if (propName === "filters" && filtersPropWritten(type, instance, value)) return;
 
   // Remember what PixiJS had before we ever touch this prop, so a removal can restore it.
   recordDefault(instance, propName, pixi.isPoint);
