@@ -137,6 +137,12 @@ describe("pixi5", () => {
     expect(canvasApp.destroy).toHaveBeenCalledWith(false, true);
     view.remove();
   });
+  it("releases a filter without destroy", () => {
+    const filter = new PIXI.filters.AlphaFilter();
+    const destroy = vi.spyOn(filter as unknown as { destroy(): void }, "destroy");
+    adapter.releaseFilter!(filter);
+    expect(destroy).not.toHaveBeenCalled();
+  });
   it("handles points", () => {
     expect(adapter.isPoint(new PIXI.ObservablePoint(() => {}, null))).toBe(true);
     expect(adapter.isPoint([1, 2])).toBe(false);

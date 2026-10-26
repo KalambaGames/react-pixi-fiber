@@ -1,3 +1,4 @@
+import { getPixiAdapter } from "./configure";
 import { heldChildren } from "./heldChildren";
 import invariant from "./invariant";
 import { getBoundBehavior, getInstanceTag, isFilterInstance } from "./registry";
@@ -119,6 +120,13 @@ export function filtersPropWritten(type: string, instance: object, value: unknow
   return true;
 }
 
+// Destroys a filter the core created, or hands it to the adapter's `releaseFilter` when the adapter has one.
+export function releaseFilter(filter: any): void {
+  const { releaseFilter } = getPixiAdapter();
+  if (releaseFilter) releaseFilter(filter);
+  else if (typeof filter.destroy === "function") filter.destroy();
+}
+
 // PixiJS never destroys a filter with its object, and React removes only the topmost node of a removed tree. So this
 // walks the tree, also the children a parent holds through its own ops, and destroys each filter child once, after
 // its `beforeRemove`.
@@ -131,7 +139,7 @@ export function destroyOwnedFilters(root: any): void {
       if (!isFilterInstance(item)) continue;
       const bound = getBoundBehavior(item);
       if (bound && bound.beforeRemove) bound.beforeRemove(item);
-      if (typeof (item as any).destroy === "function") (item as any).destroy();
+      releaseFilter(item);
     }
   }
   if (Array.isArray(root.children)) for (const child of root.children) destroyOwnedFilters(child);

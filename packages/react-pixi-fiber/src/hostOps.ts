@@ -14,6 +14,7 @@ import {
   forgetChildren,
   placeChild,
   placeFilter,
+  releaseFilter,
   removeFilter,
 } from "./filters";
 import { holdChild, isHeldBy, releaseChild } from "./heldChildren";
@@ -66,7 +67,7 @@ export function removeChild(parentInstance: any, child: any): void {
 
   if (isFilterInstance(child)) {
     removeFilter(parentInstance, child);
-    if (typeof child.destroy === "function") child.destroy();
+    releaseFilter(child);
     return;
   }
 

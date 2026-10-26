@@ -40,6 +40,8 @@ Features that are plain PixiJS work as the [PixiJS 6 documentation](https://pixi
 
 `NineSlicePlane`, `SimpleMesh`, `SimplePlane` and `SimpleRope` are the PixiJS 6 class names. Each is a tag of its own: `defaults` and `PIXIProperty` keyed by `NineSliceSprite` do not apply to `<NineSlicePlane />`, and `getInstanceTag` returns `"NineSlicePlane"` for it. Import them from this package.
 
+When a filter element or an ancestor unmounts, this adapter releases the filter without a call to `destroy`. This applies to every filter the core created, built-in or registered with `PIXIFilter`. A behavior's `beforeRemove` is the place for custom cleanup. On PixiJS 6, `Filter.destroy` frees nothing. Below 6.5.7 it also leaves the renderer's bound shader dangling, so the next frame throws.
+
 | Feature | Support |
 | --- | --- |
 | Application | `Stage` creates a `PIXI.Application` from `options`; `view` defaults to the canvas `Stage` renders |

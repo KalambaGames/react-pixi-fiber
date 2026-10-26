@@ -37,6 +37,8 @@ The core destroys a filter that it created:
 - When the filter element unmounts, the core removes the filter from `parent.filters` and calls `destroy()` on the filter.
 - When an ancestor unmounts, React removes only the topmost node of the removed tree. So the core walks this tree before it destroys the tree. The walk calls `destroy()` on each filter child one time.
 
+An adapter can replace the call to `destroy()` for a PixiJS major where `Filter.destroy` breaks the renderer.
+
 The walk runs in `removeChild`. The core does not use `detachDeletedInstance` for this. The reconciler of React 17 does not have this hook, and React 18 and 19 call it in the passive phase, after the commit.
 
 A new `key` on a filter element makes a new filter. Use a new `key` when a constructor parameter changes.

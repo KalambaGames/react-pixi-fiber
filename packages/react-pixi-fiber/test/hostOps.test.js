@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import * as PIXI from "pixi.js";
 import { strictModeBit } from "@react-pixi-fiber/react-18";
+import { getPixiAdapter } from "../src/configure";
 import { recordDefault } from "../src/defaults";
 import { hasFilterChildren } from "../src/filters";
 import * as hostOps from "../src/hostOps";
@@ -759,6 +760,39 @@ describe("hostOps", () => {
       hostOps.appendChild(sprite, f);
       expect(() => hostOps.removeChild(stage, sprite)).not.toThrow();
       expect(sprite.destroyed).toBe(true);
+    });
+
+    describe("with an adapter releaseFilter", () => {
+      let releaseFilter;
+      beforeEach(() => {
+        releaseFilter = vi.fn();
+        getPixiAdapter().releaseFilter = releaseFilter;
+      });
+      afterEach(() => {
+        delete getPixiAdapter().releaseFilter;
+      });
+
+      it("releases a removed filter through releaseFilter, not destroy", () => {
+        const f = filterInstance();
+        hostOps.appendChild(parent, f);
+        hostOps.removeChild(parent, f);
+        expect(releaseFilter).toHaveBeenCalledTimes(1);
+        expect(releaseFilter).toHaveBeenCalledWith(f);
+        expect(f.destroy).not.toHaveBeenCalled();
+      });
+
+      it("releases the filters of a removed subtree through releaseFilter, not destroy", () => {
+        const stage = new PIXI.Container();
+        const sprite = new PIXI.Sprite();
+        const f = filterInstance();
+        hostOps.appendChild(stage, sprite);
+        hostOps.appendChild(sprite, f);
+        hostOps.removeChild(stage, sprite);
+        expect(releaseFilter).toHaveBeenCalledTimes(1);
+        expect(releaseFilter).toHaveBeenCalledWith(f);
+        expect(f.destroy).not.toHaveBeenCalled();
+        expect(sprite.destroyed).toBe(true);
+      });
     });
 
     it("drops the order of a cleared container", () => {

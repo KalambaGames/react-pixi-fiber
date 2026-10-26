@@ -8,5 +8,8 @@ beforeAll(async () => {
   if (!("configure" in mod)) return;
   const react18 = (await import("@react-pixi-fiber/react-18")).default;
   const pixi6 = (await import("@react-pixi-fiber/pixi-6")).default;
-  mod.configure({ react: react18(), pixi: pixi6() });
+  const pixi = pixi6();
+  // The suite checks the destroy path of a filter, which the PixiJS 6 adapter's `releaseFilter` skips.
+  delete pixi.releaseFilter;
+  mod.configure({ react: react18(), pixi });
 });

@@ -249,6 +249,9 @@ export interface PixiAdapter {
   createApplication(options: Record<string, unknown>): unknown | Promise<unknown>;
   destroyApplication(app: any, removeView: boolean, stageOptions: unknown): void;
   isApplication(value: unknown): boolean;
+  // Releases a filter the core created, instead of `filter.destroy()`. For a PixiJS major where `destroy` breaks the
+  // renderer.
+  releaseFilter?: (filter: object) => void;
   translateProps?(type: string, props: Record<string, unknown>): Record<string, unknown>;
 }
 

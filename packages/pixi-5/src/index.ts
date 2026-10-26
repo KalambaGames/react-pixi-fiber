@@ -40,5 +40,8 @@ export default function pixi5({ defaults }: Pixi5Options = {}): PixiAdapter {
       app.destroy(removeView, stageOptions as any);
     },
     isApplication: value => value instanceof PIXI.Application,
+    // PixiJS 5 `Filter.destroy` frees no GPU resource, but it leaves the renderer's bound shader without its uniforms:
+    // the next frame then throws. So the adapter releases a filter without `destroy`.
+    releaseFilter() {},
   };
 }
