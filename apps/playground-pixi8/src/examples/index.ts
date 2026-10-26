@@ -79,6 +79,7 @@ export const examples: Example[] = [
   filter("Basic", "Basic"),
   filter("Animated", "Animated"),
   filter("Controls", "Controls"),
+  filter("Unmount", "Unmount"),
   integration("Animated", "Animated"),
   integration("GSAP", "GSAP"),
   integration("Layout", "Layout"),
