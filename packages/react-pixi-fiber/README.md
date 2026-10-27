@@ -12,35 +12,97 @@
   </p>
 
   <a href="https://npmjs.com/package/react-pixi-fiber">
-    <img alt="npm" src="https://img.shields.io/npm/v/react-pixi-fiber.svg" />
+    <img alt="npm" src="https://img.shields.io/npm/v/react-pixi-fiber/alpha.svg" />
   </a>
-  <a href="./LICENSE">
-    <img alt="License" src="https://img.shields.io/github/license/michalochman/react-pixi-fiber.svg" />
-  </a>
-  <a href="https://github.com/KalambaGames/react-pixi-fiber/actions/workflows/ci.yml">
-    <img alt="CI" src="https://github.com/KalambaGames/react-pixi-fiber/actions/workflows/ci.yml/badge.svg" />
-  </a>
-  <a href="https://biomejs.dev">
-    <img alt="formatted with Biome" src="https://img.shields.io/badge/formatted_with-Biome-60a5fa.svg" />
+  <a href="https://bundlejs.com/?q=react-pixi-fiber@alpha">
+    <img alt="Bundle size" src="https://img.shields.io/bundlejs/size/react-pixi-fiber@alpha" />
   </a>
 </div>
 
-## Demo
-
-The playgrounds cover the API. They are hosted at https://react-pixi-fiber.pages.dev (the root opens the PixiJS 8 playground, `/pixi-7/` the PixiJS 7 playground, `/pixi-6/` the PixiJS 6 playground, `/pixi-5/` the PixiJS 5 playground and `/pixi-4/` the PixiJS 4 playground). To run them locally, use `pnpm install`, `pnpm build` and `pnpm start` in the repository.
-
-
 ## Installing
 
-Install the core, one React adapter and one PixiJS adapter next to [React] and [PixiJS]. For React 18 and PixiJS 6:
+Install the core, one React adapter and one PixiJS adapter next to [React] and [PixiJS]. For React 19 and PixiJS 8:
 
-    npm install react-pixi-fiber @react-pixi-fiber/react-18 @react-pixi-fiber/pixi-6 react pixi.js@6
+    npm install react-pixi-fiber @react-pixi-fiber/react-19 @react-pixi-fiber/pixi-8 react react-dom pixi.js
 
-or
-
-    yarn add react-pixi-fiber @react-pixi-fiber/react-18 @react-pixi-fiber/pixi-6 react pixi.js@6
+> [!IMPORTANT]
+> The core renders nothing without adapters. Install one React adapter that matches the major version of `react`. Install one PixiJS adapter that matches the major version of `pixi.js`. Then call `configure` once, before the first render. [Setup](#setup) has the adapter table.
 
 This package works with [Vite](https://vite.dev) and webpack based setups such as [Create React App](https://github.com/facebookincubator/create-react-app) – the examples below use Vite.
+
+To upgrade from 2.x, read [Migrating to 3.0.0](#migrating-to-300).
+
+## What does it look like?
+
+```jsx
+import { useState } from "react";
+import { createRoot } from "react-dom/client";
+import { configure, Stage, Text } from "react-pixi-fiber";
+import react19 from "@react-pixi-fiber/react-19";
+import pixi8 from "@react-pixi-fiber/pixi-8";
+
+configure({ react: react19(), pixi: pixi8() });
+
+function Counter(props) {
+  const [count, setCount] = useState(0);
+  return (
+    <Text
+      {...props}
+      cursor="pointer"
+      eventMode="static"
+      onpointertap={() => setCount(c => c + 1)}
+      text={`Clicked ${count} times`}
+    />
+  );
+}
+
+createRoot(document.getElementById("root")).render(
+  <Stage options={{ background: 0x10bb99, height: 600, width: 800 }}>
+    <Counter x={200} y={200} />
+  </Stage>,
+);
+```
+
+<details>
+  <summary>Show TypeScript example</summary>
+
+```tsx
+import { useState } from "react";
+import { createRoot } from "react-dom/client";
+import { configure, Stage, Text, type TextProps } from "react-pixi-fiber";
+import react19 from "@react-pixi-fiber/react-19";
+import pixi8 from "@react-pixi-fiber/pixi-8";
+
+configure({ react: react19(), pixi: pixi8() });
+
+function Counter(props: TextProps) {
+  const [count, setCount] = useState(0);
+  return (
+    <Text
+      {...props}
+      cursor="pointer"
+      eventMode="static"
+      onpointertap={() => setCount(c => c + 1)}
+      text={`Clicked ${count} times`}
+    />
+  );
+}
+
+createRoot(document.getElementById("root")!).render(
+  <Stage options={{ background: 0x10bb99, height: 600, width: 800 }}>
+    <Counter x={200} y={200} />
+  </Stage>,
+);
+```
+</details>
+
+#### Does it make rendering slower?
+
+No. It adds no cost per frame. PixiJS renders the scene, and React runs only when props change. For animation, change the instance through a `ref` in a ticker callback. Do not set state on every frame.
+
+#### Can I use PixiJS classes that have no tag?
+
+Yes. Every PixiJS adapter implements the 13 Display Object [tags](#tags) and the 5 filter tags. For any other class, use [custom components](#custom-components).
 
 ## Setup
 
@@ -138,7 +200,10 @@ Moved from the PixiJS 7 playground to PixiJS 8 with `compat` from `@react-pixi-f
     <strong>With ReactDOM (React 18 and 19)</strong>
   </summary>
 
+Configure the adapters first, as in [Setup](#setup).
+
 ```jsx harmony
+import * as PIXI from "pixi.js";
 import { createRoot } from "react-dom/client";
 import { Sprite, Stage } from "react-pixi-fiber";
 import bunny from "./bunny.png";
@@ -172,6 +237,7 @@ The HTML-like syntax; [called JSX](https://reactjs.org/docs/introducing-jsx.html
 Configure `@react-pixi-fiber/react-17` first, as in [Setup](#setup). React 16 is not supported.
 
 ```jsx harmony
+import * as PIXI from "pixi.js";
 import { render } from "react-dom";
 import { Sprite, Stage } from "react-pixi-fiber";
 import bunny from "./bunny.png";
@@ -201,6 +267,8 @@ The HTML-like syntax; [called JSX](https://reactjs.org/docs/introducing-jsx.html
     <strong>Without ReactDOM</strong>
   </summary>
 
+Configure the adapters first, as in [Setup](#setup).
+
 ```jsx harmony
 import { render, Text } from "react-pixi-fiber";
 import * as PIXI from "pixi.js";
@@ -222,16 +290,6 @@ render(
 
 This example will render [`PIXI.Text`] object into a [Root Container] of PIXI Application (created as `app`) inside the `<canvas id="container"></canvas>` element on the page.
 </details>
-
-
-## Running Examples
-
-The playgrounds live in [`apps/playground-pixi8`](../../apps/playground-pixi8), [`apps/playground-pixi7`](../../apps/playground-pixi7), [`apps/playground-pixi6`](../../apps/playground-pixi6), [`apps/playground-pixi5`](../../apps/playground-pixi5) and [`apps/playground-pixi4`](../../apps/playground-pixi4) of the [repository](https://github.com/michalochman/react-pixi-fiber) and use the local `react-pixi-fiber` package.
-
-1. Run `pnpm install` in the repository root.
-2. Run `pnpm build` in the repository root. The playgrounds load the built files, so rebuild after changing the package source.
-3. Run `pnpm start` in the repository root. It starts the dev servers of all the playgrounds.
-4. Open one of the URLs that the command prints.
 
 
 ## API
@@ -685,7 +743,7 @@ The one your PixiJS adapter supports, see the adapter table in [Setup](#setup).
 
 ### Can I use it in my TypeScript project?
 
-Sure thing! We've got you covered.
+Yes. The packages include their types. See the TypeScript example in [What does it look like?](#what-does-it-look-like).
 
 ### Can I use already existing [`PIXI.Application`]?
 
@@ -884,8 +942,8 @@ function ApplyAnimatedValues(instance, props) {
 ```
 
 Refer to the implementation, when in doubt:
-* old `applyProps` -> https://github.com/michalochman/react-pixi-fiber/blob/64e8e9f991f51b407f3af108da732e186429454a/src/ReactPixiFiber.js#L43
-* new `applyDisplayObjectProps` -> https://github.com/michalochman/react-pixi-fiber/blob/3a9b71b8d18180117bf70459dd6b4419c5ef1c21/src/ReactPixiFiberComponent.js#L161
+* old `applyProps` -> https://github.com/KalambaGames/react-pixi-fiber/blob/64e8e9f991f51b407f3af108da732e186429454a/src/ReactPixiFiber.js#L43
+* new `applyDisplayObjectProps` -> https://github.com/KalambaGames/react-pixi-fiber/blob/3a9b71b8d18180117bf70459dd6b4419c5ef1c21/src/ReactPixiFiberComponent.js#L161
 </details>
 
 ---

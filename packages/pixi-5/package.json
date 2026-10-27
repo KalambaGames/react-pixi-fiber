@@ -5,9 +5,10 @@
   "main": "index.js",
   "author": "Michal Ochman",
   "license": "MIT",
+  "homepage": "https://react-pixi-fiber.pages.dev",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/michalochman/react-pixi-fiber.git",
+    "url": "git+https://github.com/KalambaGames/react-pixi-fiber.git",
     "directory": "packages/pixi-5"
   },
   "typings": "./dist/cjs/pixi-5.d.ts",

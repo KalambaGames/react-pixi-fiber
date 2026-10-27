@@ -1,6 +1,8 @@
 # @react-pixi-fiber/pixi-7
 
-PixiJS 7 adapter for [react-pixi-fiber](https://github.com/michalochman/react-pixi-fiber). It tells `react-pixi-fiber` how to create the PixiJS 7 classes for the 13 Display Object tags and the 5 filter tags. It also tells which props it types and how to create a `PIXI.Application`.
+[![npm](https://img.shields.io/npm/v/@react-pixi-fiber/pixi-7.svg)](https://npmjs.com/package/@react-pixi-fiber/pixi-7)
+
+PixiJS 7 adapter for [react-pixi-fiber](https://github.com/KalambaGames/react-pixi-fiber). It tells `react-pixi-fiber` how to create the PixiJS 7 classes for the 13 Display Object tags and the 5 filter tags. It also tells which props it types and how to create a `PIXI.Application`.
 
 Install it next to `react-pixi-fiber`, `pixi.js` 7.2 or newer (the first with `eventMode`) and a React adapter from the [adapter table](../react-pixi-fiber/README.md#setup), then configure once in the app entry, before the first render:
 
