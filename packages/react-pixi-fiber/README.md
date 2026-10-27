@@ -19,22 +19,88 @@
   </a>
 </div>
 
-## Demo
-
-The [playgrounds](https://react-pixi-fiber.pages.dev) cover the API. The link opens the playground for the newest supported PixiJS version.
-
-
 ## Installing
 
-Install the core, one React adapter and one PixiJS adapter next to [React] and [PixiJS]. For React 18 and PixiJS 6:
+Install the core, one React adapter and one PixiJS adapter next to [React] and [PixiJS]. For React 19 and PixiJS 8:
 
-    npm install react-pixi-fiber @react-pixi-fiber/react-18 @react-pixi-fiber/pixi-6 react pixi.js@6
+    npm install react-pixi-fiber @react-pixi-fiber/react-19 @react-pixi-fiber/pixi-8 react react-dom pixi.js
 
-or
-
-    yarn add react-pixi-fiber @react-pixi-fiber/react-18 @react-pixi-fiber/pixi-6 react pixi.js@6
+> [!IMPORTANT]
+> The core renders nothing without adapters. Install one React adapter that matches the major version of `react`. Install one PixiJS adapter that matches the major version of `pixi.js`. Then call `configure` once, before the first render. [Setup](#setup) has the adapter table.
 
 This package works with [Vite](https://vite.dev) and webpack based setups such as [Create React App](https://github.com/facebookincubator/create-react-app) – the examples below use Vite.
+
+## What does it look like?
+
+```jsx
+import { useState } from "react";
+import { createRoot } from "react-dom/client";
+import { configure, Stage, Text } from "react-pixi-fiber";
+import react19 from "@react-pixi-fiber/react-19";
+import pixi8 from "@react-pixi-fiber/pixi-8";
+
+configure({ react: react19(), pixi: pixi8() });
+
+function Counter(props) {
+  const [count, setCount] = useState(0);
+  return (
+    <Text
+      {...props}
+      cursor="pointer"
+      eventMode="static"
+      onpointertap={() => setCount(c => c + 1)}
+      text={`Clicked ${count} times`}
+    />
+  );
+}
+
+createRoot(document.getElementById("root")).render(
+  <Stage options={{ background: 0x10bb99, height: 600, width: 800 }}>
+    <Counter x={200} y={200} />
+  </Stage>,
+);
+```
+
+<details>
+  <summary>Show TypeScript example</summary>
+
+```tsx
+import { useState } from "react";
+import { createRoot } from "react-dom/client";
+import { configure, Stage, Text, type TextProps } from "react-pixi-fiber";
+import react19 from "@react-pixi-fiber/react-19";
+import pixi8 from "@react-pixi-fiber/pixi-8";
+
+configure({ react: react19(), pixi: pixi8() });
+
+function Counter(props: TextProps) {
+  const [count, setCount] = useState(0);
+  return (
+    <Text
+      {...props}
+      cursor="pointer"
+      eventMode="static"
+      onpointertap={() => setCount(c => c + 1)}
+      text={`Clicked ${count} times`}
+    />
+  );
+}
+
+createRoot(document.getElementById("root")!).render(
+  <Stage options={{ background: 0x10bb99, height: 600, width: 800 }}>
+    <Counter x={200} y={200} />
+  </Stage>,
+);
+```
+</details>
+
+#### Does it make rendering slower?
+
+No. It adds no cost per frame. PixiJS renders the scene, and React runs only when props change. For animation, change the instance through a `ref` in a ticker callback. Do not set state on every frame.
+
+#### Can I use PixiJS classes that have no tag?
+
+Yes. Every PixiJS adapter implements the 13 Display Object [tags](#tags) and the 5 filter tags. For any other class, use [custom components](#custom-components).
 
 ## Setup
 
@@ -132,7 +198,10 @@ Moved from the PixiJS 7 playground to PixiJS 8 with `compat` from `@react-pixi-f
     <strong>With ReactDOM (React 18 and 19)</strong>
   </summary>
 
+Configure the adapters first, as in [Setup](#setup).
+
 ```jsx harmony
+import * as PIXI from "pixi.js";
 import { createRoot } from "react-dom/client";
 import { Sprite, Stage } from "react-pixi-fiber";
 import bunny from "./bunny.png";
@@ -166,6 +235,7 @@ The HTML-like syntax; [called JSX](https://reactjs.org/docs/introducing-jsx.html
 Configure `@react-pixi-fiber/react-17` first, as in [Setup](#setup). React 16 is not supported.
 
 ```jsx harmony
+import * as PIXI from "pixi.js";
 import { render } from "react-dom";
 import { Sprite, Stage } from "react-pixi-fiber";
 import bunny from "./bunny.png";
@@ -194,6 +264,8 @@ The HTML-like syntax; [called JSX](https://reactjs.org/docs/introducing-jsx.html
   <summary>
     <strong>Without ReactDOM</strong>
   </summary>
+
+Configure the adapters first, as in [Setup](#setup).
 
 ```jsx harmony
 import { render, Text } from "react-pixi-fiber";
@@ -669,7 +741,7 @@ The one your PixiJS adapter supports, see the adapter table in [Setup](#setup).
 
 ### Can I use it in my TypeScript project?
 
-Sure thing! We've got you covered.
+Yes. The packages include their types. See the TypeScript example in [What does it look like?](#what-does-it-look-like).
 
 ### Can I use already existing [`PIXI.Application`]?
 

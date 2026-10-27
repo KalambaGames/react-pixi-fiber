@@ -12,6 +12,8 @@
 
 This repository holds [`react-pixi-fiber`](./packages/react-pixi-fiber), a React Fiber renderer for [PixiJS](https://pixijs.com/), its React and PixiJS adapters, and the playgrounds. Package documentation lives in the [package README](./packages/react-pixi-fiber/README.md).
 
+[![Playground](./docs/playground.png)](https://react-pixi-fiber.pages.dev)
+
 Try the [playgrounds](https://react-pixi-fiber.pages.dev) in your browser. The link opens the playground for the newest supported PixiJS version. The [hosted playgrounds](#hosted-playgrounds) section lists the playgrounds for older versions.
 
 ## Layout
