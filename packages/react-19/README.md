@@ -1,5 +1,7 @@
 # @react-pixi-fiber/react-19
 
+[![npm](https://img.shields.io/npm/v/@react-pixi-fiber/react-19.svg)](https://npmjs.com/package/@react-pixi-fiber/react-19)
+
 React 19 adapter for [react-pixi-fiber](https://github.com/KalambaGames/react-pixi-fiber). It bundles `react-reconciler` 0.34.0 and builds the renderer that `react-pixi-fiber` uses to render PixiJS Display Objects. It needs React 19.3 or newer, the peer range of that `react-reconciler`.
 
 Install it next to `react-pixi-fiber`, `react` 19 and a PixiJS adapter from the [adapter table](../react-pixi-fiber/README.md#setup), then configure once in the app entry, before the first render:

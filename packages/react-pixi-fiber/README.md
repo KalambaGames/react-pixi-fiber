@@ -12,22 +12,16 @@
   </p>
 
   <a href="https://npmjs.com/package/react-pixi-fiber">
-    <img alt="npm" src="https://img.shields.io/npm/v/react-pixi-fiber.svg" />
+    <img alt="npm" src="https://img.shields.io/npm/v/react-pixi-fiber/alpha.svg" />
   </a>
-  <a href="./LICENSE">
-    <img alt="License" src="https://img.shields.io/github/license/KalambaGames/react-pixi-fiber.svg" />
-  </a>
-  <a href="https://github.com/KalambaGames/react-pixi-fiber/actions/workflows/ci.yml">
-    <img alt="CI" src="https://github.com/KalambaGames/react-pixi-fiber/actions/workflows/ci.yml/badge.svg" />
-  </a>
-  <a href="https://biomejs.dev">
-    <img alt="formatted with Biome" src="https://img.shields.io/badge/formatted_with-Biome-60a5fa.svg" />
+  <a href="https://bundlejs.com/?q=react-pixi-fiber@alpha">
+    <img alt="Bundle size" src="https://img.shields.io/bundlejs/size/react-pixi-fiber@alpha" />
   </a>
 </div>
 
 ## Demo
 
-The playgrounds cover the API. They are hosted at https://react-pixi-fiber.pages.dev (the root opens the PixiJS 8 playground, `/pixi-7/` the PixiJS 7 playground, `/pixi-6/` the PixiJS 6 playground, `/pixi-5/` the PixiJS 5 playground and `/pixi-4/` the PixiJS 4 playground). To run them locally, use `pnpm install`, `pnpm build` and `pnpm start` in the repository.
+The [playgrounds](https://react-pixi-fiber.pages.dev) cover the API. The link opens the playground for the newest supported PixiJS version.
 
 
 ## Installing
@@ -222,16 +216,6 @@ render(
 
 This example will render [`PIXI.Text`] object into a [Root Container] of PIXI Application (created as `app`) inside the `<canvas id="container"></canvas>` element on the page.
 </details>
-
-
-## Running Examples
-
-The playgrounds live in [`apps/playground-pixi8`](../../apps/playground-pixi8), [`apps/playground-pixi7`](../../apps/playground-pixi7), [`apps/playground-pixi6`](../../apps/playground-pixi6), [`apps/playground-pixi5`](../../apps/playground-pixi5) and [`apps/playground-pixi4`](../../apps/playground-pixi4) of the [repository](https://github.com/KalambaGames/react-pixi-fiber) and use the local `react-pixi-fiber` package.
-
-1. Run `pnpm install` in the repository root.
-2. Run `pnpm build` in the repository root. The playgrounds load the built files, so rebuild after changing the package source.
-3. Run `pnpm start` in the repository root. It starts the dev servers of all the playgrounds.
-4. Open one of the URLs that the command prints.
 
 
 ## API

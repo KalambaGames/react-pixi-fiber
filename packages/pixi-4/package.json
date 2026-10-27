@@ -5,6 +5,7 @@
   "main": "index.js",
   "author": "Michal Ochman",
   "license": "MIT",
+  "homepage": "https://react-pixi-fiber.pages.dev",
   "repository": {
     "type": "git",
     "url": "git+https://github.com/KalambaGames/react-pixi-fiber.git",

@@ -2,11 +2,17 @@
   <img alt="ReactPixiFiber" src="./packages/react-pixi-fiber/react-pixi.svg" width="500" />
 </div>
 
+<div align="center">
+  <a href="https://github.com/KalambaGames/react-pixi-fiber/actions/workflows/ci.yml">
+    <img alt="CI" src="https://github.com/KalambaGames/react-pixi-fiber/actions/workflows/ci.yml/badge.svg" />
+  </a>
+</div>
+
 # react-pixi-fiber repository
 
 This repository holds [`react-pixi-fiber`](./packages/react-pixi-fiber), a React Fiber renderer for [PixiJS](https://pixijs.com/), its React and PixiJS adapters, and the playgrounds. Package documentation lives in the [package README](./packages/react-pixi-fiber/README.md).
 
-Try the playgrounds in your browser: [PixiJS 8](https://react-pixi-fiber.pages.dev/pixi-8/), [PixiJS 7](https://react-pixi-fiber.pages.dev/pixi-7/), [PixiJS 6](https://react-pixi-fiber.pages.dev/pixi-6/), [PixiJS 5](https://react-pixi-fiber.pages.dev/pixi-5/) and [PixiJS 4](https://react-pixi-fiber.pages.dev/pixi-4/).
+Try the [playgrounds](https://react-pixi-fiber.pages.dev) in your browser. The link opens the playground for the newest supported PixiJS version. The [hosted playgrounds](#hosted-playgrounds) section lists the playgrounds for older versions.
 
 ## Layout
 
