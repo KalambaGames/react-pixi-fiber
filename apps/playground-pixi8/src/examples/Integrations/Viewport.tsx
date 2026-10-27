@@ -58,6 +58,7 @@ const Viewport = PIXIComponent<PixiViewport, ViewportProps>("Viewport", {
       .clamp({ direction: "all" })
       .clampZoom({ maxWidth: world.width, minWidth: screen.width / 2 })
       .moveCenter(clusterCenters[0].x, clusterCenters[0].y),
+  // Only `create` reads `app`. Without this, the default setters would write it on the viewport as an unknown prop.
   applyProps: function (instance, oldProps, newProps) {
     const { app, ...newPropsRest } = newProps;
     const { app: oldApp, ...oldPropsRest }: Partial<ViewportProps> = oldProps || {};
