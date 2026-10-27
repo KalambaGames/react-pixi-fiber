@@ -75,6 +75,7 @@ export const examples: Example[] = [
   feature("PIXIProperty", "PIXIProperty"),
   feature("PointLikeProps", "Point-like props"),
   feature("SmokeTest", "Smoke test"),
+  feature("Spritesheet", "Spritesheet"),
   feature("Suspense", "Suspense"),
   filter("Basic", "Basic"),
   filter("FiltersProp", "Filters prop"),
