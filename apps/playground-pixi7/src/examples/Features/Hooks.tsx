@@ -76,10 +76,7 @@ type AnimatedValueOptions = {
 };
 
 function useAnimatedValue({ direction, enabled, max, min, value }: AnimatedValueOptions) {
-  const [data, setData] = useState<{ direction: number; max?: number; min?: number; value: number }>({
-    direction,
-    value,
-  });
+  const [data, setData] = useState({ direction, max, min, value });
 
   const animate = useCallback(() => {
     // perform all the logic inside setData so useEffect's dependency array
@@ -90,8 +87,8 @@ function useAnimatedValue({ direction, enabled, max, min, value }: AnimatedValue
 
       // flip direction once min or max has been reached.
       if (
-        (current.max !== undefined && current.value >= current.max && current.direction === 1) ||
-        (current.min !== undefined && current.value <= current.min && current.direction === -1)
+        (current.value >= current.max && current.direction === 1) ||
+        (current.value <= current.min && current.direction === -1)
       ) {
         data.direction *= -1;
       }
