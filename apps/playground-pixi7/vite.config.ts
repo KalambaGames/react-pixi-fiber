@@ -20,6 +20,7 @@ export default defineConfig({
         index: resolve(import.meta.dirname, "index.html"),
         runner: resolve(import.meta.dirname, "runner.html"),
         runnerCompatPixi6: resolve(import.meta.dirname, "runner-compat-pixi6.html"),
+        runnerDefaults: resolve(import.meta.dirname, "runner-defaults.html"),
       },
     },
   },

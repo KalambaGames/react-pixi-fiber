@@ -26,6 +26,19 @@ const feature = (name: string, title: string, load = source(`./Features/${name}.
   id: `features-${name.toLowerCase()}`,
 });
 
+// The runner configures the adapter with these defaults, see src/runners/defaults.tsx.
+const defaults = (name: string, title: string): Example => ({
+  ...feature(name, title),
+  configure: {
+    code: setup(4).code.replace(
+      "pixi4()",
+      'pixi4({ defaults: { Sprite: { anchor: 0.5 }, Text: { style: { fill: "white", fontSize: 24 } } } })'
+    ),
+    summary: `${setup(4).summary} with default props`,
+  },
+  runner: "runner-defaults.html",
+});
+
 const filter = (name: string, title: string): Example => ({
   ...example(title, source(`./Filters/${name}.tsx`)),
   group: "Filters",
@@ -55,6 +68,7 @@ export const examples: Example[] = [
   feature("Bunnymark", "Bunnymark"),
   feature("BunnymarkCustomComponents", "Bunnymark with custom components"),
   feature("CanvasProps", "Canvas props"),
+  defaults("Defaults", "Default props"),
   feature("Deprecations", "Deprecations"),
   feature("Events", "Events"),
   feature("Hooks", "Hooks"),

@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>runner</title>
+    <style>
+      html, body, #root { height: 100%; margin: 0; overflow: hidden; }
+      /* The 0x1099bb background that most examples use, see-through so the dark theme shows through. */
+      html { background: rgb(16 153 187 / 75%); }
+      /* Each example keeps its own stage size and sits in the middle of the preview. */
+      #root { align-items: center; display: flex; flex-direction: column; justify-content: safe center; }
+      #root > * { max-width: 100%; }
+      /* A stage wider than the preview scales down. An outline, unlike a border, keeps the layout and the border an example sets. */
+      canvas { height: auto; max-width: 100%; outline: 1px dashed white; }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/runners/defaults.tsx"></script>
+  </body>
+</html>

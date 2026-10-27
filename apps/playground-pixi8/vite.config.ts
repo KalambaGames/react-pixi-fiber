@@ -21,6 +21,7 @@ export default defineConfig({
         runner: resolve(import.meta.dirname, "runner.html"),
         runnerCompatPixi6: resolve(import.meta.dirname, "runner-compat-pixi6.html"),
         runnerCompatPixi7: resolve(import.meta.dirname, "runner-compat-pixi7.html"),
+        runnerDefaults: resolve(import.meta.dirname, "runner-defaults.html"),
       },
     },
   },
