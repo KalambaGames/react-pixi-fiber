@@ -160,7 +160,7 @@ export function pixi8WithClasses(options: Pixi8WithClassesOptions): PixiAdapter 
     behaviors[tag] = Ctor === undefined ? stub(tag) : build(tag, Ctor, classes);
   }
   const adapter: PixiAdapter = {
-    components: behaviors,
+    behaviors,
     defaults,
     properties,
     isPoint: (value): value is PIXI.PointData => value instanceof Point || value instanceof ObservablePoint,

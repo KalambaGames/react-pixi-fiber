@@ -241,7 +241,7 @@ export interface PixiPropertyTable {
 }
 
 export interface PixiAdapter {
-  components: Record<string, Behavior>;
+  behaviors: Record<string, Behavior>;
   defaults?: Record<string, Record<string, unknown>>;
   properties: PixiPropertyTable;
   isPoint(value: unknown): value is { x: number; y: number };

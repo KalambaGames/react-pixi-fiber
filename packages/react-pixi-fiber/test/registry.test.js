@@ -76,7 +76,7 @@ describe("registry", () => {
   it("resolves the user entry before the adapter entry and names the source", () => {
     const adapter = { create: () => ({}) };
     const user = { create: () => ({}) };
-    registry.registerAdapterComponents({ Sprite: adapter, Text: () => ({}) });
+    registry.registerAdapterBehaviors({ Sprite: adapter, Text: () => ({}) });
     expect(registry.resolveComponent("Sprite")).toEqual({ behavior: adapter, source: "adapter" });
     registry.registerComponent("Sprite", user);
     expect(registry.resolveComponent("Sprite")).toEqual({ behavior: user, source: "user" });
@@ -85,13 +85,13 @@ describe("registry", () => {
     expect(registry.resolveComponent("constructor")).toBeUndefined();
   });
 
-  it("registerAdapterComponents normalizes every entry and replaces the previous set", () => {
+  it("registerAdapterBehaviors normalizes every entry and replaces the previous set", () => {
     const create = () => ({});
-    registry.registerAdapterComponents({ Text: create });
+    registry.registerAdapterBehaviors({ Text: create });
     expect(registry.getAdapterComponent("Text").create).toBe(create);
-    registry.registerAdapterComponents({ Sprite: create });
+    registry.registerAdapterBehaviors({ Sprite: create });
     expect(registry.getAdapterComponent("Text")).toBeUndefined();
-    expect(() => registry.registerAdapterComponents({ Broken: {} })).toThrow("Broken");
+    expect(() => registry.registerAdapterBehaviors({ Broken: {} })).toThrow("Broken");
   });
 
   it("throws when create returns no object, naming the component", () => {

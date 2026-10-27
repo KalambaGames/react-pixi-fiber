@@ -40,7 +40,7 @@ function withDefaults(tag: string, props: Props): Props {
   return merged;
 }
 
-// Tag resolution: the user `PIXIComponent` registry, then the adapter's components, then the deprecated tag map.
+// Tag resolution: the user `PIXIComponent` registry, then the adapter's behaviors, then the deprecated tag map.
 export function createInstance(
   type: string,
   props: Props,

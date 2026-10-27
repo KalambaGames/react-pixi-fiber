@@ -1,6 +1,6 @@
 import * as PIXI from "pixi.js";
 import type { PixiAdapter, PixiComponent } from "react-pixi-fiber";
-import { components } from "./components";
+import { behaviors } from "./behaviors";
 import { properties } from "./properties";
 import type {
   FXAAFilterProps,
@@ -78,7 +78,7 @@ function warnLegacyProps(type: string, props: Record<string, unknown>): Record<s
 
 export default function pixi7({ compat, defaults }: Pixi7Options = {}): PixiAdapter {
   const adapter: PixiAdapter = {
-    components,
+    behaviors,
     defaults,
     properties,
     isPoint: (value): value is PIXI.IPointData => value instanceof PIXI.Point || value instanceof PIXI.ObservablePoint,

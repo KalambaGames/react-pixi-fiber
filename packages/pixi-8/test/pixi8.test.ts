@@ -30,13 +30,13 @@ describe("pixi8", () => {
   const adapter = pixi8();
   it("implements the 18 core tags and the six PixiJS 8 tags", () => {
     for (const [name, value] of Object.entries(EXTRA_TAGS)) expect(value).toBe(name);
-    expect(Object.keys(adapter.components).sort()).toEqual([...Object.keys(TAGS), ...Object.keys(EXTRA_TAGS)].sort());
-    for (const tag of Object.keys(adapter.components))
-      expect(typeof adapter.components[tag].create, tag).toBe("function");
+    expect(Object.keys(adapter.behaviors).sort()).toEqual([...Object.keys(TAGS), ...Object.keys(EXTRA_TAGS)].sort());
+    for (const tag of Object.keys(adapter.behaviors))
+      expect(typeof adapter.behaviors[tag].create, tag).toBe("function");
   });
   it("marks the filter tags, and no Display Object tag, with kind filter", () => {
-    for (const tag of [...Object.keys(FILTER_TAGS)]) expect(adapter.components[tag].kind, tag).toBe("filter");
-    for (const tag of Object.keys(DISPLAY_OBJECT_TAGS)) expect(adapter.components[tag].kind, tag).toBeUndefined();
+    for (const tag of [...Object.keys(FILTER_TAGS)]) expect(adapter.behaviors[tag].kind, tag).toBe("filter");
+    for (const tag of Object.keys(DISPLAY_OBJECT_TAGS)) expect(adapter.behaviors[tag].kind, tag).toBeUndefined();
   });
   it("lists origin as a point", () => {
     expect(adapter.properties.vector).toContain("origin");
@@ -161,9 +161,9 @@ describe("pixi8WithClasses({ classes })", () => {
   });
   it("creates a listed tag and throws for one left out", () => {
     const adapter = pixi8WithClasses({ classes: { Container: PIXI.Container, Sprite: PIXI.Sprite } });
-    expect(Object.keys(adapter.components).sort()).toEqual(Object.keys(factories).sort());
-    expect(adapter.components.Sprite.create({ texture })).toBeInstanceOf(PIXI.Sprite);
-    expect(() => adapter.components.HTMLText.create({ text: "t" })).toThrow(
+    expect(Object.keys(adapter.behaviors).sort()).toEqual(Object.keys(factories).sort());
+    expect(adapter.behaviors.Sprite.create({ texture })).toBeInstanceOf(PIXI.Sprite);
+    expect(() => adapter.behaviors.HTMLText.create({ text: "t" })).toThrow(
       "`HTMLText` is not in `pixi8WithClasses({ classes })`. Add `HTMLText` from `pixi.js` to it."
     );
   });
@@ -182,10 +182,8 @@ describe("pixi8WithClasses({ classes })", () => {
     const adapter = pixi8WithClasses({ classes });
     classes.Application = "Application";
     classes.Particle = class extends PIXI.Particle {};
-    const container = adapter.components.ParticleContainer.create({});
-    expect(() =>
-      adapter.components.ParticleContainer.appendChild!(container, new PIXI.Particle(texture))
-    ).not.toThrow();
+    const container = adapter.behaviors.ParticleContainer.create({});
+    expect(() => adapter.behaviors.ParticleContainer.appendChild!(container, new PIXI.Particle(texture))).not.toThrow();
     await expect(adapter.createApplication({ height: 4, width: 4 })).rejects.toThrow(
       "Add `Application` from `pixi.js` to `pixi8WithClasses({ classes })`, or pass an `app` to `Stage`."
     );

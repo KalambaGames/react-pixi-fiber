@@ -19,7 +19,7 @@ Between PixiJS majors, most differences are in class names, constructor signatur
 
 A PixiJS adapter is a factory that returns data and a few small functions:
 
-- **components:** a behavior for each tag, in the same shape that `PIXIComponent` takes. A behavior has `create(props)` and optional `applyProps`, `afterAdd`, and `beforeRemove`. `create` absorbs the constructor differences, so each built-in tag takes the same props on every PixiJS major.
+- **behaviors:** a behavior for each tag, in the same shape that `PIXIComponent` takes. A behavior has `create(props)` and optional `applyProps`, `afterAdd`, and `beforeRemove`. `create` absorbs the constructor differences, so each built-in tag takes the same props on every PixiJS major.
 - **properties:** tables that list the boolean, numeric, positive numeric, vector, and callback props of the PixiJS major
 - **point helpers:** `isPoint` and `copyPoint`
 - **application functions:** `createApplication`, `destroyApplication`, and `isApplication`. `createApplication` can return a promise, for a PixiJS major with an asynchronous `init`.
@@ -27,7 +27,7 @@ A PixiJS adapter is a factory that returns data and a few small functions:
 
 Every adapter implements the core tags. An adapter can add tags for classes that only its PixiJS major has, and exports a tag constant for each.
 
-`configure` registers the adapter components in the same registry that `PIXIComponent` writes to. On each instance creation, the core resolves a tag in this order:
+`configure` registers the adapter behaviors in the same registry that `PIXIComponent` writes to. On each instance creation, the core resolves a tag in this order:
 
 1. a component that the consumer registered with `PIXIComponent`
 2. the adapter component

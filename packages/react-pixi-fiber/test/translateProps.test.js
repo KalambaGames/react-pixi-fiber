@@ -1,7 +1,7 @@
 import { describe, it, expect, vi } from "vitest";
 import { createInstance, diffProperties, setInitialProperties } from "../src/ReactPixiFiberComponent";
 import { validateProperties } from "../src/hostOps";
-import { registerAdapterComponents, registerComponent } from "../src/registry";
+import { registerAdapterBehaviors, registerComponent } from "../src/registry";
 import { createFakeNode, fakePixiAdapter } from "./utils/fakePixiAdapter";
 
 const adapter = vi.hoisted(() => ({ current: null }));
@@ -19,7 +19,7 @@ adapter.current.translateProps = (type, props) => {
   const { legacy, ...rest } = props;
   return { ...rest, native: legacy };
 };
-registerAdapterComponents(adapter.current.components);
+registerAdapterBehaviors(adapter.current.behaviors);
 
 describe("translateProps", () => {
   it("translates props on initial set and on both sides of a diff, and hands raw props to applyProps", () => {

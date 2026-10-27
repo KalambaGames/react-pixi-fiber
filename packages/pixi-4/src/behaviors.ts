@@ -15,7 +15,7 @@ const mesh: Behavior = {
   create: props => new PIXI.mesh.Mesh(props.texture, props.vertices, props.uvs, props.indices, props.drawMode),
 };
 
-export const components: Record<string, Behavior> = {
+export const behaviors: Record<string, Behavior> = {
   AlphaFilter: { kind: "filter", create: props => new PIXI.filters.AlphaFilter(props.alpha) },
   AnimatedSprite: { create: props => new PIXI.extras.AnimatedSprite(props.textures, props.autoUpdate) },
   BitmapText: { create: props => new PIXI.extras.BitmapText(props.text, bitmapTextStyle(props)) },
@@ -56,6 +56,6 @@ export const components: Record<string, Behavior> = {
 };
 
 // The PixiJS 4 class names, the same behavior objects as the core tags they map to.
-components.NineSlicePlane = components.NineSliceSprite;
-components.Plane = components.MeshPlane;
-components.Rope = components.MeshRope;
+behaviors.NineSlicePlane = behaviors.NineSliceSprite;
+behaviors.Plane = behaviors.MeshPlane;
+behaviors.Rope = behaviors.MeshRope;

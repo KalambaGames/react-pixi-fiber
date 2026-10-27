@@ -1,7 +1,7 @@
 import React from "react";
 import { hostOps } from "./hostOps";
 import invariant from "./invariant";
-import { registerAdapterComponents } from "./registry";
+import { registerAdapterBehaviors } from "./registry";
 import type { PixiAdapter, ReactAdapter, Renderer } from "./types";
 import warning from "./warning";
 
@@ -40,7 +40,7 @@ export function configure({ react, pixi }: { react: ReactAdapter; pixi: PixiAdap
   );
   invariant(
     pixi != null &&
-      typeof pixi.components === "object" &&
+      typeof pixi.behaviors === "object" &&
       typeof pixi.properties === "object" &&
       typeof pixi.copyPoint === "function" &&
       typeof pixi.createApplication === "function" &&
@@ -59,7 +59,7 @@ export function configure({ react, pixi }: { react: ReactAdapter; pixi: PixiAdap
   // Built before anything is replaced: a throw leaves the previous configuration whole.
   const primary = react.createRenderer(hostOps, { isPrimaryRenderer: true });
   const secondary = react.createRenderer(hostOps, { isPrimaryRenderer: false });
-  registerAdapterComponents(pixi.components);
+  registerAdapterBehaviors(pixi.behaviors);
   configured = { react, pixi, primary, secondary, rendered: false };
 }
 

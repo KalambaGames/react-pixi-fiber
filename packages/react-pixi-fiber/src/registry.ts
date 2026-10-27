@@ -97,10 +97,10 @@ export function registerComponent(type: string, behavior: BehaviorInput): string
   return type;
 }
 
-// Called by configure with the adapter's components. Replaces the previous adapter set.
-export function registerAdapterComponents(components: Record<string, BehaviorInput>): void {
+// Called by configure with the adapter's behaviors. Replaces the previous adapter set.
+export function registerAdapterBehaviors(behaviors: Record<string, BehaviorInput>): void {
   const next: Record<string, Behavior> = {};
-  for (const type of Object.keys(components)) next[type] = normalizeBehavior(type, components[type]);
+  for (const type of Object.keys(behaviors)) next[type] = normalizeBehavior(type, behaviors[type]);
   adapterComponents = next;
 }
 

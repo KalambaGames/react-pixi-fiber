@@ -29,10 +29,10 @@ async function withDefaults(defaults) {
   vi.resetModules();
   vi.doMock("../src/configure", async () => {
     const pixi = (await vi.importActual("@react-pixi-fiber/pixi-6")).default();
-    const { NineSlicePlane, ...components } = pixi.components;
-    const adapter = { ...pixi, components };
-    const { registerAdapterComponents } = await import("../src/registry");
-    registerAdapterComponents(components);
+    const { NineSlicePlane, ...behaviors } = pixi.behaviors;
+    const adapter = { ...pixi, behaviors };
+    const { registerAdapterBehaviors } = await import("../src/registry");
+    registerAdapterBehaviors(behaviors);
     return { getPixiAdapter: () => ({ ...adapter, defaults }), getStrictModeBit: () => strictModeBit };
   });
   return {

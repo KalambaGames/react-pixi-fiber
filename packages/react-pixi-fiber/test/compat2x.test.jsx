@@ -20,7 +20,7 @@ import {
   withApp,
 } from "../src/index";
 import pixi6 from "@react-pixi-fiber/pixi-6";
-import { registerAdapterComponents } from "../src/registry";
+import { registerAdapterBehaviors } from "../src/registry";
 
 // 2.x code, unchanged, against react-18 and pixi-6. The deprecation warnings are module-level once guards, and this
 // file is the first in its module graph to use each deprecated name.
@@ -119,8 +119,8 @@ describe("2.x compatibility", () => {
 
   it("renders NineSlicePlane as NineSliceSprite when the adapter has no NineSlicePlane, warning once", () => {
     const dev = __DEV__ ? 1 : 0;
-    const { NineSlicePlane: _, ...components } = pixi6().components;
-    registerAdapterComponents(components);
+    const { NineSlicePlane: _, ...behaviors } = pixi6().behaviors;
+    registerAdapterBehaviors(behaviors);
     try {
       const stage = new PIXI.Container();
       render(
@@ -135,7 +135,7 @@ describe("2.x compatibility", () => {
       unmount(stage);
       expect(countMatching(error, /Tag `NineSlicePlane` is deprecated, use `NineSliceSprite`/)).toBe(dev);
     } finally {
-      registerAdapterComponents(pixi6().components);
+      registerAdapterBehaviors(pixi6().behaviors);
     }
   });
 

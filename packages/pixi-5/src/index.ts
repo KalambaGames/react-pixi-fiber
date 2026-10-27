@@ -1,6 +1,6 @@
 import * as PIXI from "pixi.js";
 import type { PixiAdapter, PixiComponent } from "react-pixi-fiber";
-import { components } from "./components";
+import { behaviors } from "./behaviors";
 import { properties } from "./properties";
 import type { FXAAFilterProps, NineSlicePlaneProps, SimpleMeshProps, SimplePlaneProps, SimpleRopeProps } from "./types";
 export * from "./types";
@@ -24,7 +24,7 @@ export interface Pixi5Options {
 
 export default function pixi5({ defaults }: Pixi5Options = {}): PixiAdapter {
   return {
-    components,
+    behaviors,
     defaults,
     properties,
     isPoint: (value): value is PIXI.IPointData => value instanceof PIXI.Point || value instanceof PIXI.ObservablePoint,
