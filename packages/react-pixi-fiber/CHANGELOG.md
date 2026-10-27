@@ -4,6 +4,42 @@ All notable changes to this project will be documented in this file.
 
 This project adheres to [Semantic Versioning](http://semver.org/). From 3.0.0 on, [Changesets](https://github.com/changesets/changesets) writes the entries from `.changeset/` at release; the entries up to 2.x follow [Keep a Changelog](http://keepachangelog.com/).
 
+## 3.0.0-alpha.2
+
+### Minor Changes
+
+- [#402](https://github.com/KalambaGames/react-pixi-fiber/pull/402) [`f662611`](https://github.com/KalambaGames/react-pixi-fiber/commit/f6626110ecfe4fb94f985474d24206104d8fdb38) Thanks [@michalochman](https://github.com/michalochman)! - `PixiAdapter.behaviors` replaces `PixiAdapter.components`. The map holds a `Behavior` for each tag, Display Objects and filters.
+
+- [#402](https://github.com/KalambaGames/react-pixi-fiber/pull/402) [`659aa2d`](https://github.com/KalambaGames/react-pixi-fiber/commit/659aa2dd2097a757e191e884fea6f194c13e8a58) Thanks [@michalochman](https://github.com/michalochman)! - A filter is a child element of the Display Object it filters, a `Sprite`, a `Container` or any other object with a `filters` property: `<Sprite><BlurFilter blur={2} /></Sprite>`. A filter element is not a Display Object. The core writes it into the parent's `filters` array in JSX order, not into `children`. `enabled` disables a filter. A Suspense fallback disables it until the content shows.
+  
+  `AlphaFilter`, `BlurFilter`, `ColorMatrixFilter`, `DisplacementFilter` and `NoiseFilter` are tags, imported from `react-pixi-fiber` like `Sprite`. `PIXIFilter(type, behavior)` registers another filter class, for example one from `pixi-filters`.
+  
+  The core destroys the filters it created, when the filter element or an ancestor unmounts. PixiJS never destroys a filter with its object, so a filter from the `filters` prop is yours to destroy. An adapter can provide the optional `PixiAdapter.releaseFilter(filter)` to release a filter instead of `filter.destroy()`.
+  
+  A `filters` value on an element with filter children throws. Use one of the two. In development, under StrictMode, a change to a prop that the filter did not have before its first write logs a warning. The constructor reads that option, so a new `key` is the way to change it.
+
+### Patch Changes
+
+- [#393](https://github.com/KalambaGames/react-pixi-fiber/pull/393) [`a366d91`](https://github.com/KalambaGames/react-pixi-fiber/commit/a366d912861cb7717fddfc40520afd1c0b387080) Thanks [@michalochman](https://github.com/michalochman)! - An explicit `null` on a callback prop, for example `onclick={null}`, is written as `null`. Before, the core reset it to its default and warned under `StrictMode`.
+  
+  An explicit `null` on a point prop is written as `null`, so the PixiJS setter throws its own error, as it does without react-pixi-fiber. Before, the core reset it to its default and warned.
+  
+  An invalid value for a point prop that the PixiJS adapter does not list as a point, for example a point prop of a custom component, resets the prop to its default with a warning. Before, `"a,b"` wrote `NaN` coordinates and three coordinates threw.
+  
+  The warning for an invalid prop value prints once for each prop name, not on every write.
+  
+  A suspended instance that becomes visible again gets the `visible` default of the PixiJS adapter, or the value PixiJS had, when the element has no `visible` prop. Before, it always became visible.
+  
+  `usePixiApp` and `usePixiTicker` throw an `Invariant Violation`, like the other core errors.
+  
+  The warning for the deprecated `width` and `height` props of `Stage` names 4.0.0 as the major that removes them, and `createStageClass` is marked `@deprecated` for editors.
+
+- [#394](https://github.com/KalambaGames/react-pixi-fiber/pull/394) [`83e5958`](https://github.com/KalambaGames/react-pixi-fiber/commit/83e595872fac688902a2779e589feb8b4dcbdb0d) Thanks [@michalochman](https://github.com/michalochman)! - With the PixiJS 8 adapter, a prop accepts what the PixiJS setter accepts, not only what the getter returns. `<Text style={{ fill: "white" }} />`, the same `style` on `BitmapText` and `HTMLText`, the same props of a `PIXIComponent`, and properties that plugins add, for example the `layout` prop of `@pixi/layout` as a style object or as `true`, type-check. Before, they needed a `PIXIComponent` with the props declared by hand. With the PixiJS 7 adapter, the same applies to the `style` prop of `Text` and `HTMLText` and to the `text` prop of `Text`, which takes a number too.
+  
+  The `style` prop of `Text` has the PixiJS style types instead of `unknown`. A style object whose literal fields TypeScript widens to `string`, for example `fontWeight: "bold"` in an object without `as const`, needs `as const` or a type annotation.
+  
+  `PIXIComponent<T>` takes the instance type alone, without the props type.
+
 ## 3.0.0-alpha.1
 
 ### Patch Changes
