@@ -2,12 +2,12 @@
 
 ## Open Development
 
-All work on React Pixi Fiber happens directly on [GitHub](https://github.com/michalochman/react-pixi-fiber). Both core team members and external contributors send pull requests which go through the same review process.
+All work on React Pixi Fiber happens directly on [GitHub](https://github.com/KalambaGames/react-pixi-fiber). Both core team members and external contributors send pull requests which go through the same review process.
 
 
 ## Branch Organization
 
-We will do our best to keep the [`master` branch](https://github.com/michalochman/react-pixi-fiber/tree/master) in good shape, with tests passing at all times. But in order to move fast, we will make API changes that your application might not be compatible with. We recommend that you use [the latest stable version of React](https://reactjs.org/downloads.html).
+We will do our best to keep the [`master` branch](https://github.com/KalambaGames/react-pixi-fiber/tree/master) in good shape, with tests passing at all times. But in order to move fast, we will make API changes that your application might not be compatible with. We recommend that you use [the latest stable version of React](https://reactjs.org/downloads.html).
 
 If you send a pull request, please do it against the `master` branch.
 
@@ -47,12 +47,12 @@ Each React adapter bundles the newest `react-reconciler` of its React major and 
 
 ## Bugs
 
-We are using [GitHub Issues](https://github.com/michalochman/react-pixi-fiber/issues) for our public bugs. We keep a close eye on this and try to make it clear when we have an internal fix in progress. Before filing a new task, try to make sure your problem doesn't already exist.
+We are using [GitHub Issues](https://github.com/KalambaGames/react-pixi-fiber/issues) for our public bugs. We keep a close eye on this and try to make it clear when we have an internal fix in progress. Before filing a new task, try to make sure your problem doesn't already exist.
 
 
 ## Proposing a Change
 
-If you intend to change the public API, or make any non-trivial changes to the implementation, we recommend [filing an issue](https://github.com/michalochman/react-pixi-fiber/issues/new). This lets us reach an agreement on your proposal before you put significant effort into it.
+If you intend to change the public API, or make any non-trivial changes to the implementation, we recommend [filing an issue](https://github.com/KalambaGames/react-pixi-fiber/issues/new). This lets us reach an agreement on your proposal before you put significant effort into it.
 
 If you're only fixing a bug, it's fine to submit a pull request right away but we still recommend to file an issue detailing what you're fixing. This is helpful in case we don't accept that specific fix but want to keep track of the issue.
 
@@ -63,7 +63,7 @@ The core team is monitoring for pull requests. We will review your pull request 
 
 **Before submitting a pull request**, please make sure the following is done:
 
-1. Fork [the repository](https://github.com/michalochman/react-pixi-fiber) and create your branch from `master`.
+1. Fork [the repository](https://github.com/KalambaGames/react-pixi-fiber) and create your branch from `master`.
 2. Run `pnpm install` in the repository root.
 3. If you've fixed a bug or added code that should be tested, add tests!
 4. Ensure the test suite passes (`pnpm test`) and the types check (`pnpm check-types`). If you changed `package.json` or the build, run the package check (`pnpm check-package`). If you changed an adapter or its build, run the bundle check (`pnpm check-bundle`).

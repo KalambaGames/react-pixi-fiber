@@ -15,7 +15,7 @@
     <img alt="npm" src="https://img.shields.io/npm/v/react-pixi-fiber.svg" />
   </a>
   <a href="./LICENSE">
-    <img alt="License" src="https://img.shields.io/github/license/michalochman/react-pixi-fiber.svg" />
+    <img alt="License" src="https://img.shields.io/github/license/KalambaGames/react-pixi-fiber.svg" />
   </a>
   <a href="https://github.com/KalambaGames/react-pixi-fiber/actions/workflows/ci.yml">
     <img alt="CI" src="https://github.com/KalambaGames/react-pixi-fiber/actions/workflows/ci.yml/badge.svg" />
@@ -226,7 +226,7 @@ This example will render [`PIXI.Text`] object into a [Root Container] of PIXI Ap
 
 ## Running Examples
 
-The playgrounds live in [`apps/playground-pixi8`](../../apps/playground-pixi8), [`apps/playground-pixi7`](../../apps/playground-pixi7), [`apps/playground-pixi6`](../../apps/playground-pixi6), [`apps/playground-pixi5`](../../apps/playground-pixi5) and [`apps/playground-pixi4`](../../apps/playground-pixi4) of the [repository](https://github.com/michalochman/react-pixi-fiber) and use the local `react-pixi-fiber` package.
+The playgrounds live in [`apps/playground-pixi8`](../../apps/playground-pixi8), [`apps/playground-pixi7`](../../apps/playground-pixi7), [`apps/playground-pixi6`](../../apps/playground-pixi6), [`apps/playground-pixi5`](../../apps/playground-pixi5) and [`apps/playground-pixi4`](../../apps/playground-pixi4) of the [repository](https://github.com/KalambaGames/react-pixi-fiber) and use the local `react-pixi-fiber` package.
 
 1. Run `pnpm install` in the repository root.
 2. Run `pnpm build` in the repository root. The playgrounds load the built files, so rebuild after changing the package source.
@@ -884,8 +884,8 @@ function ApplyAnimatedValues(instance, props) {
 ```
 
 Refer to the implementation, when in doubt:
-* old `applyProps` -> https://github.com/michalochman/react-pixi-fiber/blob/64e8e9f991f51b407f3af108da732e186429454a/src/ReactPixiFiber.js#L43
-* new `applyDisplayObjectProps` -> https://github.com/michalochman/react-pixi-fiber/blob/3a9b71b8d18180117bf70459dd6b4419c5ef1c21/src/ReactPixiFiberComponent.js#L161
+* old `applyProps` -> https://github.com/KalambaGames/react-pixi-fiber/blob/64e8e9f991f51b407f3af108da732e186429454a/src/ReactPixiFiber.js#L43
+* new `applyDisplayObjectProps` -> https://github.com/KalambaGames/react-pixi-fiber/blob/3a9b71b8d18180117bf70459dd6b4419c5ef1c21/src/ReactPixiFiberComponent.js#L161
 </details>
 
 ---

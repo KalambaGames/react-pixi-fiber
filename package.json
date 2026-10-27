@@ -3,7 +3,7 @@
   "private": true,
   "license": "MIT",
   "type": "module",
-  "repository": "github:michalochman/react-pixi-fiber",
+  "repository": "github:KalambaGames/react-pixi-fiber",
   "packageManager": "pnpm@10.24.0",
   "scripts": {
     "build": "pnpm -r build",

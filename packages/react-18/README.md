@@ -1,6 +1,6 @@
 # @react-pixi-fiber/react-18
 
-React 18 adapter for [react-pixi-fiber](https://github.com/michalochman/react-pixi-fiber). It bundles `react-reconciler` 0.29.2 and builds the renderer that `react-pixi-fiber` uses to render PixiJS Display Objects. It needs React 18.3.1 or a later 18.x, the peer range of that `react-reconciler`.
+React 18 adapter for [react-pixi-fiber](https://github.com/KalambaGames/react-pixi-fiber). It bundles `react-reconciler` 0.29.2 and builds the renderer that `react-pixi-fiber` uses to render PixiJS Display Objects. It needs React 18.3.1 or a later 18.x, the peer range of that `react-reconciler`.
 
 Install it next to `react-pixi-fiber`, `react` 18 and a PixiJS adapter from the [adapter table](../react-pixi-fiber/README.md#setup), then configure once in the app entry, before the first render:
 

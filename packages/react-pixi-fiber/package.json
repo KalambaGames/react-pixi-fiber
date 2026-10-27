@@ -7,7 +7,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/michalochman/react-pixi-fiber.git",
+    "url": "git+https://github.com/KalambaGames/react-pixi-fiber.git",
     "directory": "packages/react-pixi-fiber"
   },
   "typings": "./dist/cjs/react-pixi-fiber.d.ts",

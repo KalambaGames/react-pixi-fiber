@@ -1,6 +1,6 @@
 {
   "$schema": "https://unpkg.com/@changesets/config@3.0.0/schema.json",
-  "changelog": ["@changesets/changelog-github", { "repo": "michalochman/react-pixi-fiber" }],
+  "changelog": ["@changesets/changelog-github", { "repo": "KalambaGames/react-pixi-fiber" }],
   "commit": false,
   "fixed": [],
   "linked": [],

@@ -1,6 +1,6 @@
 # @react-pixi-fiber/pixi-8
 
-PixiJS 8 adapter for [react-pixi-fiber](https://github.com/michalochman/react-pixi-fiber). It tells `react-pixi-fiber` how to create the PixiJS 8 classes for the 13 Scene Object tags and the 5 filter tags. It also tells which props it types and how to create and initialize a `PIXI.Application`.
+PixiJS 8 adapter for [react-pixi-fiber](https://github.com/KalambaGames/react-pixi-fiber). It tells `react-pixi-fiber` how to create the PixiJS 8 classes for the 13 Scene Object tags and the 5 filter tags. It also tells which props it types and how to create and initialize a `PIXI.Application`.
 
 Install it next to `react-pixi-fiber`, `pixi.js` 8.9 or newer (the first with every tag this adapter exports) and a React adapter from the [adapter table](../react-pixi-fiber/README.md#setup), then configure once in the app entry, before the first render:
 
