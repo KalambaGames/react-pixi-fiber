@@ -14,3 +14,6 @@ declare module "pixi-tilemap" {
 declare module "pixi-spine" {
   export = PIXI.spine;
 }
+declare module "*/hooks/useSpritesheet" {
+  export const useSpritesheet: typeof import("./examples/hooks/useSpritesheet").useSpritesheet;
+}

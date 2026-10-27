@@ -10,6 +10,7 @@ import bunnys from "./examples/assets/bunnys.png";
 import sounds from "./examples/assets/sounds.mp3";
 import spineboy from "./examples/assets/spineboy.png";
 import tinyTown from "./examples/assets/tiny-town.png";
+import { useSpritesheet } from "./examples/hooks/useSpritesheet";
 import type { LazyModules } from "playground-shell/runner";
 
 export const modules: Record<string, unknown> = {
@@ -18,6 +19,7 @@ export const modules: Record<string, unknown> = {
   "./assets/sounds.mp3": sounds,
   "./assets/spineboy.png": spineboy,
   "./assets/tiny-town.png": tinyTown,
+  "./hooks/useSpritesheet": { useSpritesheet },
   "@pixi/layers": layers,
   "@react-pixi-fiber/pixi-6": pixi6,
   "pixi.js": pixi,
