@@ -1,7 +1,17 @@
-import { Rectangle, Texture } from "pixi.js";
+import { Spritesheet, Texture } from "pixi.js";
 import { useCallback, useEffect, useState } from "react";
 import { ParticleContainer, Sprite, Stage, usePixiTicker } from "react-pixi-fiber";
+// Frame names and rectangles: see the Features / Spritesheet example.
+import bunnysData from "./assets/bunnys.json";
 import bunnys from "./assets/bunnys.png";
+
+const bunnySheet = Texture.fromURL(bunnys).then(texture => {
+  const sheet = new Spritesheet(texture, bunnysData);
+  // parse fills sheet.textures before it returns, for a sheet this small.
+  // The documented way waits for parse: see the Features / Spritesheet example.
+  sheet.parse(() => {});
+  return sheet;
+});
 
 const createBunnies = () =>
   Array.from({ length: 200 }, (_, id) => ({
@@ -31,15 +41,12 @@ export default function ParticleContainerExample() {
   const [texture, setTexture] = useState<Texture>();
   useEffect(() => {
     let cancelled = false;
-    let bunny: Texture | undefined;
-    Texture.fromURL(bunnys).then(sheet => {
+    bunnySheet.then(sheet => {
       if (cancelled) return;
-      bunny = new Texture(sheet.baseTexture, new Rectangle(2, 47, 26, 37));
-      setTexture(bunny);
+      setTexture(sheet.textures.bunny);
     });
     return () => {
       cancelled = true;
-      bunny?.destroy();
     };
   }, []);
   return (

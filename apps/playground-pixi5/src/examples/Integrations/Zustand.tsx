@@ -1,8 +1,10 @@
 import type { Graphics as PixiGraphics, Sprite as PixiSprite, Text as PixiText } from "pixi.js";
-import { Point, Rectangle, SCALE_MODES, settings, Texture } from "pixi.js";
+import { BaseTexture, Point, SCALE_MODES, settings, Spritesheet } from "pixi.js";
 import { useEffect, useRef } from "react";
 import { Container, Graphics, Sprite, Stage, Text, usePixiTicker } from "react-pixi-fiber";
 import { create } from "zustand";
+// Frame names and rectangles: see the Features / Spritesheet example.
+import bunnysData from "./assets/bunnys.json";
 import bunnys from "./assets/bunnys.png";
 
 settings.SCALE_MODE = SCALE_MODES.NEAREST;
@@ -13,14 +15,13 @@ const feetAnchor = new Point(0.5, 1);
 // Half the height of a bunny at scale 1.5, so the pointer stays in the middle of its body.
 const feetOffset = 28;
 const topRightAnchor = new Point(1, 0);
-const bunnyTextures = Texture.from(bunnys);
-const textures = [
-  new Texture(bunnyTextures.baseTexture, new Rectangle(2, 47, 26, 37)),
-  new Texture(bunnyTextures.baseTexture, new Rectangle(2, 86, 26, 37)),
-  new Texture(bunnyTextures.baseTexture, new Rectangle(2, 125, 26, 37)),
-  new Texture(bunnyTextures.baseTexture, new Rectangle(2, 164, 26, 37)),
-  new Texture(bunnyTextures.baseTexture, new Rectangle(2, 2, 26, 43)),
-];
+const sheet = new Spritesheet(BaseTexture.from(bunnys), bunnysData);
+// parse fills sheet.textures before it returns, for a sheet this small.
+// The documented way waits for parse: see the Features / Spritesheet example.
+sheet.parse(() => {});
+
+const bunnyNames = ["bunny", "bunnyCute", "bunnySporty", "bunnyRobot", "bunnyAstronaut"] as const;
+const textures = bunnyNames.map(name => sheet.textures[name]);
 // One coin color per bunny, in the order of the textures.
 const coinColors = [0xd08a24, 0x9bc12b, 0x25b8a8, 0x5a7090, 0xe040e0];
 const roundSeconds = 30;

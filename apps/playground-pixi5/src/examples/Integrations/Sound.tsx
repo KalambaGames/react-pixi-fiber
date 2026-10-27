@@ -1,8 +1,10 @@
 import sound from "pixi-sound";
 import type { Sprite as PixiSprite } from "pixi.js";
-import { Point, Rectangle, SCALE_MODES, settings, Texture } from "pixi.js";
+import { BaseTexture, Point, SCALE_MODES, settings, Spritesheet } from "pixi.js";
 import { useEffect, useRef, useState } from "react";
 import { Sprite, Stage, Text, usePixiTicker } from "react-pixi-fiber";
+// Frame names and rectangles: see the Features / Spritesheet example.
+import bunnysData from "./assets/bunnys.json";
 import bunnys from "./assets/bunnys.png";
 import sounds from "./assets/sounds.mp3";
 
@@ -11,14 +13,13 @@ settings.SCALE_MODE = SCALE_MODES.NEAREST;
 const centerAnchor = new Point(0.5, 0.5);
 // The frames differ in height, so the bunnies stand on their feet like in the AnimatedSprite example.
 const feetAnchor = new Point(0.5, 1);
-const bunnyTextures = Texture.from(bunnys);
-const textures = [
-  new Texture(bunnyTextures.baseTexture, new Rectangle(2, 47, 26, 37)),
-  new Texture(bunnyTextures.baseTexture, new Rectangle(2, 86, 26, 37)),
-  new Texture(bunnyTextures.baseTexture, new Rectangle(2, 125, 26, 37)),
-  new Texture(bunnyTextures.baseTexture, new Rectangle(2, 164, 26, 37)),
-  new Texture(bunnyTextures.baseTexture, new Rectangle(2, 2, 26, 43)),
-];
+const sheet = new Spritesheet(BaseTexture.from(bunnys), bunnysData);
+// parse fills sheet.textures before it returns, for a sheet this small.
+// The documented way waits for parse: see the Features / Spritesheet example.
+sheet.parse(() => {});
+
+const bunnyNames = ["bunny", "bunnyCute", "bunnySporty", "bunnyRobot", "bunnyAstronaut"] as const;
+const textures = bunnyNames.map(name => sheet.textures[name]);
 const textStyle = { fill: "white", fontFamily: "Arial", fontSize: 14 } as const;
 
 // One audio sprite holds all the sounds. Each sound starts on a full second.
