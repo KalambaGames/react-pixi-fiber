@@ -13,6 +13,17 @@ import { Sprite, Stage } from "react-pixi-fiber";
 import bunnysData from "./assets/bunnys.json";
 import bunnys from "./assets/bunnys.png";
 
+// Scale mode for all textures, will retain pixelation
+TextureSource.defaultOptions.scaleMode = "nearest";
+
+const bunnySheet = Assets.load<Texture>(bunnys).then(async texture => {
+  const sheet = new Spritesheet(texture, bunnysData);
+  await sheet.parse();
+  return sheet;
+});
+
+const bunnyNames = ["bunny", "bunnyCute", "bunnySporty", "bunnyRobot", "bunnyAstronaut"] as const;
+
 const centerAnchor = new Point(0.5, 0.5);
 
 // PixiJS 8 loads the sprite sheet asynchronously, so the bunnies render once their textures exist.
@@ -44,17 +55,6 @@ function Bunny({ as: Component = Sprite, texture = 0, ...passedProps }: BunnyPro
   const textures = useContext(BunnyTextures);
   return <Component anchor={centerAnchor} {...passedProps} texture={textures[texture]} />;
 }
-
-// Scale mode for all textures, will retain pixelation
-TextureSource.defaultOptions.scaleMode = "nearest";
-
-const bunnySheet = Assets.load<Texture>(bunnys).then(async texture => {
-  const sheet = new Spritesheet(texture, bunnysData);
-  await sheet.parse();
-  return sheet;
-});
-
-const bunnyNames = ["bunny", "bunnyCute", "bunnySporty", "bunnyRobot", "bunnyAstronaut"] as const;
 
 const WIDTH = 400;
 const HEIGHT = 300;
