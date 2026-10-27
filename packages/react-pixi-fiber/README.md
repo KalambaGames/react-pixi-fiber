@@ -548,6 +548,62 @@ render(
 
 ---
 
+<details>
+  <summary>
+    <strong>Using the <code>usePixiApp</code> and <code>usePixiTicker</code> hooks</strong>
+  </summary>
+
+`usePixiApp()` returns `app`. `usePixiTicker(fn, options)` adds `fn` to `app.ticker` on mount and removes it on unmount. `options` is optional:
+
+* `enabled` – `false` removes `fn` from the ticker, `true` adds it back. Default `true`.
+* `priority` – the PixiJS `UPDATE_PRIORITY` of `fn`: `INTERACTION` (50), `HIGH` (25), `NORMAL` (0, the default), `LOW` (-25) or `UTILITY` (-50), exported from `pixi.js`. A listener with a higher priority runs first. The PixiJS render runs at `LOW`.
+
+Listeners with the same priority run in the order they were added. A change to `enabled` or `priority` removes `fn` and adds it again, so `fn` then runs after the other listeners with its priority. Give listeners different priorities when their order matters.
+
+```jsx harmony
+import { useCallback, useState } from "react";
+import { createRoot } from "react-dom/client";
+import { Assets } from "pixi.js";
+import { configure, Sprite, Stage, usePixiTicker } from "react-pixi-fiber";
+import react19 from "@react-pixi-fiber/react-19";
+import pixi8 from "@react-pixi-fiber/pixi-8";
+import bunny from "./bunny.png";
+
+configure({ react: react19(), pixi: pixi8() });
+
+const texture = await Assets.load(bunny);
+
+function RotatingBunny(props) {
+  const [rotation, setRotation] = useState(0);
+  const [paused, setPaused] = useState(false);
+  // PixiJS 8 passes the `Ticker`. PixiJS 4 to 7 pass the frame delta as a number.
+  const spin = useCallback(ticker => setRotation(rotation => rotation + 0.1 * ticker.deltaTime), []);
+
+  usePixiTicker(spin, { enabled: !paused });
+
+  return (
+    <Sprite
+      {...props}
+      cursor="pointer"
+      eventMode="static"
+      onpointertap={() => setPaused(paused => !paused)}
+      rotation={rotation}
+      texture={texture}
+    />
+  );
+}
+
+createRoot(document.getElementById("root")).render(
+  <Stage options={{ background: 0x10bb99, height: 600, width: 800 }}>
+    <RotatingBunny x={200} y={200} />
+  </Stage>,
+);
+```
+
+</details>
+
+---
+
 ### Context – Using a context provided outside `Stage`
 
 React does not pass context between renderers, and the children of `<Stage />` render in their own React root. A provider around `<Stage />` is not visible inside it, so `useContext`, `react-redux` `connect` and similar read the default value there.

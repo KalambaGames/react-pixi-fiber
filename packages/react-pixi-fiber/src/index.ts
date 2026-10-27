@@ -36,7 +36,7 @@ import type {
 
 export * from "./types";
 export type { ApplyPropsContext, Behavior, BehaviorInput } from "./registry";
-export type { PixiTickerCallback } from "./hooks";
+export type { PixiTickerCallback, PixiTickerOptions } from "./hooks";
 
 // Filled by a PixiJS adapter's module augmentation. Empty here so the core compiles without one.
 export interface PixiExtraProps {}

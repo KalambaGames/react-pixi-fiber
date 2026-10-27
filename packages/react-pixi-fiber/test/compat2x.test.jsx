@@ -209,7 +209,7 @@ describe("2.x compatibility", () => {
       ["usePixiApp", app],
       ["AppContext", app],
     ]);
-    expect(add).toHaveBeenCalledWith(tick);
+    expect(add).toHaveBeenCalledWith(tick, undefined, undefined);
     act(() => unmount(app.stage));
     app.destroy();
     expect(messages(error)).toEqual([]);

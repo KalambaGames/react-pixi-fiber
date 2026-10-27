@@ -17,16 +17,28 @@ export type PixiTickerCallback = PixiApplication extends { ticker: { add(fn: inf
   ? F
   : (deltaTime: number) => void;
 
-export function usePixiTicker(fn: PixiTickerCallback): void {
+export interface PixiTickerOptions {
+  // `false` removes the callback from the ticker. `true` adds it back. Default `true`.
+  enabled?: boolean;
+  // The `priority` argument of `ticker.add`, a PixiJS `UPDATE_PRIORITY` value.
+  priority?: number;
+}
+
+export function usePixiTicker(fn: PixiTickerCallback, options?: PixiTickerOptions): void {
   const { ticker } = usePixiApp();
+  const { enabled = true, priority } = options ?? {};
 
   invariant(ticker != null, "`usePixiTicker` needs an `app` with a `ticker`.");
 
   useEffect(() => {
-    ticker.add(fn);
+    if (!enabled) {
+      return;
+    }
+
+    ticker.add(fn, undefined, priority);
 
     return () => {
       ticker.remove(fn);
     };
-  }, [fn, ticker]);
+  }, [enabled, fn, priority, ticker]);
 }
