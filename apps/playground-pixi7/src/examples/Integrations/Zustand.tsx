@@ -1,11 +1,12 @@
 import type { Graphics as PixiGraphics, Sprite as PixiSprite, Text as PixiText } from "pixi.js";
-import { BaseTexture, Point, SCALE_MODES, Spritesheet } from "pixi.js";
-import { useEffect, useRef } from "react";
+import { BaseTexture, Point, SCALE_MODES, type Texture } from "pixi.js";
+import { useEffect, useMemo, useRef } from "react";
 import { Container, Graphics, Sprite, Stage, Text, usePixiTicker } from "react-pixi-fiber";
 import { create } from "zustand";
-// Frame names and rectangles: see the Features / Spritesheet example.
+// useSpritesheet source, frame names and rectangles: see the Features / Spritesheet example.
 import bunnysData from "./assets/bunnys.json";
 import bunnys from "./assets/bunnys.png";
+import { useSpritesheet } from "./hooks/useSpritesheet";
 
 BaseTexture.defaultOptions.scaleMode = SCALE_MODES.NEAREST;
 
@@ -15,13 +16,7 @@ const feetAnchor = new Point(0.5, 1);
 // Half the height of a bunny at scale 1.5, so the pointer stays in the middle of its body.
 const feetOffset = 28;
 const topRightAnchor = new Point(1, 0);
-const sheet = new Spritesheet(BaseTexture.from(bunnys), bunnysData);
-// parse fills sheet.textures before it returns, for a sheet this small.
-// The documented way waits for parse: see the Features / Spritesheet example.
-sheet.parse();
-
 const bunnyNames = ["bunny", "bunnyCute", "bunnySporty", "bunnyRobot", "bunnyAstronaut"] as const;
-const textures = bunnyNames.map(name => sheet.textures[name]);
 // One coin color per bunny, in the order of the textures.
 const coinColors = [0xd08a24, 0x9bc12b, 0x25b8a8, 0x5a7090, 0xe040e0];
 const roundSeconds = 30;
@@ -54,7 +49,7 @@ interface Game {
 // One store for the DOM HUD and the PixiJS scene.
 const useGame = create<Game>()((set, get) => ({
   // A click changes the bunny, or starts a new round after the game is over.
-  click: () => (get().over ? get().restart() : set(state => ({ kind: (state.kind + 1) % textures.length }))),
+  click: () => (get().over ? get().restart() : set(state => ({ kind: (state.kind + 1) % coinColors.length }))),
   coins: startCoins(),
   end: () => set(state => ({ highScore: Math.max(state.highScore, state.score), over: true })),
   endsAt: null,
@@ -125,7 +120,7 @@ function Coins() {
   return coins.map(coin => <Graphics key={coin.id} ref={drawCoin[coin.kind]} x={coin.x} y={coin.y} />);
 }
 
-function Player() {
+function Player({ textures }: { textures: Texture[] }) {
   const sprite = useRef<PixiSprite>(null);
   const click = useGame(state => state.click);
   const kind = useGame(state => state.kind);
@@ -167,6 +162,9 @@ function GameOver() {
 }
 
 export default function ZustandExample() {
+  const { textures: frames } = useSpritesheet(bunnys, bunnysData);
+  const textures = useMemo(() => frames.bunny && bunnyNames.map(name => frames[name] as Texture), [frames]);
+
   return (
     <div>
       <Hud />
@@ -181,7 +179,7 @@ export default function ZustandExample() {
         <Clock />
         <HighScore />
         <Coins />
-        <Player />
+        {textures && <Player textures={textures} />}
         <GameOver />
       </Stage>
     </div>

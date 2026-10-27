@@ -1,12 +1,13 @@
 import { gsap } from "gsap";
 import { PixiPlugin } from "gsap/PixiPlugin";
 import * as PIXI from "pixi.js";
-import { BaseTexture, Point, SCALE_MODES, Spritesheet } from "pixi.js";
-import { useEffect, useRef } from "react";
+import { BaseTexture, Point, SCALE_MODES, type Texture } from "pixi.js";
+import { useEffect, useMemo, useRef } from "react";
 import { Sprite, Stage, Text } from "react-pixi-fiber";
-// Frame names and rectangles: see the Features / Spritesheet example.
+// useSpritesheet source, frame names and rectangles: see the Features / Spritesheet example.
 import bunnysData from "./assets/bunnys.json";
 import bunnys from "./assets/bunnys.png";
+import { useSpritesheet } from "./hooks/useSpritesheet";
 
 // PixiPlugin animates PixiJS properties such as scale and alpha through the `pixi` key.
 gsap.registerPlugin(PixiPlugin);
@@ -17,21 +18,19 @@ BaseTexture.defaultOptions.scaleMode = SCALE_MODES.NEAREST;
 const centerAnchor = new Point(0.5, 0.5);
 // The frames differ in height, so the bunnies stand on their feet like in the AnimatedSprite example.
 const feetAnchor = new Point(0.5, 1);
-const sheet = new Spritesheet(BaseTexture.from(bunnys), bunnysData);
-// parse fills sheet.textures before it returns, for a sheet this small.
-// The documented way waits for parse: see the Features / Spritesheet example.
-sheet.parse();
-
 const bunnyNames = ["bunny", "bunnyCute", "bunnySporty", "bunnyRobot", "bunnyAstronaut"] as const;
-const textures = bunnyNames.map(name => sheet.textures[name]);
 
 export default function GSAPExample() {
+  const { textures: frames } = useSpritesheet(bunnys, bunnysData);
+  const textures = useMemo(() => frames.bunny && bunnyNames.map(name => frames[name] as Texture), [frames]);
   const logo = useRef<PIXI.Text>(null);
   const bunnies = useRef<PIXI.Sprite[]>([]);
   const timeline = useRef<gsap.core.Timeline>(null);
 
+  // The intro waits for the sprite sheet.
   // The timeline changes the PixiJS objects directly, so the buttons do not re-render the component.
   useEffect(() => {
+    if (!textures) return;
     const intro = gsap
       .timeline()
       .from(logo.current, { duration: 1.2, ease: "bounce.out", pixi: { alpha: 0, y: -60 } })
@@ -45,7 +44,7 @@ export default function GSAPExample() {
     return () => {
       intro.revert();
     };
-  }, []);
+  }, [textures]);
 
   const play = () => {
     const intro = timeline.current;
@@ -67,15 +66,17 @@ export default function GSAPExample() {
         </button>
       </div>
       <Stage options={{ backgroundColor: 0x1099bb, height: 300, width: 400 }}>
-        <Text
-          anchor={centerAnchor}
-          ref={logo}
-          style={{ fill: "white", fontFamily: "Arial", fontSize: 36, fontWeight: "bold" }}
-          text="react-pixi-fiber"
-          x={200}
-          y={100}
-        />
-        {textures.map((texture, index) => (
+        {textures && (
+          <Text
+            anchor={centerAnchor}
+            ref={logo}
+            style={{ fill: "white", fontFamily: "Arial", fontSize: 36, fontWeight: "bold" }}
+            text="react-pixi-fiber"
+            x={200}
+            y={100}
+          />
+        )}
+        {textures?.map((texture, index) => (
           <Sprite
             anchor={feetAnchor}
             key={index}
