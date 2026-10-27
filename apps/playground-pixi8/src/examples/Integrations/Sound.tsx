@@ -1,20 +1,15 @@
 import { type Sound, sound } from "@pixi/sound";
 import type { Sprite as PixiSprite } from "pixi.js";
-import { Assets, Point, Spritesheet, type Texture, TextureSource } from "pixi.js";
-import { useEffect, useRef, useState } from "react";
+import { Point, type Texture, TextureSource } from "pixi.js";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Sprite, Stage, Text, usePixiTicker } from "react-pixi-fiber";
-// Frame names and rectangles: see the Features / Spritesheet example.
+// useSpritesheet source, frame names and rectangles: see the Features / Spritesheet example.
 import bunnysData from "./assets/bunnys.json";
 import bunnys from "./assets/bunnys.png";
 import sounds from "./assets/sounds.mp3";
+import { useSpritesheet } from "./hooks/useSpritesheet";
 
 TextureSource.defaultOptions.scaleMode = "nearest";
-
-const bunnySheet = Assets.load<Texture>(bunnys).then(async texture => {
-  const sheet = new Spritesheet(texture, bunnysData);
-  await sheet.parse();
-  return sheet;
-});
 
 const bunnyNames = ["bunny", "bunnyCute", "bunnySporty", "bunnyRobot", "bunnyAstronaut"] as const;
 
@@ -68,22 +63,11 @@ function Bunnies({ effects, textures }: { effects: Sound; textures: Texture[] })
 }
 
 export default function SoundExample() {
-  const [textures, setTextures] = useState<Texture[]>();
+  const { textures: frames } = useSpritesheet(bunnys, bunnysData);
+  const textures = useMemo(() => frames.bunny && bunnyNames.map(name => frames[name] as Texture), [frames]);
   const [effects, setEffects] = useState<Sound>();
   const [muted, setMuted] = useState(false);
   const [volume, setVolume] = useState(0.5);
-
-  // PixiJS 8 loads the sprite sheet asynchronously, so the bunnies render once their textures exist.
-  useEffect(() => {
-    let cancelled = false;
-    bunnySheet.then(sheet => {
-      if (cancelled) return;
-      setTextures(bunnyNames.map(name => sheet.textures[name]));
-    });
-    return () => {
-      cancelled = true;
-    };
-  }, []);
 
   useEffect(() => {
     setEffects(sound.add("bunnies", { preload: true, sprites, url: sounds }));

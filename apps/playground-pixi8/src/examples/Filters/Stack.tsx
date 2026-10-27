@@ -5,20 +5,14 @@ import {
   type OutlineFilterOptions,
   PixelateFilter as PixiPixelateFilter,
 } from "pixi-filters";
-import { Assets, Point, Spritesheet, type Texture, TextureSource } from "pixi.js";
-import { useEffect, useState } from "react";
+import { Point, TextureSource } from "pixi.js";
 import { BlurFilter, PIXIFilter, Sprite, Stage, Text } from "react-pixi-fiber";
-// Frame names and rectangles: see the Features / Spritesheet example.
+// useSpritesheet source, frame names and rectangles: see the Features / Spritesheet example.
 import bunnysData from "./assets/bunnys.json";
 import bunnys from "./assets/bunnys.png";
+import { useSpritesheet } from "./hooks/useSpritesheet";
 
 TextureSource.defaultOptions.scaleMode = "nearest";
-
-const bunnySheet = Assets.load<Texture>(bunnys).then(async texture => {
-  const sheet = new Spritesheet(texture, bunnysData);
-  await sheet.parse();
-  return sheet;
-});
 
 const OutlineFilter = PIXIFilter("OutlineFilter", (props: OutlineFilterOptions) => new PixiOutlineFilter(props));
 const PixelateFilter = PIXIFilter("PixelateFilter", (props: { size?: number }) => new PixiPixelateFilter(props.size));
@@ -27,19 +21,8 @@ const centerAnchor = new Point(0.5, 0.5);
 const scale = new Point(4, 4);
 
 export default function StackExample() {
-  const [texture, setTexture] = useState<Texture>();
-
-  // PixiJS 8 loads the sprite sheet asynchronously, so the bunny renders once its texture exists.
-  useEffect(() => {
-    let cancelled = false;
-    bunnySheet.then(sheet => {
-      if (cancelled) return;
-      setTexture(sheet.textures.bunny);
-    });
-    return () => {
-      cancelled = true;
-    };
-  }, []);
+  const { textures } = useSpritesheet(bunnys, bunnysData);
+  const texture = textures.bunny;
 
   const { blur, order, outline, pixelate } = useControls({
     pixelate: true,

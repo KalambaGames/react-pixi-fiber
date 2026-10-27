@@ -1,19 +1,14 @@
 import type { Sprite as PixiSprite, Text as PixiText } from "pixi.js";
-import { Assets, GraphicsContext, Point, Spritesheet, type Texture, TextureSource } from "pixi.js";
-import { useEffect, useRef, useState } from "react";
+import { GraphicsContext, Point, type Texture, TextureSource } from "pixi.js";
+import { useEffect, useMemo, useRef } from "react";
 import { Container, Graphics, Sprite, Stage, Text, usePixiTicker } from "react-pixi-fiber";
 import { create } from "zustand";
-// Frame names and rectangles: see the Features / Spritesheet example.
+// useSpritesheet source, frame names and rectangles: see the Features / Spritesheet example.
 import bunnysData from "./assets/bunnys.json";
 import bunnys from "./assets/bunnys.png";
+import { useSpritesheet } from "./hooks/useSpritesheet";
 
 TextureSource.defaultOptions.scaleMode = "nearest";
-
-const bunnySheet = Assets.load<Texture>(bunnys).then(async texture => {
-  const sheet = new Spritesheet(texture, bunnysData);
-  await sheet.parse();
-  return sheet;
-});
 
 const bunnyNames = ["bunny", "bunnyCute", "bunnySporty", "bunnyRobot", "bunnyAstronaut"] as const;
 
@@ -164,19 +159,8 @@ function GameOver() {
 }
 
 export default function ZustandExample() {
-  const [textures, setTextures] = useState<Texture[]>();
-
-  // PixiJS 8 loads the sprite sheet asynchronously, so the bunny renders once its textures exist.
-  useEffect(() => {
-    let cancelled = false;
-    bunnySheet.then(sheet => {
-      if (cancelled) return;
-      setTextures(bunnyNames.map(name => sheet.textures[name]));
-    });
-    return () => {
-      cancelled = true;
-    };
-  }, []);
+  const { textures: frames } = useSpritesheet(bunnys, bunnysData);
+  const textures = useMemo(() => frames.bunny && bunnyNames.map(name => frames[name] as Texture), [frames]);
 
   return (
     <div>

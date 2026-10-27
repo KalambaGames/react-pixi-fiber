@@ -1,19 +1,14 @@
 import { useSpring } from "@react-spring/core";
 import type { Sprite as PixiSprite } from "pixi.js";
-import { Assets, GraphicsContext, Point, Spritesheet, type Texture, TextureSource } from "pixi.js";
-import { useEffect, useRef, useState } from "react";
+import { GraphicsContext, Point, TextureSource } from "pixi.js";
+import { useRef } from "react";
 import { Graphics, Sprite, Stage, Text } from "react-pixi-fiber";
-// Frame names and rectangles: see the Features / Spritesheet example.
+// useSpritesheet source, frame names and rectangles: see the Features / Spritesheet example.
 import bunnysData from "./assets/bunnys.json";
 import bunnys from "./assets/bunnys.png";
+import { useSpritesheet } from "./hooks/useSpritesheet";
 
 TextureSource.defaultOptions.scaleMode = "nearest";
-
-const bunnySheet = Assets.load<Texture>(bunnys).then(async texture => {
-  const sheet = new Spritesheet(texture, bunnysData);
-  await sheet.parse();
-  return sheet;
-});
 
 const centerAnchor = new Point(0.5, 0.5);
 const outline = new GraphicsContext().roundRect(-35, -40, 70, 80, 8).stroke({ alpha: 0.6, color: 0xffffff, width: 2 });
@@ -21,7 +16,8 @@ const slots = [80, 160, 240, 320].map(x => ({ x, y: 220 }));
 const start = { x: 200, y: 110 };
 
 export default function ReactSpringExample() {
-  const [bunny, setBunny] = useState<Texture>();
+  const { textures } = useSpritesheet(bunnys, bunnysData);
+  const bunny = textures.bunny;
   const sprite = useRef<PixiSprite>(null);
   const grab = useRef<{ x: number; y: number } | null>(null);
   // The spring writes the position to the sprite on every frame, so dragging does not re-render the component.
@@ -29,18 +25,6 @@ export default function ReactSpringExample() {
     ...start,
     onChange: ({ value }: { value: typeof start }) => sprite.current?.position.set(value.x, value.y),
   }));
-
-  // PixiJS 8 loads the sprite sheet asynchronously, so the bunny renders once its texture exists.
-  useEffect(() => {
-    let cancelled = false;
-    bunnySheet.then(sheet => {
-      if (cancelled) return;
-      setBunny(sheet.textures.bunny);
-    });
-    return () => {
-      cancelled = true;
-    };
-  }, []);
 
   const release = () => {
     const current = sprite.current;

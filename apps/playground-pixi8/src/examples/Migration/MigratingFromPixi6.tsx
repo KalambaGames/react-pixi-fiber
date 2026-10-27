@@ -1,30 +1,15 @@
-import { Assets, Spritesheet, type Texture } from "pixi.js";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Container, Sprite, Stage, Text } from "react-pixi-fiber";
-// Frame names and rectangles: see the Features / Spritesheet example.
+// useSpritesheet source, frame names and rectangles: see the Features / Spritesheet example.
 import bunnysData from "./assets/bunnys.json";
 import bunnys from "./assets/bunnys.png";
-
-const bunnySheet = Assets.load<Texture>(bunnys).then(async texture => {
-  const sheet = new Spritesheet(texture, bunnysData);
-  await sheet.parse();
-  return sheet;
-});
+import { useSpritesheet } from "./hooks/useSpritesheet";
 
 export default function MigratingFromPixi6Example() {
-  const [texture, setTexture] = useState<Texture>();
+  const { textures } = useSpritesheet(bunnys, bunnysData);
+  const texture = textures.bunny;
   const [scale, setScale] = useState(3);
   const [pointer, setPointer] = useState("move the pointer");
-  useEffect(() => {
-    let cancelled = false;
-    bunnySheet.then(sheet => {
-      if (cancelled) return;
-      setTexture(sheet.textures.bunny);
-    });
-    return () => {
-      cancelled = true;
-    };
-  }, []);
   return (
     <Stage options={{ background: 0x1099bb, height: 300, width: 400 }}>
       {texture && (

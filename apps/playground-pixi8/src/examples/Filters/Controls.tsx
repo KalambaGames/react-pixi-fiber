@@ -1,20 +1,15 @@
 // Every filter and every parameter: https://pixijs.io/filters/examples/
 import { useControls } from "leva";
 import { AdjustmentFilter as PixiAdjustmentFilter, type AdjustmentFilterOptions } from "pixi-filters";
-import { Assets, Point, Spritesheet, type Texture, TextureSource } from "pixi.js";
-import { useEffect, useRef, useState } from "react";
+import { Point, type Texture, TextureSource } from "pixi.js";
+import { useMemo, useRef } from "react";
 import { Container, PIXIFilter, Sprite, Stage, Text } from "react-pixi-fiber";
-// Frame names and rectangles: see the Features / Spritesheet example.
+// useSpritesheet source, frame names and rectangles: see the Features / Spritesheet example.
 import bunnysData from "./assets/bunnys.json";
 import bunnys from "./assets/bunnys.png";
+import { useSpritesheet } from "./hooks/useSpritesheet";
 
 TextureSource.defaultOptions.scaleMode = "nearest";
-
-const bunnySheet = Assets.load<Texture>(bunnys).then(async texture => {
-  const sheet = new Spritesheet(texture, bunnysData);
-  await sheet.parse();
-  return sheet;
-});
 
 const bunnyNames = ["bunny", "bunnyCute", "bunnySporty", "bunnyRobot", "bunnyAstronaut"] as const;
 
@@ -30,19 +25,8 @@ export default function ControlsExample() {
   const renders = useRef(0);
   renders.current += 1;
   const adjustment = useRef<PixiAdjustmentFilter>(null);
-  const [textures, setTextures] = useState<Texture[]>();
-
-  // PixiJS 8 loads the sprite sheet asynchronously, so the bunnies render once their textures exist.
-  useEffect(() => {
-    let cancelled = false;
-    bunnySheet.then(sheet => {
-      if (cancelled) return;
-      setTextures(bunnyNames.map(name => sheet.textures[name]));
-    });
-    return () => {
-      cancelled = true;
-    };
-  }, []);
+  const { textures: frames } = useSpritesheet(bunnys, bunnysData);
+  const textures = useMemo(() => frames.bunny && bunnyNames.map(name => frames[name] as Texture), [frames]);
 
   // useControls returns values, so a change of contrast or saturation re-renders the component.
   const { contrast, saturation } = useControls({

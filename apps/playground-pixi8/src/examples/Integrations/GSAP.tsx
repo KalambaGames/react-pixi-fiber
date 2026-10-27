@@ -1,24 +1,19 @@
 import { gsap } from "gsap";
 import { PixiPlugin } from "gsap/PixiPlugin";
 import * as PIXI from "pixi.js";
-import { type Application, Assets, Point, Spritesheet, type Texture, TextureSource } from "pixi.js";
-import { useEffect, useRef, useState } from "react";
+import { type Application, Point, type Texture, TextureSource } from "pixi.js";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Sprite, Stage, Text } from "react-pixi-fiber";
-// Frame names and rectangles: see the Features / Spritesheet example.
+// useSpritesheet source, frame names and rectangles: see the Features / Spritesheet example.
 import bunnysData from "./assets/bunnys.json";
 import bunnys from "./assets/bunnys.png";
+import { useSpritesheet } from "./hooks/useSpritesheet";
 
 // PixiPlugin animates PixiJS properties such as scale and alpha through the `pixi` key.
 gsap.registerPlugin(PixiPlugin);
 PixiPlugin.registerPIXI(PIXI);
 
 TextureSource.defaultOptions.scaleMode = "nearest";
-
-const bunnySheet = Assets.load<Texture>(bunnys).then(async texture => {
-  const sheet = new Spritesheet(texture, bunnysData);
-  await sheet.parse();
-  return sheet;
-});
 
 const bunnyNames = ["bunny", "bunnyCute", "bunnySporty", "bunnyRobot", "bunnyAstronaut"] as const;
 
@@ -28,21 +23,11 @@ const feetAnchor = new Point(0.5, 1);
 
 export default function GSAPExample() {
   const [app, setApp] = useState<Application>();
-  const [textures, setTextures] = useState<Texture[]>();
+  const { textures: frames } = useSpritesheet(bunnys, bunnysData);
+  const textures = useMemo(() => frames.bunny && bunnyNames.map(name => frames[name] as Texture), [frames]);
   const logo = useRef<PIXI.Text>(null);
   const bunnies = useRef<PIXI.Sprite[]>([]);
   const timeline = useRef<gsap.core.Timeline>(null);
-
-  useEffect(() => {
-    let cancelled = false;
-    bunnySheet.then(sheet => {
-      if (cancelled) return;
-      setTextures(bunnyNames.map(name => sheet.textures[name]));
-    });
-    return () => {
-      cancelled = true;
-    };
-  }, []);
 
   // Stage renders its children after `onInit`, because PixiJS 8 creates the application asynchronously.
   // The sprite sheet can load before `onInit`, so the intro waits for both.

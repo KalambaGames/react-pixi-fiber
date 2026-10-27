@@ -1,4 +1,4 @@
-import { Assets, Point, Spritesheet, type Texture, type Ticker } from "pixi.js";
+import { Point, type Texture, type Ticker } from "pixi.js";
 import {
   type ComponentProps,
   type ComponentType,
@@ -6,39 +6,24 @@ import {
   type ReactNode,
   useCallback,
   useContext,
-  useEffect,
+  useMemo,
   useState,
 } from "react";
 import { Container, type PixiAppProperties, Sprite, Stage, usePixiTicker, withApp } from "react-pixi-fiber";
-// Frame names and rectangles: see the Features / Spritesheet example.
+// useSpritesheet source, frame names and rectangles: see the Features / Spritesheet example.
 import bunnysData from "./assets/bunnys.json";
 import bunnys from "./assets/bunnys.png";
-
-const bunnySheet = Assets.load<Texture>(bunnys).then(async texture => {
-  const sheet = new Spritesheet(texture, bunnysData);
-  await sheet.parse();
-  return sheet;
-});
+import { useSpritesheet } from "./hooks/useSpritesheet";
 
 const bunnyNames = ["bunny", "bunnyCute", "bunnySporty", "bunnyRobot", "bunnyAstronaut"] as const;
 
 const centerAnchor = new Point(0.5, 0.5);
 
-// PixiJS 8 loads the sprite sheet asynchronously, so the bunnies render once their textures exist.
 const BunnyTextures = createContext<Texture[]>([]);
 
 function BunnyTexturesProvider({ children }: { children: ReactNode }) {
-  const [textures, setTextures] = useState<Texture[]>();
-  useEffect(() => {
-    let cancelled = false;
-    bunnySheet.then(sheet => {
-      if (cancelled) return;
-      setTextures(bunnyNames.map(name => sheet.textures[name]));
-    });
-    return () => {
-      cancelled = true;
-    };
-  }, []);
+  const { textures: frames } = useSpritesheet(bunnys, bunnysData);
+  const textures = useMemo(() => frames.bunny && bunnyNames.map(name => frames[name] as Texture), [frames]);
   return textures ? <BunnyTextures.Provider value={textures}>{children}</BunnyTextures.Provider> : null;
 }
 

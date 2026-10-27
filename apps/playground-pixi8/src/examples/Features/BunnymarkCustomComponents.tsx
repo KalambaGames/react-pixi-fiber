@@ -1,5 +1,5 @@
 import * as PIXI from "pixi.js";
-import { Fragment, useCallback, useEffect, useRef, useState } from "react";
+import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   PIXIComponent,
   type PixiAppProperties,
@@ -10,15 +10,10 @@ import {
   usePixiTicker,
   withApp,
 } from "react-pixi-fiber";
-// Frame names and rectangles: see the Features / Spritesheet example.
+// useSpritesheet source, frame names and rectangles: see the Features / Spritesheet example.
 import bunnysData from "./assets/bunnys.json";
 import bunnysImage from "./assets/bunnys.png";
-
-const bunnySheet = PIXI.Assets.load<PIXI.Texture>(bunnysImage).then(async texture => {
-  const sheet = new PIXI.Spritesheet(texture, bunnysData);
-  await sheet.parse();
-  return sheet;
-});
+import { useSpritesheet } from "./hooks/useSpritesheet";
 
 const bunnyNames = ["bunny", "bunnyCute", "bunnySporty", "bunnyRobot", "bunnyAstronaut"] as const;
 
@@ -110,27 +105,21 @@ const moveBunny = function (this: ParticleInstance) {
 const CustomBunnymark = withApp(function CustomBunnymark(props: PixiAppProperties) {
   const particleContainer = useRef<PIXI.ParticleContainer>(null);
   const [bunnys, setBunnys] = useState<Bunny[]>([]);
-  const [bunnyTextures, setBunnyTextures] = useState<PIXI.Texture[]>([]);
+  const { textures: frames } = useSpritesheet(bunnysImage, bunnysData);
+  const bunnyTextures = useMemo(() => frames.bunny && bunnyNames.map(name => frames[name] as PIXI.Texture), [frames]);
   const [currentTexture, setCurrentTexture] = useState(0);
   const [isAdding, setIsAdding] = useState(false);
 
-  // PixiJS 8 loads the sprite sheet asynchronously.
+  // The first bunnies appear when the sprite sheet is ready.
   useEffect(() => {
-    let cancelled = false;
-    bunnySheet.then(sheet => {
-      if (cancelled) return;
-      setBunnyTextures(bunnyNames.map(name => sheet.textures[name]));
-      const currentTexture = 2;
-      setBunnys([generateBunny(currentTexture), generateBunny(currentTexture)]);
-      setCurrentTexture(currentTexture);
-    });
-    return () => {
-      cancelled = true;
-    };
-  }, []);
+    if (!bunnyTextures) return;
+    const currentTexture = 2;
+    setBunnys([generateBunny(currentTexture), generateBunny(currentTexture)]);
+    setCurrentTexture(currentTexture);
+  }, [bunnyTextures]);
 
   const animate = useCallback(() => {
-    if (isAdding) {
+    if (isAdding && bunnyTextures) {
       const addedBunnys: Bunny[] = [];
 
       if (bunnys.length < maxSize) {
@@ -146,7 +135,7 @@ const CustomBunnymark = withApp(function CustomBunnymark(props: PixiAppPropertie
     if (particleContainer.current) {
       (particleContainer.current.particleChildren as ParticleInstance[]).forEach(bunny => bunny.update?.(bunny));
     }
-  }, [bunnys, currentTexture, isAdding]);
+  }, [bunnyTextures, bunnys, currentTexture, isAdding]);
 
   usePixiTicker(animate);
 
@@ -162,17 +151,18 @@ const CustomBunnymark = withApp(function CustomBunnymark(props: PixiAppPropertie
   return (
     <Fragment>
       <ParticleContainer dynamicProperties={particleContainerProperties} ref={particleContainer}>
-        {bunnys.map((bunny, i) => (
-          <Particle
-            anchorX={0.5}
-            anchorY={1}
-            key={i}
-            speedX={bunny.speedX}
-            speedY={bunny.speedY}
-            texture={bunnyTextures[bunny.texture]}
-            update={moveBunny}
-          />
-        ))}
+        {bunnyTextures &&
+          bunnys.map((bunny, i) => (
+            <Particle
+              anchorX={0.5}
+              anchorY={1}
+              key={i}
+              speedX={bunny.speedX}
+              speedY={bunny.speedY}
+              texture={bunnyTextures[bunny.texture]}
+              update={moveBunny}
+            />
+          ))}
       </ParticleContainer>
       <Text style={{ fill: 0xffff00, fontSize: 14 }} text={`${bunnys.length} BUNNIES`} x={5} y={5} />
       {/* ParticleContainer and its children cannot be interactive
