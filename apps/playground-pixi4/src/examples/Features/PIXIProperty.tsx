@@ -1,4 +1,4 @@
-import { BaseTexture, Point, Spritesheet } from "pixi.js";
+import { Point } from "pixi.js";
 import React, { type ComponentProps, type ComponentType, useCallback, useState } from "react";
 import {
   Container,
@@ -9,9 +9,10 @@ import {
   usePixiTicker,
   withApp,
 } from "react-pixi-fiber";
-// Frame names and rectangles: see the Features / Spritesheet example.
+// useSpritesheet source, frame names and rectangles: see the Features / Spritesheet example.
 import bunnysData from "./assets/bunnys.json";
 import bunnys from "./assets/bunnys.png";
+import { useSpritesheet } from "./hooks/useSpritesheet";
 
 console.log(
   "The invalid `id` warning below is expected: `id` is registered as a number, and two bunnies pass a string."
@@ -19,13 +20,7 @@ console.log(
 
 const centerAnchor = new Point(0.5, 0.5);
 
-const sheet = new Spritesheet(BaseTexture.fromImage(bunnys), bunnysData);
-// parse fills sheet.textures before it returns, for a sheet this small.
-// The documented way waits for parse: see the Features / Spritesheet example.
-sheet.parse(() => {});
-
 const bunnyNames = ["bunny", "bunnyCute", "bunnySporty", "bunnyRobot", "bunnyAstronaut"] as const;
-const textures = bunnyNames.map(name => sheet.textures[name]);
 
 type BunnyProps = Omit<ComponentProps<typeof Sprite>, "texture"> & {
   // Component used to render the bunny, e.g. `Animated.Sprite`
@@ -35,7 +30,9 @@ type BunnyProps = Omit<ComponentProps<typeof Sprite>, "texture"> & {
 };
 
 function Bunny({ as: Component = Sprite, texture = 0, ...passedProps }: BunnyProps) {
-  return <Component anchor={centerAnchor} {...passedProps} texture={textures[texture]} />;
+  const { textures } = useSpritesheet(bunnys, bunnysData);
+  const frame = textures[bunnyNames[texture]];
+  return frame ? <Component anchor={centerAnchor} {...passedProps} texture={frame} /> : null;
 }
 
 type RotatingBunnyProps = PixiAppProperties &

@@ -1,27 +1,24 @@
 // Every filter and every parameter: https://pixijs.io/filters/examples/
 import { useControls } from "leva";
 import { AdjustmentFilter as PixiAdjustmentFilter, type AdjustmentOptions } from "pixi-filters";
-import { BaseTexture, Point, SCALE_MODES, settings, Spritesheet } from "pixi.js";
-import { useRef } from "react";
+import { Point, SCALE_MODES, settings, type Texture } from "pixi.js";
+import { useMemo, useRef } from "react";
 import { Container, PIXIFilter, Sprite, Stage, Text } from "react-pixi-fiber";
-// Frame names and rectangles: see the Features / Spritesheet example.
+// useSpritesheet source, frame names and rectangles: see the Features / Spritesheet example.
 import bunnysData from "./assets/bunnys.json";
 import bunnys from "./assets/bunnys.png";
+import { useSpritesheet } from "./hooks/useSpritesheet";
 
 settings.SCALE_MODE = SCALE_MODES.NEAREST;
 
 const AdjustmentFilter = PIXIFilter("AdjustmentFilter", (props: AdjustmentOptions) => new PixiAdjustmentFilter(props));
 
-const sheet = new Spritesheet(BaseTexture.fromImage(bunnys), bunnysData);
-// parse fills sheet.textures before it returns, for a sheet this small.
-// The documented way waits for parse: see the Features / Spritesheet example.
-sheet.parse(() => {});
-
 const bunnyNames = ["bunny", "bunnyCute", "bunnySporty", "bunnyRobot", "bunnyAstronaut"] as const;
-const textures = bunnyNames.map(name => sheet.textures[name]);
 const scale = new Point(2, 2);
 
 export default function ControlsExample() {
+  const { textures: frames } = useSpritesheet(bunnys, bunnysData);
+  const textures = useMemo(() => frames.bunny && bunnyNames.map(name => frames[name] as Texture), [frames]);
   // Counts the renders of this component, to show which controls re-render it.
   const renders = useRef(0);
   renders.current += 1;
@@ -64,7 +61,7 @@ export default function ControlsExample() {
           ref={adjustment}
           saturation={saturation}
         />
-        {textures.map((texture, index) => (
+        {textures?.map((texture, index) => (
           <Sprite key={index} scale={scale} texture={texture} x={40 + index * 70} y={130} />
         ))}
       </Container>
