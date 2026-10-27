@@ -19,6 +19,7 @@ export default defineConfig({
       input: {
         index: resolve(import.meta.dirname, "index.html"),
         runner: resolve(import.meta.dirname, "runner.html"),
+        runnerDefaults: resolve(import.meta.dirname, "runner-defaults.html"),
       },
     },
   },
