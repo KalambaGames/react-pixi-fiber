@@ -1,0 +1,26 @@
+name: Bug report
+description: Report incorrect rendering or incorrect behavior.
+labels: [bug]
+body:
+  - type: input
+    id: versions
+    attributes:
+      label: Versions
+      description: Give the versions of react-pixi-fiber, the React adapter, the PixiJS adapter, react and pixi.js.
+      placeholder: react-pixi-fiber 3.0.0-alpha.1, react-19 1.0.0-alpha.0, pixi-8 1.0.0-alpha.1, react 19.2.0, pixi.js 8.9.2
+    validations:
+      required: true
+  - type: textarea
+    id: repro
+    attributes:
+      label: Reproduction
+      description: Give a minimal example or a link to one. You can fork the playground for this.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected and actual behavior
+      description: Write what you expected. Then write what happened.
+    validations:
+      required: true
