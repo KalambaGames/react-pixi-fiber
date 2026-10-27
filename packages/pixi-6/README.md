@@ -1,6 +1,6 @@
 # @react-pixi-fiber/pixi-6
 
-PixiJS 6 adapter for [react-pixi-fiber](https://github.com/michalochman/react-pixi-fiber). It tells `react-pixi-fiber` how to create the PixiJS 6 Display Objects for all 13 core tags, which props it types, and how to create a `PIXI.Application`.
+PixiJS 6 adapter for [react-pixi-fiber](https://github.com/michalochman/react-pixi-fiber). It tells `react-pixi-fiber` how to create the PixiJS 6 classes for the 13 Display Object tags and the 5 filter tags. It also tells which props it types and how to create a `PIXI.Application`.
 
 Install it next to `react-pixi-fiber`, `pixi.js` 6 and a React adapter from the [adapter table](../react-pixi-fiber/README.md#setup), then configure once in the app entry, before the first render:
 
@@ -18,21 +18,29 @@ Features that are plain PixiJS work as the [PixiJS 6 documentation](https://pixi
 
 | Tag | Creates |
 | --- | --- |
+| `AlphaFilter` | `PIXI.filters.AlphaFilter` |
 | `AnimatedSprite` | `PIXI.AnimatedSprite` |
 | `BitmapText` | `PIXI.BitmapText` |
+| `BlurFilter` | `PIXI.filters.BlurFilter` |
+| `ColorMatrixFilter` | `PIXI.filters.ColorMatrixFilter` |
 | `Container` | `PIXI.Container` |
+| `DisplacementFilter` | `PIXI.filters.DisplacementFilter`, from `sprite` and `scale` |
+| `FXAAFilter` | `PIXI.filters.FXAAFilter`, a tag of this adapter. Import it from this package |
 | `Graphics` | `PIXI.Graphics`, `geometry` is passed to the constructor |
 | `Mesh` | `PIXI.Mesh`, from `geometry`, `shader`, `state` and `drawMode` |
 | `MeshPlane`, `SimplePlane` | `PIXI.SimplePlane` |
 | `MeshRope`, `SimpleRope` | `PIXI.SimpleRope` |
 | `MeshSimple`, `SimpleMesh` | `PIXI.SimpleMesh` |
 | `NineSliceSprite`, `NineSlicePlane` | `PIXI.NineSlicePlane` |
+| `NoiseFilter` | `PIXI.filters.NoiseFilter` |
 | `ParticleContainer` | `PIXI.ParticleContainer` |
 | `Sprite` | `PIXI.Sprite` |
 | `Text` | `PIXI.Text` |
 | `TilingSprite` | `PIXI.TilingSprite` |
 
 `NineSlicePlane`, `SimpleMesh`, `SimplePlane` and `SimpleRope` are the PixiJS 6 class names. Each is a tag of its own: `defaults` and `PIXIProperty` keyed by `NineSliceSprite` do not apply to `<NineSlicePlane />`, and `getInstanceTag` returns `"NineSlicePlane"` for it. Import them from this package.
+
+When a filter element or an ancestor unmounts, this adapter releases the filter without a call to `destroy`. This applies to every filter the core created, built-in or registered with `PIXIFilter`. A behavior's `beforeRemove` is the place for custom cleanup. On PixiJS 6, `Filter.destroy` frees nothing. Below 6.5.7 it also leaves the renderer's bound shader dangling, so the next frame throws.
 
 | Feature | Support |
 | --- | --- |

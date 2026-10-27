@@ -1,6 +1,6 @@
 # @react-pixi-fiber/pixi-8
 
-PixiJS 8 adapter for [react-pixi-fiber](https://github.com/michalochman/react-pixi-fiber). It tells `react-pixi-fiber` how to create the PixiJS 8 Scene Objects for all 13 core tags, which props it types, and how to create and initialize a `PIXI.Application`.
+PixiJS 8 adapter for [react-pixi-fiber](https://github.com/michalochman/react-pixi-fiber). It tells `react-pixi-fiber` how to create the PixiJS 8 classes for the 13 Scene Object tags and the 5 filter tags. It also tells which props it types and how to create and initialize a `PIXI.Application`.
 
 Install it next to `react-pixi-fiber`, `pixi.js` 8.9 or newer (the first with every tag this adapter exports) and a React adapter from the [adapter table](../react-pixi-fiber/README.md#setup), then configure once in the app entry, before the first render:
 
@@ -20,17 +20,22 @@ Features that are plain PixiJS work as the [PixiJS 8 documentation](https://pixi
 
 | Tag | Creates |
 | --- | --- |
+| `AlphaFilter` | `PIXI.AlphaFilter` |
 | `AnimatedSprite` | `PIXI.AnimatedSprite` |
 | `BitmapText` | `PIXI.BitmapText`, from `style` and `text` |
+| `BlurFilter` | `PIXI.BlurFilter`, from `kernelSize`, `quality`, `resolution`, `strength`, `strengthX` and `strengthY` |
+| `ColorMatrixFilter` | `PIXI.ColorMatrixFilter` |
 | `Container` | `PIXI.Container` |
 | `DOMContainer` | `PIXI.DOMContainer`, a tag of this adapter |
+| `DisplacementFilter` | `PIXI.DisplacementFilter`, from `sprite` |
 | `Graphics` | `PIXI.Graphics`, `context` is passed to the constructor |
 | `HTMLText` | `PIXI.HTMLText`, a tag of this adapter |
 | `Mesh` | `PIXI.Mesh`, from `geometry`, `shader`, `state` and `texture` |
 | `MeshPlane` | `PIXI.MeshPlane` |
 | `MeshRope` | `PIXI.MeshRope` |
-| `MeshSimple` | `PIXI.MeshSimple`, from `texture`, `vertices`, `uvs`, `indices` and `topology` |
+| `MeshSimple` | `PIXI.MeshSimple`, from `indices`, `texture`, `topology`, `uvs` and `vertices` |
 | `NineSliceSprite` | `PIXI.NineSliceSprite` |
+| `NoiseFilter` | `PIXI.NoiseFilter`, from `noise` and `seed` |
 | `Particle` | `PIXI.Particle`, a tag of this adapter, only inside a `ParticleContainer` |
 | `ParticleContainer` | `PIXI.ParticleContainer`, with `Particle` children |
 | `PerspectiveMesh` | `PIXI.PerspectiveMesh`, a tag of this adapter |
@@ -41,6 +46,8 @@ Features that are plain PixiJS work as the [PixiJS 8 documentation](https://pixi
 | `TilingSprite` | `PIXI.TilingSprite` |
 
 Import the tags of this adapter from this package. `<NineSlicePlane />` is not a tag here: the core maps it to `NineSliceSprite` with a development warning.
+
+The blur prop of `BlurFilter` is `strength`. `blur` works, but PixiJS 8 logs its own deprecation for it. `strengthX` and `strengthY` each override `strength` for one axis. A filter tag accepts `resolution="inherit"`. `kernelSize` of `BlurFilter` and `sprite` of `DisplacementFilter` are constructor-only. PixiJS 8 has no `FXAAFilter`, so this adapter has no `FXAAFilter` tag.
 
 | Feature | Support |
 | --- | --- |
@@ -54,30 +61,30 @@ Import the tags of this adapter from this package. `<NineSlicePlane />` is not a
 
 ### Choosing the classes
 
-`pixi8()` creates every tag, so a bundle holds every class that the adapter can create. To ship only the classes the app renders, use `pixi8WithComponents`. It takes the options of `pixi8`, plus `components`: the PixiJS classes the app renders, keyed by the tag as written in JSX, plus `Application`. `pixi8` takes no `components`.
+`pixi8()` creates every tag, so a bundle holds every class that the adapter can create. To ship only the classes the app renders, use `pixi8WithClasses`. It takes the options of `pixi8`, plus `classes`: the PixiJS classes the app renders, keyed by the tag as written in JSX, plus `Application`. `pixi8` takes no `classes`.
 
-PixiJS 8 lets a bundler drop every class the app does not import. `pixi8WithComponents` references no PixiJS display class of its own. So a bundle of the ES build (the `import` condition) holds only the display classes in `components`. The CommonJS build loads every class. A bundler uses it when the app's code reaches `@react-pixi-fiber/pixi-8` through `require`, for example after TypeScript compiles to CommonJS. pixi.js then loads its own CommonJS build too, and that build keeps every class. There are three ways to configure the adapter:
+PixiJS 8 lets a bundler drop every class the app does not import. `pixi8WithClasses` references no PixiJS display or filter class of its own. So a bundle of the ES build (the `import` condition) holds only the listed classes. The CommonJS build loads every class. A bundler uses it when the app's code reaches `@react-pixi-fiber/pixi-8` through `require`, for example after TypeScript compiles to CommonJS. pixi.js then loads its own CommonJS build too, and that build keeps every class. There are three ways to configure the adapter:
 
 1. `pixi8()`: every class and all three renderers (WebGL, WebGPU and Canvas).
-2. `pixi8WithComponents` with `Application` in the list: the listed classes and all three renderers.
-3. `pixi8WithComponents` without `Application`, and an `app` that the app makes with its own renderer: the listed classes and one renderer.
+2. `pixi8WithClasses` with `Application` in the list: the listed classes and all three renderers.
+3. `pixi8WithClasses` without `Application`, and an `app` that the app makes with its own renderer: the listed classes and one renderer.
 
 A list with `Application`:
 
 ```js
 import { Application, Container, Sprite, Text } from "pixi.js";
-import { pixi8WithComponents } from "@react-pixi-fiber/pixi-8";
+import { pixi8WithClasses } from "@react-pixi-fiber/pixi-8";
 
-configure({ react: reactN(), pixi: pixi8WithComponents({ components: { Application, Container, Sprite, Text } }) });
+configure({ react: reactN(), pixi: pixi8WithClasses({ classes: { Application, Container, Sprite, Text } }) });
 ```
 
 An app that makes its own renderer:
 
 ```tsx
 import { Container, Sprite, Text, Ticker, WebGLRenderer, type Application } from "pixi.js";
-import { pixi8WithComponents } from "@react-pixi-fiber/pixi-8";
+import { pixi8WithClasses } from "@react-pixi-fiber/pixi-8";
 
-configure({ react: reactN(), pixi: pixi8WithComponents({ components: { Container, Sprite, Text } }) });
+configure({ react: reactN(), pixi: pixi8WithClasses({ classes: { Container, Sprite, Text } }) });
 
 const renderer = new WebGLRenderer();
 await renderer.init({ canvas, width: 800, height: 600 });
@@ -90,9 +97,11 @@ const app = { stage, ticker: Ticker.shared } as unknown as Application;
 
 With `app` provided, `Stage` renders no canvas of its own and ignores `options`. Only this form omits `autoDetectRenderer` and the WebGPU and Canvas renderers, because `Application.init` calls `autoDetectRenderer` itself.
 
+The built-in filters are in `pixi8()` and `allClasses`. With `pixi8WithClasses`, list only the filter tags the app renders, for example `{ BlurFilter, Container, Sprite }`. The five filters together add about 7 KB gzipped.
+
 `ParticleContainer` needs `Particle` in the list. A tag left out of the list typechecks and throws at first render, naming the class to add. Render each screen once in a test, so that a tag left out of the list fails there and not in production. Without `Application` in the list, every `Stage` needs an `app`.
 
-`allComponents` holds the classes that `pixi8` uses. pixi-8 is the only adapter with a class list.
+`allClasses` holds the classes that `pixi8` uses. pixi-8 is the only adapter with a class list.
 
 ### `ParticleContainer`
 

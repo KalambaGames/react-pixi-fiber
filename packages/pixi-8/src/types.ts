@@ -1,14 +1,18 @@
 import type * as PIXI from "pixi.js";
 import type { Props } from "react-pixi-fiber";
-import type { allComponents } from "./all";
+import type { allClasses } from "./allClasses";
 
 // Importing this package fills the core's augmentable interfaces with the PixiJS 8 classes.
 declare module "react-pixi-fiber" {
   interface PixiInstances {
+    AlphaFilter: PIXI.AlphaFilter;
     AnimatedSprite: PIXI.AnimatedSprite;
     BitmapText: PIXI.BitmapText;
+    BlurFilter: PIXI.BlurFilter;
+    ColorMatrixFilter: PIXI.ColorMatrixFilter;
     Container: PIXI.Container;
     DOMContainer: PIXI.DOMContainer;
+    DisplacementFilter: PIXI.DisplacementFilter;
     Graphics: PIXI.Graphics;
     HTMLText: PIXI.HTMLText;
     Mesh: PIXI.Mesh;
@@ -16,6 +20,7 @@ declare module "react-pixi-fiber" {
     MeshRope: PIXI.MeshRope;
     MeshSimple: PIXI.MeshSimple;
     NineSliceSprite: PIXI.NineSliceSprite;
+    NoiseFilter: PIXI.NoiseFilter;
     Particle: PIXI.Particle;
     ParticleContainer: PIXI.ParticleContainer;
     PerspectiveMesh: PIXI.PerspectiveMesh;
@@ -51,11 +56,15 @@ declare module "react-pixi-fiber" {
       [PIXI.DOMContainer, PIXI.DOMContainerOptions],
       [PIXI.RenderContainer, PIXI.RenderContainerOptions],
       [PIXI.Container, PIXI.ContainerOptions],
+      [PIXI.AlphaFilter, PIXI.AlphaFilterOptions],
+      [PIXI.BlurFilter, PIXI.BlurFilterOptions],
+      [PIXI.DisplacementFilter, PIXI.DisplacementFilterOptions],
+      [PIXI.NoiseFilter, PIXI.NoiseFilterOptions],
     ];
   }
 }
 
-export type Pixi8Components = typeof allComponents;
+export type Pixi8Classes = typeof allClasses;
 
 export type DOMContainerProps = Props<PIXI.DOMContainer>;
 export type HTMLTextProps = Props<PIXI.HTMLText>;

@@ -1,17 +1,17 @@
 import { describe, it, expect, vi } from "vitest";
 import * as PIXI from "pixi.js";
-import { TAGS } from "../../react-pixi-fiber/src/tags";
+import { DISPLAY_OBJECT_TAGS, FILTER_TAGS, TAGS } from "../../react-pixi-fiber/src/tags";
 import react18 from "@react-pixi-fiber/react-18";
 import { configure, PIXIComponent } from "react-pixi-fiber";
 import { createInstance } from "../../react-pixi-fiber/src/ReactPixiFiberComponent";
 import { factories } from "../src/factories";
 import pixi8, {
-  allComponents,
+  allClasses,
   DOMContainer,
   HTMLText,
   Particle,
   PerspectiveMesh,
-  pixi8WithComponents,
+  pixi8WithClasses,
   RenderContainer,
   RenderLayer,
 } from "../src/index";
@@ -28,11 +28,15 @@ const EXTRA_TAGS = {
 
 describe("pixi8", () => {
   const adapter = pixi8();
-  it("implements the 13 core tags and the six PixiJS 8 tags", () => {
+  it("implements the 18 core tags and the six PixiJS 8 tags", () => {
     for (const [name, value] of Object.entries(EXTRA_TAGS)) expect(value).toBe(name);
-    expect(Object.keys(adapter.components).sort()).toEqual([...Object.keys(TAGS), ...Object.keys(EXTRA_TAGS)].sort());
-    for (const tag of Object.keys(adapter.components))
-      expect(typeof adapter.components[tag].create, tag).toBe("function");
+    expect(Object.keys(adapter.behaviors).sort()).toEqual([...Object.keys(TAGS), ...Object.keys(EXTRA_TAGS)].sort());
+    for (const tag of Object.keys(adapter.behaviors))
+      expect(typeof adapter.behaviors[tag].create, tag).toBe("function");
+  });
+  it("marks the filter tags, and no Display Object tag, with kind filter", () => {
+    for (const tag of [...Object.keys(FILTER_TAGS)]) expect(adapter.behaviors[tag].kind, tag).toBe("filter");
+    for (const tag of Object.keys(DISPLAY_OBJECT_TAGS)) expect(adapter.behaviors[tag].kind, tag).toBeUndefined();
   });
   it("lists origin as a point", () => {
     expect(adapter.properties.vector).toContain("origin");
@@ -88,9 +92,9 @@ describe("pixi8", () => {
     adapter.copyPoint(target, { x: 1, y: 2 });
     expect([target.x, target.y]).toEqual([1, 2]);
   });
-  it("throws on components, naming pixi8WithComponents", () => {
-    expect(() => pixi8({ components: { Sprite: PIXI.Sprite } } as any)).toThrow(
-      "`pixi8` takes no `components`. Pass them to `pixi8WithComponents` from `@react-pixi-fiber/pixi-8`."
+  it("throws on classes, naming pixi8WithClasses", () => {
+    expect(() => pixi8({ classes: { Sprite: PIXI.Sprite } } as any)).toThrow(
+      "`pixi8` takes no `classes`. Pass them to `pixi8WithClasses` from `@react-pixi-fiber/pixi-8`."
     );
   });
   it("has no translateProps without compat in production", () => {
@@ -108,86 +112,84 @@ describe("pixi8 prop writes", () => {
   });
 });
 
-describe("pixi8WithComponents({ components })", () => {
-  const M1 = "`pixi8WithComponents` needs `components`. Pass the PixiJS classes the app renders.";
-  it("throws without components", () => {
-    expect(() => (pixi8WithComponents as any)()).toThrow(M1);
-    expect(() => (pixi8WithComponents as any)({})).toThrow(M1);
-    expect(() => (pixi8WithComponents as any)({ components: "all" })).toThrow(M1);
-    expect(() => (pixi8WithComponents as any)({ components: null })).toThrow(M1);
+describe("pixi8WithClasses({ classes })", () => {
+  const M1 = "`pixi8WithClasses` needs `classes`. Pass the PixiJS classes the app renders.";
+  it("throws without classes", () => {
+    expect(() => (pixi8WithClasses as any)()).toThrow(M1);
+    expect(() => (pixi8WithClasses as any)({})).toThrow(M1);
+    expect(() => (pixi8WithClasses as any)({ classes: "all" })).toThrow(M1);
+    expect(() => (pixi8WithClasses as any)({ classes: null })).toThrow(M1);
   });
   it("throws on an unknown key, listing the known ones", () => {
-    expect(() => pixi8WithComponents({ components: { Sprit: PIXI.Sprite } as any })).toThrow(
-      `\`pixi8WithComponents({ components })\` got unknown key \`Sprit\`. Known keys: ${Object.keys(allComponents).join(", ")}.`
+    expect(() => pixi8WithClasses({ classes: { Sprit: PIXI.Sprite } as any })).toThrow(
+      `\`pixi8WithClasses({ classes })\` got unknown key \`Sprit\`. Known keys: ${Object.keys(allClasses).join(", ")}.`
     );
   });
   it("throws when ParticleContainer is listed without Particle, undefined included", () => {
     const M3 =
-      "`ParticleContainer` needs `Particle`. Add `Particle` from `pixi.js` to `pixi8WithComponents({ components })`.";
-    expect(() => pixi8WithComponents({ components: { ParticleContainer: PIXI.ParticleContainer } })).toThrow(M3);
+      "`ParticleContainer` needs `Particle`. Add `Particle` from `pixi.js` to `pixi8WithClasses({ classes })`.";
+    expect(() => pixi8WithClasses({ classes: { ParticleContainer: PIXI.ParticleContainer } })).toThrow(M3);
     expect(() =>
-      pixi8WithComponents({ components: { Particle: undefined, ParticleContainer: PIXI.ParticleContainer } })
+      pixi8WithClasses({ classes: { Particle: undefined, ParticleContainer: PIXI.ParticleContainer } })
     ).toThrow(M3);
-    expect(() => pixi8WithComponents({ components: { Particle: PIXI.Particle } })).not.toThrow();
+    expect(() => pixi8WithClasses({ classes: { Particle: PIXI.Particle } })).not.toThrow();
   });
   it("throws on a value that is not a class", () => {
-    expect(() => pixi8WithComponents({ components: { Sprite: "Sprite" as any } })).toThrow(
-      '`pixi8WithComponents({ components })` got `"Sprite"` for `Sprite`; expected the class from `pixi.js`.'
+    expect(() => pixi8WithClasses({ classes: { Sprite: "Sprite" as any } })).toThrow(
+      '`pixi8WithClasses({ classes })` got `"Sprite"` for `Sprite`; expected the class from `pixi.js`.'
     );
   });
   it("throws the value message for an instance, which JSON cannot print", () => {
-    expect(() => pixi8WithComponents({ components: { Container: new PIXI.Container() as any } })).toThrow(
-      "`pixi8WithComponents({ components })` got `[object Object]` for `Container`; expected the class from `pixi.js`."
+    expect(() => pixi8WithClasses({ classes: { Container: new PIXI.Container() as any } })).toThrow(
+      "`pixi8WithClasses({ classes })` got `[object Object]` for `Container`; expected the class from `pixi.js`."
     );
-    expect(() => pixi8WithComponents({ components: { Sprite: 1n as any } })).toThrow(
-      "`pixi8WithComponents({ components })` got `1` for `Sprite`; expected the class from `pixi.js`."
+    expect(() => pixi8WithClasses({ classes: { Sprite: 1n as any } })).toThrow(
+      "`pixi8WithClasses({ classes })` got `1` for `Sprite`; expected the class from `pixi.js`."
     );
   });
   it("throws the value message for an object with no string form", () => {
-    expect(() => pixi8WithComponents({ components: { Sprite: Object.create(null) } })).toThrow(
-      "`pixi8WithComponents({ components })` got `[object Object]` for `Sprite`; expected the class from `pixi.js`."
+    expect(() => pixi8WithClasses({ classes: { Sprite: Object.create(null) } })).toThrow(
+      "`pixi8WithClasses({ classes })` got `[object Object]` for `Sprite`; expected the class from `pixi.js`."
     );
   });
   it("checks in order: missing, unknown key, Particle, value", () => {
-    expect(() => pixi8WithComponents({ components: { ParticleContainer: 1, Sprit: 1 } as any })).toThrow(/unknown key/);
-    expect(() => pixi8WithComponents({ components: { ParticleContainer: 1 as any } })).toThrow(/needs `Particle`/);
+    expect(() => pixi8WithClasses({ classes: { ParticleContainer: 1, Sprit: 1 } as any })).toThrow(/unknown key/);
+    expect(() => pixi8WithClasses({ classes: { ParticleContainer: 1 as any } })).toThrow(/needs `Particle`/);
   });
-  it("runs the components checks before the compat check", () => {
-    expect(() => (pixi8WithComponents as any)({ compat: "pixi6" })).toThrow(M1);
+  it("runs the classes checks before the compat check", () => {
+    expect(() => (pixi8WithClasses as any)({ compat: "pixi6" })).toThrow(M1);
   });
   it("creates a listed tag and throws for one left out", () => {
-    const adapter = pixi8WithComponents({ components: { Container: PIXI.Container, Sprite: PIXI.Sprite } });
-    expect(Object.keys(adapter.components).sort()).toEqual(Object.keys(factories).sort());
-    expect(adapter.components.Sprite.create({ texture })).toBeInstanceOf(PIXI.Sprite);
-    expect(() => adapter.components.HTMLText.create({ text: "t" })).toThrow(
-      "`HTMLText` is not in `pixi8WithComponents({ components })`. Add `HTMLText` from `pixi.js` to it."
+    const adapter = pixi8WithClasses({ classes: { Container: PIXI.Container, Sprite: PIXI.Sprite } });
+    expect(Object.keys(adapter.behaviors).sort()).toEqual(Object.keys(factories).sort());
+    expect(adapter.behaviors.Sprite.create({ texture })).toBeInstanceOf(PIXI.Sprite);
+    expect(() => adapter.behaviors.HTMLText.create({ text: "t" })).toThrow(
+      "`HTMLText` is not in `pixi8WithClasses({ classes })`. Add `HTMLText` from `pixi.js` to it."
     );
   });
   it("createApplication rejects when Application is not listed", async () => {
-    const adapter = pixi8WithComponents({ components: { Container: PIXI.Container } });
+    const adapter = pixi8WithClasses({ classes: { Container: PIXI.Container } });
     await expect(adapter.createApplication({ height: 4, width: 4 })).rejects.toThrow(
-      "Add `Application` from `pixi.js` to `pixi8WithComponents({ components })`, or pass an `app` to `Stage`."
+      "Add `Application` from `pixi.js` to `pixi8WithClasses({ classes })`, or pass an `app` to `Stage`."
     );
   });
   it("keeps the classes it was given when the caller changes the object afterwards", async () => {
-    const components: Record<string, any> = {
+    const classes: Record<string, any> = {
       Container: PIXI.Container,
       Particle: PIXI.Particle,
       ParticleContainer: PIXI.ParticleContainer,
     };
-    const adapter = pixi8WithComponents({ components });
-    components.Application = "Application";
-    components.Particle = class extends PIXI.Particle {};
-    const container = adapter.components.ParticleContainer.create({});
-    expect(() =>
-      adapter.components.ParticleContainer.appendChild!(container, new PIXI.Particle(texture))
-    ).not.toThrow();
+    const adapter = pixi8WithClasses({ classes });
+    classes.Application = "Application";
+    classes.Particle = class extends PIXI.Particle {};
+    const container = adapter.behaviors.ParticleContainer.create({});
+    expect(() => adapter.behaviors.ParticleContainer.appendChild!(container, new PIXI.Particle(texture))).not.toThrow();
     await expect(adapter.createApplication({ height: 4, width: 4 })).rejects.toThrow(
-      "Add `Application` from `pixi.js` to `pixi8WithComponents({ components })`, or pass an `app` to `Stage`."
+      "Add `Application` from `pixi.js` to `pixi8WithClasses({ classes })`, or pass an `app` to `Stage`."
     );
   });
   it("isApplication is duck-typed on a stage that can hold children", () => {
-    const adapter = pixi8WithComponents({ components: { Container: PIXI.Container } });
+    const adapter = pixi8WithClasses({ classes: { Container: PIXI.Container } });
     expect(adapter.isApplication({ stage: new PIXI.Container() })).toBe(true);
     expect(adapter.isApplication({ stage: {} })).toBe(false);
     expect(adapter.isApplication({})).toBe(false);
@@ -197,9 +199,9 @@ describe("pixi8WithComponents({ components })", () => {
   });
 });
 
-describe("pixi8WithComponents({ components }) with PIXIComponent", () => {
+describe("pixi8WithClasses({ classes }) with PIXIComponent", () => {
   it("a PIXIComponent registered for an unlisted tag wins over the stub, with the dev warning", () => {
-    configure({ react: react18(), pixi: pixi8WithComponents({ components: { Container: PIXI.Container } }) });
+    configure({ react: react18(), pixi: pixi8WithClasses({ classes: { Container: PIXI.Container } }) });
     PIXIComponent("HTMLText", { create: () => new PIXI.Container() });
     const error = vi.spyOn(console, "error").mockImplementation(() => {});
     expect(createInstance("HTMLText", {})).toBeInstanceOf(PIXI.Container);

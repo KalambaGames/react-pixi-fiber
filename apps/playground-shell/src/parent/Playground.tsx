@@ -22,9 +22,11 @@ import { useRunner } from "./useRunner";
 import { useSidebarOpen } from "./useSidebarOpen";
 import { useTheme, type Theme } from "./useTheme";
 
-export type ExampleGroup = "Display Objects" | "Features" | "Integrations" | "Migration" | "Scene Objects";
+export type ExampleGroup = "Display Objects" | "Features" | "Filters" | "Integrations" | "Migration" | "Scene Objects";
 
 export interface Example {
+  /** Ids the example answered to before, for links and saved edits from then. */
+  aliases?: string[];
   configure: { code: string; summary: string };
   group: ExampleGroup;
   id: string;
@@ -45,10 +47,13 @@ interface Resolved {
 
 export async function resolve(examples: Example[], store: CodeStore, hash: string): Promise<Resolved> {
   const parsed = parseHash(hash);
-  const known = examples.find(candidate => candidate.id === parsed.exampleId);
+  const id = parsed.exampleId ?? "";
+  const known =
+    examples.find(candidate => candidate.id === id) ?? examples.find(candidate => candidate.aliases?.includes(id));
   const example = known ?? examples[0];
   const shared = known ? parsed.code : null;
-  if (!known) window.history.replaceState(null, "", buildHash(example.id));
+  // An alias becomes the current id in the address, an unknown id the first example.
+  if (example.id !== id) window.history.replaceState(null, "", buildHash(example.id, shared ?? undefined));
   const original = await example.load();
   if (shared !== null) {
     try {

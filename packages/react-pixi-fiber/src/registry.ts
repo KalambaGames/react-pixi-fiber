@@ -10,6 +10,8 @@ export interface Behavior<I = any, P = any> {
   applyProps?(this: ApplyPropsContext<P>, instance: I, oldProps: P | undefined, newProps: P): void;
   afterAdd?(instance: I): void;
   beforeRemove?(instance: I): void;
+  /** `"filter"` marks a filter: the parent keeps it in its `filters` array, not in its children. */
+  kind?: "filter";
   /**
    * Adds `child` to the end of this parent's children, or moves it there, in place of `parent.addChild(child)`.
    * For adapters whose container keeps children that are not Display Objects. Unstable: may change in a minor.
@@ -41,6 +43,7 @@ export interface BoundBehavior {
   appendChild?: (parent: any, child: any) => void;
   beforeRemove?: (instance: any) => void;
   insertBefore?: (parent: any, child: any, before: any) => void;
+  kind?: "filter";
   removeChild?: (parent: any, child: any) => void;
 }
 
@@ -79,8 +82,9 @@ export function normalizeBehavior(type: string, behavior: BehaviorInput): Behavi
   }
   invariant(
     typeof normalized.create === "function",
-    "Invalid behavior for `%s`: `create` must be a function that returns a Display Object.",
-    type
+    "Invalid behavior for `%s`: `create` must be a function that returns %s.",
+    type,
+    normalized.kind === "filter" ? "a filter" : "a Display Object"
   );
   return normalized as unknown as Behavior;
 }
@@ -93,10 +97,10 @@ export function registerComponent(type: string, behavior: BehaviorInput): string
   return type;
 }
 
-// Called by configure with the adapter's components. Replaces the previous adapter set.
-export function registerAdapterComponents(components: Record<string, BehaviorInput>): void {
+// Called by configure with the adapter's behaviors. Replaces the previous adapter set.
+export function registerAdapterBehaviors(behaviors: Record<string, BehaviorInput>): void {
   const next: Record<string, Behavior> = {};
-  for (const type of Object.keys(components)) next[type] = normalizeBehavior(type, components[type]);
+  for (const type of Object.keys(behaviors)) next[type] = normalizeBehavior(type, behaviors[type]);
   adapterComponents = next;
 }
 
@@ -142,9 +146,10 @@ export function createRegisteredInstance(
   const instance = behavior.create(props);
   invariant(
     instance !== null && (typeof instance === "object" || typeof instance === "function"),
-    "`create` of `%s` returned `%s`, expected a Display Object.",
+    "`create` of `%s` returned `%s`, expected %s.",
     type,
-    String(instance)
+    String(instance),
+    behavior.kind === "filter" ? "a filter" : "a Display Object"
   );
   const bound: BoundBehavior = { tag: type };
   if (typeof behavior.applyProps === "function") {
@@ -158,10 +163,16 @@ export function createRegisteredInstance(
   if (typeof behavior.appendChild === "function") bound.appendChild = behavior.appendChild;
   if (typeof behavior.insertBefore === "function") bound.insertBefore = behavior.insertBefore;
   if (typeof behavior.removeChild === "function") bound.removeChild = behavior.removeChild;
+  if (behavior.kind === "filter") bound.kind = "filter";
   boundBehaviors.set(instance, bound);
   return instance;
 }
 
 export function getBoundBehavior(instance: object): BoundBehavior | undefined {
   return boundBehaviors.get(instance);
+}
+
+export function isFilterInstance(instance: object): boolean {
+  const bound = boundBehaviors.get(instance);
+  return bound !== undefined && bound.kind === "filter";
 }

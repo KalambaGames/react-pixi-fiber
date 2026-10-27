@@ -1,6 +1,6 @@
 # @react-pixi-fiber/pixi-7
 
-PixiJS 7 adapter for [react-pixi-fiber](https://github.com/michalochman/react-pixi-fiber). It tells `react-pixi-fiber` how to create the PixiJS 7 Display Objects for all 13 core tags, which props it types, and how to create a `PIXI.Application`.
+PixiJS 7 adapter for [react-pixi-fiber](https://github.com/michalochman/react-pixi-fiber). It tells `react-pixi-fiber` how to create the PixiJS 7 classes for the 13 Display Object tags and the 5 filter tags. It also tells which props it types and how to create a `PIXI.Application`.
 
 Install it next to `react-pixi-fiber`, `pixi.js` 7.2 or newer (the first with `eventMode`) and a React adapter from the [adapter table](../react-pixi-fiber/README.md#setup), then configure once in the app entry, before the first render:
 
@@ -18,16 +18,22 @@ Features that are plain PixiJS work as the [PixiJS 7 documentation](https://pixi
 
 | Tag | Creates |
 | --- | --- |
+| `AlphaFilter` | `PIXI.AlphaFilter` |
 | `AnimatedSprite` | `PIXI.AnimatedSprite` |
 | `BitmapText` | `PIXI.BitmapText` |
+| `BlurFilter` | `PIXI.BlurFilter` |
+| `ColorMatrixFilter` | `PIXI.ColorMatrixFilter` |
 | `Container` | `PIXI.Container` |
+| `DisplacementFilter` | `PIXI.DisplacementFilter`, from `sprite` and `scale` |
+| `FXAAFilter` | `PIXI.FXAAFilter`, a tag of this adapter. Import it from this package |
 | `Graphics` | `PIXI.Graphics`, `geometry` is passed to the constructor |
-| `HTMLText` | `PIXI.HTMLText`, a tag of this adapter; import it from this package |
+| `HTMLText` | `PIXI.HTMLText`, a tag of this adapter. Import it from this package |
 | `Mesh` | `PIXI.Mesh`, from `geometry`, `shader`, `state` and `drawMode` |
 | `MeshPlane`, `SimplePlane` | `PIXI.SimplePlane` |
 | `MeshRope`, `SimpleRope` | `PIXI.SimpleRope` |
 | `MeshSimple`, `SimpleMesh` | `PIXI.SimpleMesh` |
 | `NineSliceSprite`, `NineSlicePlane` | `PIXI.NineSlicePlane` |
+| `NoiseFilter` | `PIXI.NoiseFilter` |
 | `ParticleContainer` | `PIXI.ParticleContainer` |
 | `Sprite` | `PIXI.Sprite` |
 | `Text` | `PIXI.Text` |

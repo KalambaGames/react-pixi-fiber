@@ -1,11 +1,20 @@
 import * as PIXI from "pixi.js";
 import type { PixiAdapter, PixiComponent } from "react-pixi-fiber";
-import { components } from "./components";
+import { behaviors } from "./behaviors";
 import { properties } from "./properties";
-import type { HTMLTextProps, NineSlicePlaneProps, SimpleMeshProps, SimplePlaneProps, SimpleRopeProps } from "./types";
+import type {
+  FXAAFilterProps,
+  HTMLTextProps,
+  NineSlicePlaneProps,
+  SimpleMeshProps,
+  SimplePlaneProps,
+  SimpleRopeProps,
+} from "./types";
 export * from "./types";
 
 // A tag is a string at runtime and a component in the type system, like the core tags.
+export const FXAAFilter = "FXAAFilter" as unknown as PixiComponent<FXAAFilterProps, PIXI.FXAAFilter>;
+export type FXAAFilter = FXAAFilterProps;
 export const HTMLText = "HTMLText" as unknown as PixiComponent<HTMLTextProps, PIXI.HTMLText>;
 export const NineSlicePlane = "NineSlicePlane" as unknown as PixiComponent<NineSlicePlaneProps, PIXI.NineSlicePlane>;
 export const SimpleMesh = "SimpleMesh" as unknown as PixiComponent<SimpleMeshProps, PIXI.SimpleMesh>;
@@ -69,7 +78,7 @@ function warnLegacyProps(type: string, props: Record<string, unknown>): Record<s
 
 export default function pixi7({ compat, defaults }: Pixi7Options = {}): PixiAdapter {
   const adapter: PixiAdapter = {
-    components,
+    behaviors,
     defaults,
     properties,
     isPoint: (value): value is PIXI.IPointData => value instanceof PIXI.Point || value instanceof PIXI.ObservablePoint,

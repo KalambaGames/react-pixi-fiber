@@ -52,7 +52,8 @@ export const properties: PixiPropertyTable = {
   ],
   numeric: ["angle", "clampMargin", "rotation", "x", "y", "zIndex"],
   // `tint` is not typed: PixiJS 8 also accepts a color string or array.
-  positiveNumeric: ["alpha", "height", "resolution", "width"],
+  // `resolution` is untyped: PixiJS 8 takes `null` on a text and `"inherit"` on a filter.
+  positiveNumeric: ["alpha", "height", "width"],
   untypedContainer: [
     "blendMode",
     "boundsArea",

@@ -15,10 +15,21 @@ const mesh: Behavior = {
   create: props => new PIXI.mesh.Mesh(props.texture, props.vertices, props.uvs, props.indices, props.drawMode),
 };
 
-export const components: Record<string, Behavior> = {
+export const behaviors: Record<string, Behavior> = {
+  AlphaFilter: { kind: "filter", create: props => new PIXI.filters.AlphaFilter(props.alpha) },
   AnimatedSprite: { create: props => new PIXI.extras.AnimatedSprite(props.textures, props.autoUpdate) },
   BitmapText: { create: props => new PIXI.extras.BitmapText(props.text, bitmapTextStyle(props)) },
+  BlurFilter: {
+    kind: "filter",
+    create: props => new PIXI.filters.BlurFilter(props.blur, props.quality, props.resolution, props.kernelSize),
+  },
+  ColorMatrixFilter: { kind: "filter", create: () => new PIXI.filters.ColorMatrixFilter() },
   Container: { create: () => new PIXI.Container() },
+  DisplacementFilter: {
+    kind: "filter",
+    create: props => new PIXI.filters.DisplacementFilter(props.sprite, props.scale),
+  },
+  FXAAFilter: { kind: "filter", create: () => new PIXI.filters.FXAAFilter() },
   Graphics: { create: props => new PIXI.Graphics(props.nativeLines) },
   Mesh: mesh,
   MeshPlane: { create: props => new PIXI.mesh.Plane(props.texture, props.verticesX, props.verticesY) },
@@ -34,6 +45,7 @@ export const components: Record<string, Behavior> = {
         props.bottomHeight
       ),
   },
+  NoiseFilter: { kind: "filter", create: props => new PIXI.filters.NoiseFilter(props.noise, props.seed) },
   ParticleContainer: {
     create: props =>
       new PIXI.particles.ParticleContainer(props.maxSize, props.properties, props.batchSize, props.autoResize),
@@ -44,6 +56,6 @@ export const components: Record<string, Behavior> = {
 };
 
 // The PixiJS 4 class names, the same behavior objects as the core tags they map to.
-components.NineSlicePlane = components.NineSliceSprite;
-components.Plane = components.MeshPlane;
-components.Rope = components.MeshRope;
+behaviors.NineSlicePlane = behaviors.NineSliceSprite;
+behaviors.Plane = behaviors.MeshPlane;
+behaviors.Rope = behaviors.MeshRope;

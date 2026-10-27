@@ -53,3 +53,4 @@ Write the title as an instruction that states the decision, for example "Use Con
 | 0017 | [Keep a Shared Canvas Context When an Application Is Destroyed](0017-keep-a-shared-canvas-context-when-an-application-is-destroyed.md) | accepted | 2026-09-29 |
 | 0018 | [Let the App List the PixiJS 8 Classes It Renders](0018-let-the-app-list-the-pixijs-8-classes-it-renders.md) | accepted | 2026-10-24 |
 | 0019 | [Declare the Undeclared Imports of PixiJS Sub-Packages](0019-declare-the-undeclared-imports-of-pixijs-sub-packages.md) | accepted | 2026-10-25 |
+| 0020 | [Let Filters Be Child Elements Whose Lifecycle the Core Owns](0020-let-filters-be-child-elements-whose-lifecycle-the-core-owns.md) | accepted | 2026-10-26 |

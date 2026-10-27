@@ -20,19 +20,29 @@ const example = (title: string, load = source(`./SceneObjects/${title}.tsx`)): E
 
 const feature = (name: string, title: string, load = source(`./Features/${name}.tsx`)): Example => ({
   ...example(title, load),
+  // The id before the group prefix.
+  aliases: [name.toLowerCase()],
   group: "Features",
-  id: name.toLowerCase(),
+  id: `features-${name.toLowerCase()}`,
+});
+
+const filter = (name: string, title: string): Example => ({
+  ...example(title, source(`./Filters/${name}.tsx`)),
+  group: "Filters",
+  id: `filters-${name.toLowerCase()}`,
 });
 
 const integration = (name: string, title: string): Example => ({
   ...feature(name, title, source(`./Integrations/${name}.tsx`)),
   group: "Integrations",
+  id: `integrations-${name.toLowerCase()}`,
 });
 
 const compat = (version: 6 | 7, name: string, title: string): Example => ({
   ...feature(name, title, source(`./Migration/${name}.tsx`)),
   configure: setup(8, version),
   group: "Migration",
+  id: `migration-${name.toLowerCase()}`,
   runner: `runner-compat-pixi${version}.html`,
 });
 
@@ -66,6 +76,13 @@ export const examples: Example[] = [
   feature("PointLikeProps", "Point-like props"),
   feature("SmokeTest", "Smoke test"),
   feature("Suspense", "Suspense"),
+  filter("Basic", "Basic"),
+  filter("FiltersProp", "Filters prop"),
+  filter("Animated", "Animated"),
+  filter("Controls", "Controls"),
+  filter("Stack", "Stack"),
+  filter("Unmount", "Unmount"),
+  filter("CustomShader", "Custom shader"),
   integration("Animated", "Animated"),
   integration("GSAP", "GSAP"),
   integration("Layout", "Layout"),

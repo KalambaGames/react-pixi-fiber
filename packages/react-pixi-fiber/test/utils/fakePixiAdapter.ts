@@ -1,5 +1,5 @@
 import type { PixiAdapter } from "react-pixi-fiber";
-import { TAGS } from "../../src/tags";
+import { DISPLAY_OBJECT_TAGS, FILTER_TAGS } from "../../src/tags";
 
 function point(x = 0, y = 0) {
   return {
@@ -88,11 +88,12 @@ export function createFakeApp() {
 
 export function fakePixiAdapter({ async = false }: { async?: boolean } = {}) {
   const apps: ReturnType<typeof createFakeApp>[] = [];
-  const components: PixiAdapter["components"] = {};
-  for (const tag of Object.keys(TAGS)) components[tag] = { create: () => createFakeNode(tag) };
+  const behaviors: PixiAdapter["behaviors"] = {};
+  for (const tag of Object.keys(DISPLAY_OBJECT_TAGS)) behaviors[tag] = { create: () => createFakeNode(tag) };
+  for (const tag of Object.keys(FILTER_TAGS)) behaviors[tag] = { create: () => ({ type: tag }), kind: "filter" };
   const adapter: PixiAdapter & { apps: typeof apps } = {
     apps,
-    components,
+    behaviors,
     properties: {
       boolean: ["visible"],
       callback: ["onclick"],

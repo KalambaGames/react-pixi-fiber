@@ -1,11 +1,16 @@
 import * as PIXI from "pixi.js";
 import type { PixiAdapter, PixiComponent } from "react-pixi-fiber";
-import { components } from "./components";
+import { behaviors } from "./behaviors";
 import { properties } from "./properties";
-import type { NineSlicePlaneProps, SimpleMeshProps, SimplePlaneProps, SimpleRopeProps } from "./types";
+import type { FXAAFilterProps, NineSlicePlaneProps, SimpleMeshProps, SimplePlaneProps, SimpleRopeProps } from "./types";
 export * from "./types";
 
 // A tag is a string at runtime and a component in the type system, like the core tags.
+export const FXAAFilter = "FXAAFilter" as unknown as PixiComponent<
+  FXAAFilterProps,
+  InstanceType<typeof PIXI.filters.FXAAFilter>
+>;
+export type FXAAFilter = FXAAFilterProps;
 export const NineSlicePlane = "NineSlicePlane" as unknown as PixiComponent<NineSlicePlaneProps, PIXI.NineSlicePlane>;
 export const SimpleMesh = "SimpleMesh" as unknown as PixiComponent<SimpleMeshProps, PIXI.SimpleMesh>;
 export const SimplePlane = "SimplePlane" as unknown as PixiComponent<SimplePlaneProps, PIXI.SimplePlane>;
@@ -22,7 +27,7 @@ export interface Pixi6Options {
 
 export default function pixi6({ defaults }: Pixi6Options = {}): PixiAdapter {
   return {
-    components,
+    behaviors,
     defaults,
     properties,
     isPoint: (value): value is PIXI.IPointData => value instanceof PIXI.Point || value instanceof PIXI.ObservablePoint,
@@ -38,5 +43,8 @@ export default function pixi6({ defaults }: Pixi6Options = {}): PixiAdapter {
       app.destroy(removeView, stageOptions as any);
     },
     isApplication: value => value instanceof PIXI.Application,
+    // PixiJS 6 `Filter.destroy` frees no GPU resource. Below 6.5.7 it also leaves the renderer's bound shader without
+    // its uniforms: the next frame then throws. So the adapter releases a filter without `destroy`.
+    releaseFilter() {},
   };
 }

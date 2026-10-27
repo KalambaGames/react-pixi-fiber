@@ -7,49 +7,80 @@ import {
 } from "./ReactPixiFiberComponent";
 import { getDefaultValue } from "./PixiPropertyOperations";
 import { validateProperties as validateUnknownProperties } from "./ReactPixiFiberUnknownPropertyHook";
-import { getBoundBehavior } from "./registry";
+import {
+  destroyOwnedFilters,
+  displayBefore,
+  forgetChild,
+  forgetChildren,
+  placeChild,
+  placeFilter,
+  releaseFilter,
+  removeFilter,
+} from "./filters";
+import { holdChild, isHeldBy, releaseChild } from "./heldChildren";
+import { getBoundBehavior, getInstanceTag, isFilterInstance } from "./registry";
 import { getStrictModeBit } from "./configure";
 import { findStrictRoot } from "./utils";
 import invariant from "./invariant";
 import type { HostOps, PixiFragmentInstance } from "./types";
 
-// The parent that holds a child through its own ops, for children that have no `parent` of their own.
-const heldBy = new WeakMap<object, object>();
-
-// A parent's behavior may own its child operations; otherwise the Display Object methods are used.
-// `afterAdd` runs only when the child joins the parent. A reorder within the same parent is a move, not an add,
-// and calls neither `afterAdd` nor `beforeRemove`.
-export function appendChild(parentInstance: any, child: any): void {
-  if (parentInstance == null) return;
-
-  const isMove = child.parent === parentInstance || heldBy.get(child) === parentInstance;
+function appendDisplayChild(parentInstance: any, child: any): void {
   const ops = getBoundBehavior(parentInstance);
   if (ops && ops.appendChild) {
     ops.appendChild(parentInstance, child);
-    heldBy.set(child, parentInstance);
+    holdChild(parentInstance, child);
   } else {
     // TODO do we need to remove the child first if it's already added?
     parentInstance.removeChild(child);
 
     parentInstance.addChild(child);
   }
+}
+
+function afterAddUnlessMove(child: any, isMove: boolean): void {
   if (isMove) return;
   const bound = getBoundBehavior(child);
   if (bound && bound.afterAdd) bound.afterAdd(child);
+}
+
+// A parent's behavior may own its child operations; otherwise the Display Object methods are used.
+// `afterAdd` runs only when the child joins the parent. A reorder within the same parent is a move, not an add,
+// and calls neither `afterAdd` nor `beforeRemove`.
+// A filter child joins the parent's `filters` instead, also under a parent that owns its child operations.
+export function appendChild(parentInstance: any, child: any): void {
+  if (parentInstance == null) return;
+  if (isFilterInstance(parentInstance)) invariant(false, "`<%s />` takes no children.", getInstanceTag(parentInstance));
+
+  if (isFilterInstance(child)) {
+    afterAddUnlessMove(child, placeFilter(parentInstance, child));
+    return;
+  }
+  const isMove = child.parent === parentInstance || isHeldBy(child, parentInstance);
+  appendDisplayChild(parentInstance, child);
+  placeChild(parentInstance, child);
+  afterAddUnlessMove(child, isMove);
 }
 
 export function removeChild(parentInstance: any, child: any): void {
   const bound = getBoundBehavior(child);
   if (bound && bound.beforeRemove) bound.beforeRemove(child);
 
+  if (isFilterInstance(child)) {
+    removeFilter(parentInstance, child);
+    releaseFilter(child);
+    return;
+  }
+
   const ops = getBoundBehavior(parentInstance);
   if (ops && ops.removeChild) {
     ops.removeChild(parentInstance, child);
-    heldBy.delete(child);
+    releaseChild(parentInstance, child);
   } else {
     parentInstance.removeChild(child);
   }
+  forgetChild(parentInstance, child);
 
+  destroyOwnedFilters(child);
   // A child that is not a Display Object may have nothing to destroy.
   if (typeof child.destroy === "function") child.destroy({ children: true });
 }
@@ -57,11 +88,21 @@ export function removeChild(parentInstance: any, child: any): void {
 export function insertBefore(parentInstance: any, child: any, beforeChild: any): void {
   invariant(child !== beforeChild, "ReactPixiFiber cannot insert node before itself");
 
-  const isMove = child.parent === parentInstance || heldBy.get(child) === parentInstance;
+  if (isFilterInstance(child)) {
+    afterAddUnlessMove(child, placeFilter(parentInstance, child, beforeChild));
+    return;
+  }
+  const isMove = child.parent === parentInstance || isHeldBy(child, parentInstance);
+  // Before a filter, the child goes before the next display sibling.
+  const target = displayBefore(parentInstance, beforeChild);
   const ops = getBoundBehavior(parentInstance);
-  if (ops && ops.insertBefore) {
-    ops.insertBefore(parentInstance, child, beforeChild);
-    heldBy.set(child, parentInstance);
+  if (target === undefined) {
+    appendDisplayChild(parentInstance, child);
+  } else if (target === child) {
+    // Already in place.
+  } else if (ops && ops.insertBefore) {
+    ops.insertBefore(parentInstance, child, target);
+    holdChild(parentInstance, child, target);
   } else {
     const childExists = parentInstance.children.indexOf(child) !== -1;
 
@@ -69,31 +110,37 @@ export function insertBefore(parentInstance: any, child: any, beforeChild: any):
       parentInstance.removeChild(child);
     }
 
-    const index = parentInstance.getChildIndex(beforeChild);
+    const index = parentInstance.getChildIndex(target);
     parentInstance.addChildAt(child, index);
   }
-  if (isMove) return;
-  const bound = getBoundBehavior(child);
-  if (bound && bound.afterAdd) bound.afterAdd(child);
+  placeChild(parentInstance, child, beforeChild);
+  afterAddUnlessMove(child, isMove);
 }
 
 export function clearContainer(container: any): void {
   if (container) {
     container.removeChildren();
+    forgetChildren(container);
   }
+}
+
+// A filter hides with `enabled`, a Display Object with `visible`.
+function hideProp(instance: any): string {
+  return isFilterInstance(instance) ? "enabled" : "visible";
 }
 
 export function hideInstance(instance: any): void {
-  instance.visible = false;
+  instance[hideProp(instance)] = false;
 }
 
 export function unhideInstance(instance: any, props: Record<string, unknown>): void {
-  if (typeof props.visible !== "undefined") {
-    instance.visible = props.visible;
+  const prop = hideProp(instance);
+  if (typeof props[prop] !== "undefined") {
+    instance[prop] = props[prop];
     return;
   }
-  const defaultValue = getDefaultValue(instance, "visible");
-  instance.visible = typeof defaultValue !== "undefined" ? defaultValue : true;
+  const defaultValue = getDefaultValue(instance, prop);
+  instance[prop] = typeof defaultValue !== "undefined" ? defaultValue : true;
 }
 
 // Development only: validates under a <StrictMode> ancestor, found on the fiber with the React adapter's mode bit.
@@ -107,7 +154,8 @@ type Listener = (...args: any[]) => void;
 
 // The children are read on each access, so their order stays current; the reconciler reports added and removed
 // children only so their listeners follow.
-// A child without `on` and `off`, such as a particle, takes no listeners and is skipped.
+// A child without `on` and `off`, such as a particle, takes no listeners and is skipped. The children leave out
+// filters.
 class FragmentInstance implements PixiFragmentInstance {
   listeners: [string, Listener][] = [];
   readChildren: () => any[];
@@ -117,7 +165,7 @@ class FragmentInstance implements PixiFragmentInstance {
   }
 
   get children(): any[] {
-    return this.readChildren();
+    return this.readChildren().filter(child => !isFilterInstance(child));
   }
 
   getBounds(): any[] {
@@ -141,7 +189,7 @@ class FragmentInstance implements PixiFragmentInstance {
 // The reconciler can report a child twice (added while hidden, then revealed), and a PixiJS EventEmitter keeps
 // duplicates, so each listener is removed before it is added.
 export function commitNewChildToFragmentInstance(child: any, instance: PixiFragmentInstance): void {
-  if (typeof child.on !== "function" || typeof child.off !== "function") return;
+  if (typeof child.on !== "function" || typeof child.off !== "function" || isFilterInstance(child)) return;
   for (const [event, fn] of (instance as FragmentInstance).listeners) {
     child.off(event, fn);
     child.on(event, fn);
@@ -153,7 +201,7 @@ export function createFragmentInstance(readChildren: () => any[]): PixiFragmentI
 }
 
 export function deleteChildFromFragmentInstance(child: any, instance: PixiFragmentInstance): void {
-  if (typeof child.off !== "function") return;
+  if (typeof child.off !== "function" || isFilterInstance(child)) return;
   for (const [event, fn] of (instance as FragmentInstance).listeners) child.off(event, fn);
 }
 

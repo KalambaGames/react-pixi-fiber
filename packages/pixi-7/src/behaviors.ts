@@ -10,13 +10,22 @@ function bitmapTextStyle(props: Record<string, any>) {
   return style;
 }
 
-export const components: Record<string, Behavior> = {
+export const behaviors: Record<string, Behavior> = {
+  AlphaFilter: { kind: "filter", create: props => new PIXI.AlphaFilter(props.alpha) },
   AnimatedSprite: {
     create: props => new PIXI.AnimatedSprite(props.textures, props.autoUpdate),
   },
   BitmapText: { create: props => new PIXI.BitmapText(props.text, bitmapTextStyle(props)) },
+  BlurFilter: {
+    kind: "filter",
+    create: props => new PIXI.BlurFilter(props.blur, props.quality, props.resolution, props.kernelSize),
+  },
+  ColorMatrixFilter: { kind: "filter", create: () => new PIXI.ColorMatrixFilter() },
   Container: { create: () => new PIXI.Container() },
+  DisplacementFilter: { kind: "filter", create: props => new PIXI.DisplacementFilter(props.sprite, props.scale) },
+  FXAAFilter: { kind: "filter", create: () => new PIXI.FXAAFilter() },
   Graphics: { create: props => new PIXI.Graphics(props.geometry) },
+  HTMLText: { create: props => new PIXI.HTMLText(props.text, props.style) },
   Mesh: { create: props => new PIXI.Mesh(props.geometry, props.shader, props.state, props.drawMode) },
   MeshPlane: { create: props => new PIXI.SimplePlane(props.texture, props.verticesX, props.verticesY) },
   MeshRope: { create: props => new PIXI.SimpleRope(props.texture, props.points, props.textureScale) },
@@ -27,6 +36,7 @@ export const components: Record<string, Behavior> = {
     create: props =>
       new PIXI.NineSlicePlane(props.texture, props.leftWidth, props.topHeight, props.rightWidth, props.bottomHeight),
   },
+  NoiseFilter: { kind: "filter", create: props => new PIXI.NoiseFilter(props.noise, props.seed) },
   ParticleContainer: {
     create: props => new PIXI.ParticleContainer(props.maxSize, props.properties, props.batchSize, props.autoResize),
   },
@@ -35,8 +45,8 @@ export const components: Record<string, Behavior> = {
   TilingSprite: { create: props => new PIXI.TilingSprite(props.texture, props.width, props.height) },
 };
 
-// The PixiJS 6 class names, the same behavior objects as the core tags they map to.
-components.NineSlicePlane = components.NineSliceSprite;
-components.SimpleMesh = components.MeshSimple;
-components.SimplePlane = components.MeshPlane;
-components.SimpleRope = components.MeshRope;
+// The PixiJS 7 class names, the same behavior objects as the core tags they map to.
+behaviors.NineSlicePlane = behaviors.NineSliceSprite;
+behaviors.SimpleMesh = behaviors.MeshSimple;
+behaviors.SimplePlane = behaviors.MeshPlane;
+behaviors.SimpleRope = behaviors.MeshRope;

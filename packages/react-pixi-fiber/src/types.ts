@@ -164,7 +164,14 @@ export type DisplayObjectProps<T, S = SetterTypesOf<T>> = PropsWithReactChildren
 > &
   PixiExtraProps;
 export type Props<T> = DisplayObjectProps<T>;
+// Props of a filter: its own fields and setters, without `children` and the props the adapter adds to every tag.
+export type FilterProps<T, S = SetterTypesOf<T>> = Partial<
+  WithSetterTypes<WithPointLike<T>, Omit<S, PointProperties<T>>>
+> & {
+  enabled?: boolean;
+};
 
+export type AlphaFilterProps = FilterProps<InstanceOf<"AlphaFilter">>;
 export type AnimatedSpriteProps = Props<InstanceOf<"AnimatedSprite">> & {
   // `autoUpdate` is not a property on the instance, but is used in constructor
   autoUpdate?: boolean;
@@ -174,7 +181,16 @@ export type BitmapTextProps = Props<InstanceOf<"BitmapText">> & {
   font?: unknown;
   style?: unknown;
 };
+export type BlurFilterProps = FilterProps<InstanceOf<"BlurFilter">> & {
+  // Constructor argument that is not a property on the instance
+  kernelSize?: number;
+};
+export type ColorMatrixFilterProps = FilterProps<InstanceOf<"ColorMatrixFilter">>;
 export type ContainerProps = Props<InstanceOf<"Container">>;
+export type DisplacementFilterProps = FilterProps<InstanceOf<"DisplacementFilter">> & {
+  // Constructor argument that is not a property on the instance
+  sprite: InstanceOf<"Sprite">;
+};
 export type GraphicsProps = Props<InstanceOf<"Graphics">>;
 export type MeshProps = Props<InstanceOf<"Mesh">>;
 export type MeshPlaneProps = Props<InstanceOf<"MeshPlane">> & {
@@ -195,6 +211,7 @@ export type MeshSimpleProps = Props<InstanceOf<"MeshSimple">> & {
 /** @deprecated Renamed to `NineSliceSpriteProps`, removed in 4.0.0 */
 export type NineSlicePlaneProps = NineSliceSpriteProps;
 export type NineSliceSpriteProps = Props<InstanceOf<"NineSliceSprite">>;
+export type NoiseFilterProps = FilterProps<InstanceOf<"NoiseFilter">>;
 export type ParticleContainerProps = Props<InstanceOf<"ParticleContainer">> & {
   // Constructor arguments that are not properties on the instance
   dynamicProperties?: Record<string, boolean>;
@@ -224,7 +241,7 @@ export interface PixiPropertyTable {
 }
 
 export interface PixiAdapter {
-  components: Record<string, Behavior>;
+  behaviors: Record<string, Behavior>;
   defaults?: Record<string, Record<string, unknown>>;
   properties: PixiPropertyTable;
   isPoint(value: unknown): value is { x: number; y: number };
@@ -232,6 +249,9 @@ export interface PixiAdapter {
   createApplication(options: Record<string, unknown>): unknown | Promise<unknown>;
   destroyApplication(app: any, removeView: boolean, stageOptions: unknown): void;
   isApplication(value: unknown): boolean;
+  // Releases a filter the core created, instead of `filter.destroy()`. For a PixiJS major where `destroy` breaks the
+  // renderer.
+  releaseFilter?: (filter: object) => void;
   translateProps?(type: string, props: Record<string, unknown>): Record<string, unknown>;
 }
 
@@ -395,6 +415,20 @@ export type PIXIComponentBehavior<T extends object, P> =
   | PIXIComponentBehaviorDefinition<T, P>
   | LegacyPIXIComponentBehaviorDefinition<T, P>
   | DisplayObjectCreator<T, P>;
+
+// `PIXIFilter` `behavior` object.
+export interface PIXIFilterBehaviorDefinition<T extends object, P> {
+  create: (props: P) => T;
+  applyProps?: DisplayObjectPropSetter<T, P>;
+  afterAdd?: (filter: T) => void;
+  beforeRemove?: (filter: T) => void;
+}
+
+// `PIXIFilter` has `behavior` defined either as an object or factory function.
+export type PIXIFilterBehavior<T extends object, P> = PIXIFilterBehaviorDefinition<T, P> | ((props: P) => T);
+
+// Props accepted by a `PIXIFilter`: props defined on the component overwrite props of the underlying filter.
+export type PIXIFilterProps<T extends object, P> = P & FilterProps<Omit<T, keyof P>, SetterTypesOf<T>>;
 
 /** @deprecated Renamed to `PIXIComponentInstance`, removed in 4.0.0 */
 export type CustomDisplayObject<T extends object, P> = PIXIComponentInstance<T, P>;

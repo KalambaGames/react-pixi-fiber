@@ -1,12 +1,17 @@
 import type * as PIXI from "pixi.js";
-import type { Props } from "react-pixi-fiber";
+import type { FilterProps, Props } from "react-pixi-fiber";
 
 // Importing this package fills the core's augmentable interfaces with the PixiJS 7 classes.
 declare module "react-pixi-fiber" {
   interface PixiInstances {
+    AlphaFilter: PIXI.AlphaFilter;
     AnimatedSprite: PIXI.AnimatedSprite;
     BitmapText: PIXI.BitmapText;
+    BlurFilter: PIXI.BlurFilter;
+    ColorMatrixFilter: PIXI.ColorMatrixFilter;
     Container: PIXI.Container;
+    DisplacementFilter: PIXI.DisplacementFilter;
+    FXAAFilter: PIXI.FXAAFilter;
     Graphics: PIXI.Graphics;
     HTMLText: PIXI.HTMLText;
     Mesh: PIXI.Mesh;
@@ -15,6 +20,7 @@ declare module "react-pixi-fiber" {
     MeshSimple: PIXI.SimpleMesh;
     NineSlicePlane: PIXI.NineSlicePlane;
     NineSliceSprite: PIXI.NineSlicePlane;
+    NoiseFilter: PIXI.NoiseFilter;
     ParticleContainer: PIXI.ParticleContainer;
     SimpleMesh: PIXI.SimpleMesh;
     SimplePlane: PIXI.SimplePlane;
@@ -36,6 +42,7 @@ declare module "react-pixi-fiber" {
   }
 }
 
+export type FXAAFilterProps = FilterProps<PIXI.FXAAFilter>;
 export type HTMLTextProps = Props<PIXI.HTMLText>;
 export type NineSlicePlaneProps = Props<PIXI.NineSlicePlane>;
 export type PixiTypeFallback<T, U> = T extends PIXI.DisplayObject ? T : U;

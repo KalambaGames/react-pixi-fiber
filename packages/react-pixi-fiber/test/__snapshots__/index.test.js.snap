@@ -2,6 +2,7 @@
 
 exports[`ReactPixiFiber public API > should match snapshot 1`] = `
 {
+  "AlphaFilter": "AlphaFilter",
   "AnimatedSprite": "AnimatedSprite",
   "AppContext": {
     "$$typeof": Symbol(react.context),
@@ -23,9 +24,12 @@ exports[`ReactPixiFiber public API > should match snapshot 1`] = `
   },
   "AppProvider": [Function],
   "BitmapText": "BitmapText",
+  "BlurFilter": "BlurFilter",
+  "ColorMatrixFilter": "ColorMatrixFilter",
   "Container": "Container",
   "CustomPIXIComponent": [Function],
   "CustomPIXIProperty": [Function],
+  "DisplacementFilter": "DisplacementFilter",
   "Graphics": "Graphics",
   "Mesh": "Mesh",
   "MeshPlane": "MeshPlane",
@@ -33,7 +37,9 @@ exports[`ReactPixiFiber public API > should match snapshot 1`] = `
   "MeshSimple": "MeshSimple",
   "NineSlicePlane": "NineSlicePlane",
   "NineSliceSprite": "NineSliceSprite",
+  "NoiseFilter": "NoiseFilter",
   "PIXIComponent": [Function],
+  "PIXIFilter": [Function],
   "PIXIProperty": [Function],
   "ParticleContainer": "ParticleContainer",
   "Sprite": "Sprite",

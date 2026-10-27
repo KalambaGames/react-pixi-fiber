@@ -54,7 +54,7 @@ describe("configure", () => {
     const { createInstance } = await import("../src/ReactPixiFiberComponent");
     const adapter = (await import("@react-pixi-fiber/pixi-6")).default();
     configure({ react: react18(), pixi: adapter });
-    const other = { ...adapter, components: { Container: { create: () => new PIXI.Sprite() } } };
+    const other = { ...adapter, behaviors: { Container: { create: () => new PIXI.Sprite() } } };
     const failing = {
       ...react18(),
       createRenderer: () => {
@@ -62,7 +62,7 @@ describe("configure", () => {
       },
     };
     expect(() => configure({ react: failing, pixi: other })).toThrow("createRenderer");
-    expect(() => configure({ react: react18(), pixi: { ...other, components: { Container: {} } } })).toThrow(/create/);
+    expect(() => configure({ react: react18(), pixi: { ...other, behaviors: { Container: {} } } })).toThrow(/create/);
     expect(createInstance("Container", {})).toBeInstanceOf(PIXI.Container);
     expect(createInstance("Container", {})).not.toBeInstanceOf(PIXI.Sprite);
     expect(createInstance("Sprite", {})).toBeInstanceOf(PIXI.Sprite);
@@ -75,7 +75,7 @@ describe("configure", () => {
     configure({ react: react18(), pixi: adapter });
     render(<Container />, new PIXI.Container());
     const marker = new PIXI.Container();
-    const other = { ...adapter, components: { ...adapter.components, Container: { create: () => marker } } };
+    const other = { ...adapter, behaviors: { ...adapter.behaviors, Container: { create: () => marker } } };
     configure({ react: react18(), pixi: other });
     render(<Container />, new PIXI.Container());
     configure({ react: react18(), pixi: other });

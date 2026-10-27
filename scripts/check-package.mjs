@@ -66,8 +66,8 @@ try {
       esm: `import * as Mod from ${JSON.stringify(name)};\nconsole.log(Mod);\n`,
       cjs: `console.log(require(${JSON.stringify(name)}));\n`,
     };
-    // pixi-8 builds `allComponents` as an entry of its own, which its main entry imports, so a bundle holds both.
-    const chunks = existsSync(join(dir, "dist/es/all.development.js")) ? ["all", base] : [base];
+    // pixi-8 builds `allClasses` as an entry of its own, which its main entry imports, so a bundle holds both.
+    const chunks = existsSync(join(dir, "dist/es/allClasses.development.js")) ? ["allClasses", base] : [base];
     const built = (format, suffix) => chunks.map(chunk => `dist/${format}/${chunk}.${suffix}.js`);
     const files = {
       esDevelopment: built("es", "development"),

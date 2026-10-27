@@ -12,7 +12,7 @@ Try the playgrounds in your browser: [PixiJS 8](https://react-pixi-fiber.pages.d
 
 | Path | Package | Peer dependencies |
 | --- | --- | --- |
-| [`packages/pixi-4`](./packages/pixi-4) | `@react-pixi-fiber/pixi-4`, the PixiJS 4 adapter | `@types/pixi.js` ^4.8.9 (optional), `pixi.js` ^4.4.0, `react-pixi-fiber` ^3.0.0 |
+| [`packages/pixi-4`](./packages/pixi-4) | `@react-pixi-fiber/pixi-4`, the PixiJS 4 adapter | `@types/pixi.js` ^4.8.9 (optional), `pixi.js` ^4.6.0, `react-pixi-fiber` ^3.0.0 |
 | [`packages/pixi-5`](./packages/pixi-5) | `@react-pixi-fiber/pixi-5`, the PixiJS 5 adapter | `pixi.js` ^5.0.0, `react-pixi-fiber` ^3.0.0 |
 | [`packages/pixi-6`](./packages/pixi-6) | `@react-pixi-fiber/pixi-6`, the PixiJS 6 adapter | `pixi.js` ^6.0.0, `react-pixi-fiber` ^3.0.0 |
 | [`packages/pixi-7`](./packages/pixi-7) | `@react-pixi-fiber/pixi-7`, the PixiJS 7 adapter | `pixi.js` ^7.2.0, `react-pixi-fiber` ^3.0.0 |
@@ -24,7 +24,7 @@ Try the playgrounds in your browser: [PixiJS 8](https://react-pixi-fiber.pages.d
 
 [`apps/playground-pixi4`](./apps/playground-pixi4), [`apps/playground-pixi5`](./apps/playground-pixi5), [`apps/playground-pixi6`](./apps/playground-pixi6), [`apps/playground-pixi7`](./apps/playground-pixi7) and [`apps/playground-pixi8`](./apps/playground-pixi8) hold the playgrounds, built with Vite on the local packages. [`apps/playground-shell`](./apps/playground-shell) holds the code they share.
 
-An app installs the core, one React adapter and one PixiJS adapter. Every PixiJS adapter implements all 13 core tags; the [compatibility matrix](./packages/react-pixi-fiber/README.md#compatibility-matrix) and the version notes (React 17, React 19, PixiJS 4 and PixiJS 8) are in the package README, and each adapter's README lists its supported features.
+An app installs the core, one React adapter and one PixiJS adapter. Every PixiJS adapter implements the 13 Display Object tags and the 5 filter tags. The [compatibility matrix](./packages/react-pixi-fiber/README.md#compatibility-matrix) and the version notes (React 17, React 19, PixiJS 4 and PixiJS 8) are in the package README. Each adapter's README lists its supported features.
 
 The repository is a [pnpm](https://pnpm.io) workspace. The pnpm version is pinned in the `packageManager` field of `package.json`, and Node comes from `.nvmrc`.
 

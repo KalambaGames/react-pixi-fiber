@@ -8,13 +8,13 @@ vi.mock("../src/PixiPropertyOperations", async importOriginal => ({
   setValueForProperty: vi.fn(),
 }));
 
-const components = {
+const behaviors = {
   Container: { create: vi.fn(() => ({ kind: "Container" })) },
   NineSliceSprite: { create: vi.fn(() => ({ kind: "NineSliceSprite" })) },
 };
 vi.mock("../src/configure", () => ({
   getPixiAdapter: () => ({
-    components,
+    behaviors,
     properties: { boolean: [], numeric: [], positiveNumeric: [], vector: [], callback: [] },
     isPoint: () => false,
     copyPoint() {},
@@ -26,7 +26,7 @@ describe("createInstance", () => {
   let error;
   beforeEach(async () => {
     vi.resetModules();
-    (await import("../src/registry")).registerAdapterComponents(components);
+    (await import("../src/registry")).registerAdapterBehaviors(behaviors);
     error = vi.spyOn(console, "error").mockImplementation(() => {});
   });
   afterEach(() => vi.restoreAllMocks());
@@ -41,10 +41,10 @@ describe("createInstance", () => {
     expect(error).toHaveBeenCalledTimes(__DEV__ ? 1 : 0); // "also defined by the adapter"
     if (__DEV__) expect(error.mock.calls[0][0]).toMatch(/`Container`.*PIXIComponent.*adapter/s);
   });
-  it("resolves adapter components", async () => {
+  it("resolves adapter behaviors", async () => {
     const { createInstance } = await import("../src/ReactPixiFiberComponent");
     expect(createInstance("Container", { a: 1 })).toEqual({ kind: "Container" });
-    expect(components.Container.create).toHaveBeenCalledWith({ a: 1 });
+    expect(behaviors.Container.create).toHaveBeenCalledWith({ a: 1 });
     expect(error).not.toHaveBeenCalled();
   });
   it("maps the deprecated NineSlicePlane tag to NineSliceSprite and warns once", async () => {

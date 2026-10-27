@@ -10,15 +10,20 @@ import { validateProperties } from "../src/ReactPixiFiberUnknownPropertyHook";
 // The core against pixi-6, which test/setup.ts configures. packages/pixi-6/test covers the adapter's own data.
 const texture = PIXI.Texture.WHITE;
 const propsFor = {
+  AlphaFilter: {},
   AnimatedSprite: { textures: [texture] },
   BitmapText: { style: { fontName: "test" }, text: "t" },
+  BlurFilter: {},
+  ColorMatrixFilter: {},
   Container: {},
+  DisplacementFilter: { sprite: new PIXI.Sprite() },
   Graphics: {},
   Mesh: { geometry: new PIXI.PlaneGeometry(1, 1, 2, 2), shader: new PIXI.MeshMaterial(texture) },
   MeshPlane: { texture, verticesX: 2, verticesY: 2 },
   MeshRope: { points: [new PIXI.Point(0, 0), new PIXI.Point(1, 1)], texture },
   MeshSimple: { texture },
   NineSliceSprite: { bottomHeight: 1, leftWidth: 1, rightWidth: 1, texture, topHeight: 1 },
+  NoiseFilter: {},
   ParticleContainer: {},
   Sprite: { texture },
   Text: { text: "t" },
@@ -47,7 +52,7 @@ describe("the core with pixi-6", () => {
   it("creates every core tag through createInstance and records its tag", () => {
     for (const tag of Object.keys(TAGS)) {
       const instance = createInstance(tag, propsFor[tag]);
-      expect(instance, tag).toBeInstanceOf(PIXI.Container);
+      expect(instance, tag).toBeInstanceOf(tag.endsWith("Filter") ? PIXI.Filter : PIXI.Container);
       expect(getInstanceTag(instance)).toBe(tag);
     }
   });

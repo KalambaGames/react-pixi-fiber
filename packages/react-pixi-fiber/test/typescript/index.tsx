@@ -26,6 +26,7 @@ import type {
 import {
   AnimatedSprite,
   BitmapText,
+  BlurFilter,
   Container,
   Graphics,
   MeshRope,
@@ -39,6 +40,7 @@ import {
   CustomPIXIComponent,
   CustomPIXIProperty,
   PIXIComponent,
+  PIXIFilter,
   PIXIProperty,
   applyProps,
   getInstanceTag,
@@ -188,6 +190,38 @@ const Circle = PIXIComponent<PIXI.Graphics, CircleProps>("Circle", {
 
 // A bare function is the `create` of a behavior.
 const PlainGraphics = PIXIComponent("PlainGraphics", () => new PIXI.Graphics());
+
+// A filter class registers with `PIXIFilter`: its fields and setters are props, Display Object props are not.
+class GlowFilter extends PIXI.Filter {
+  private _strength = 1;
+  get strength(): number {
+    return this._strength;
+  }
+  set strength(value: number) {
+    this._strength = value;
+  }
+}
+const Glow = PIXIFilter("Glow", () => new GlowFilter());
+const glowRef = React.createRef<GlowFilter>();
+const GlowExample = <Glow enabled ref={glowRef} strength={2} />;
+// @ts-expect-error a filter has no `x`
+const GlowWithX = <Glow x={1} />;
+// @ts-expect-error a filter has no `visible`
+const GlowWithVisible = <Glow visible />;
+// @ts-expect-error a filter has no children
+const GlowWithChildren = <Glow>{null}</Glow>;
+console.log(GlowExample, GlowWithX, GlowWithVisible, GlowWithChildren);
+
+// A built-in filter tag takes the props of its PixiJS class.
+const SpriteWithBlur = (
+  <Sprite>
+    <BlurFilter blur={2} />
+    <BlurFilter kernelSize={7} />
+    {/* @ts-expect-error a filter has no `x` */}
+    <BlurFilter x={1} />
+  </Sprite>
+);
+console.log(SpriteWithBlur);
 
 // Custom properties can be registered on one, many or all component types.
 PIXIProperty(Sprite, "id", value => typeof value === "number");

@@ -1,34 +1,46 @@
 import { describe, it, expect, vi } from "vitest";
 import * as PIXI from "pixi.js";
-import { TAGS } from "../../react-pixi-fiber/src/tags";
-import pixi4, { NineSlicePlane, Plane, Rope } from "../src/index";
+import { DISPLAY_OBJECT_TAGS, FILTER_TAGS, TAGS } from "../../react-pixi-fiber/src/tags";
+import pixi4, { FXAAFilter, NineSlicePlane, Plane, Rope } from "../src/index";
 
 const texture = PIXI.Texture.WHITE;
 const propsFor: Record<string, Record<string, unknown>> = {
+  AlphaFilter: {},
   AnimatedSprite: { textures: [texture] },
   BitmapText: { style: { font: "10px test" }, text: "t" },
+  BlurFilter: {},
+  ColorMatrixFilter: {},
   Container: {},
+  DisplacementFilter: { sprite: new PIXI.Sprite(texture) },
+  FXAAFilter: {},
   Graphics: {},
   Mesh: { indices: new Uint16Array([0, 1, 2]), texture, uvs: new Float32Array(6), vertices: new Float32Array(6) },
   MeshPlane: { texture, verticesX: 2, verticesY: 2 },
   MeshRope: { points: [new PIXI.Point(0, 0), new PIXI.Point(1, 1)], texture },
   MeshSimple: { indices: new Uint16Array([0, 1, 2]), texture, uvs: new Float32Array(6), vertices: new Float32Array(6) },
   NineSliceSprite: { bottomHeight: 1, leftWidth: 1, rightWidth: 1, texture, topHeight: 1 },
+  NoiseFilter: {},
   ParticleContainer: {},
   Sprite: { texture },
   Text: { text: "t" },
   TilingSprite: { height: 1, texture, width: 1 },
 };
 const classFor: Record<string, new (...args: any[]) => unknown> = {
+  AlphaFilter: PIXI.filters.AlphaFilter,
   AnimatedSprite: PIXI.extras.AnimatedSprite,
   BitmapText: PIXI.extras.BitmapText,
+  BlurFilter: PIXI.filters.BlurFilter,
+  ColorMatrixFilter: PIXI.filters.ColorMatrixFilter,
   Container: PIXI.Container,
+  DisplacementFilter: PIXI.filters.DisplacementFilter,
+  FXAAFilter: PIXI.filters.FXAAFilter,
   Graphics: PIXI.Graphics,
   Mesh: PIXI.mesh.Mesh,
   MeshPlane: PIXI.mesh.Plane,
   MeshRope: PIXI.mesh.Rope,
   MeshSimple: PIXI.mesh.Mesh,
   NineSliceSprite: PIXI.mesh.NineSlicePlane,
+  NoiseFilter: PIXI.filters.NoiseFilter,
   ParticleContainer: PIXI.particles.ParticleContainer,
   Sprite: PIXI.Sprite,
   Text: PIXI.Text,
@@ -48,29 +60,55 @@ PIXI.extras.BitmapText.registerFont(fontXml, texture);
 
 describe("pixi4", () => {
   const adapter = pixi4();
-  it("implements the 13 core tags and the three PixiJS 4 class-name aliases", () => {
-    for (const tag of Object.keys(TAGS)) expect(typeof adapter.components[tag].create, tag).toBe("function");
+  it("implements the 18 core tags, FXAAFilter and the three PixiJS 4 class-name aliases", () => {
+    for (const tag of Object.keys(TAGS)) expect(typeof adapter.behaviors[tag].create, tag).toBe("function");
     const aliases = { NineSlicePlane, Plane, Rope } as Record<string, unknown>;
     for (const [name, value] of Object.entries(aliases)) expect(value).toBe(name);
-    expect(adapter.components.NineSlicePlane).toBe(adapter.components.NineSliceSprite);
-    expect(adapter.components.Plane).toBe(adapter.components.MeshPlane);
-    expect(adapter.components.Rope).toBe(adapter.components.MeshRope);
-    expect(Object.keys(adapter.components).sort()).toEqual([...Object.keys(TAGS), ...Object.keys(aliases)].sort());
+    expect(adapter.behaviors.NineSlicePlane).toBe(adapter.behaviors.NineSliceSprite);
+    expect(adapter.behaviors.Plane).toBe(adapter.behaviors.MeshPlane);
+    expect(adapter.behaviors.Rope).toBe(adapter.behaviors.MeshRope);
+    expect(Object.keys(adapter.behaviors).sort()).toEqual(
+      [...Object.keys(TAGS), "FXAAFilter", ...Object.keys(aliases)].sort()
+    );
+  });
+  it("marks the filter tags, and no Display Object tag, with kind filter", () => {
+    for (const tag of [...Object.keys(FILTER_TAGS), "FXAAFilter"])
+      expect(adapter.behaviors[tag].kind, tag).toBe("filter");
+    for (const tag of Object.keys(DISPLAY_OBJECT_TAGS)) expect(adapter.behaviors[tag].kind, tag).toBeUndefined();
   });
   it("creates every core tag with the PixiJS 4 class", () => {
     for (const tag of Object.keys(TAGS)) {
-      expect(adapter.components[tag].create(propsFor[tag]), tag).toBeInstanceOf(classFor[tag]);
+      expect(adapter.behaviors[tag].create(propsFor[tag]), tag).toBeInstanceOf(classFor[tag]);
     }
   });
+  it("adds the FXAAFilter tag", () => {
+    expect(FXAAFilter).toBe("FXAAFilter");
+    expect(adapter.behaviors.FXAAFilter.create({})).toBeInstanceOf(PIXI.filters.FXAAFilter);
+  });
+  it("passes the constructor arguments in order", () => {
+    const create = (tag: string, props: Record<string, unknown>) => adapter.behaviors[tag].create(props) as any;
+    const blur = create("BlurFilter", { blur: 3, kernelSize: 7, quality: 4, resolution: 2 });
+    expect(blur).toBeInstanceOf(PIXI.filters.BlurFilter);
+    expect([blur.blur, blur.quality, blur.resolution]).toEqual([3, 4, 2]);
+    // PixiJS keeps no kernelSize property: the size is the length of the coordinate array in the shader.
+    expect(blur.blurXFilter.vertexSrc).toContain("vBlurTexCoords[7];");
+    const noise = create("NoiseFilter", { noise: 0.25, seed: 42 });
+    expect([noise.noise, noise.seed]).toEqual([0.25, 42]);
+    const sprite = new PIXI.Sprite(texture);
+    const displacement = create("DisplacementFilter", { scale: 7, sprite });
+    expect(displacement.scale.x).toBe(7);
+    expect(displacement.maskSprite).toBe(sprite);
+    expect(create("AlphaFilter", { alpha: 0.5 }).alpha).toBe(0.5);
+  });
   it("creates a BitmapText from a font prop beside a style, the props winning over the style", () => {
-    const text = adapter.components.BitmapText.create({ font: "10px test", style: { align: "center" }, text: "t" });
+    const text = adapter.behaviors.BitmapText.create({ font: "10px test", style: { align: "center" }, text: "t" });
     expect((text as PIXI.extras.BitmapText).font).toMatchObject({ align: "center", name: "test", size: 10 });
-    const sized = adapter.components.BitmapText.create({ font: "20px test", style: { font: "10px test" }, text: "t" });
+    const sized = adapter.behaviors.BitmapText.create({ font: "20px test", style: { font: "10px test" }, text: "t" });
     expect((sized as PIXI.extras.BitmapText).font).toMatchObject({ size: 20 });
   });
   it("creates Mesh and MeshSimple as the one PixiJS 4 mesh class with the constructor arguments", () => {
     for (const tag of ["Mesh", "MeshSimple"]) {
-      const created = adapter.components[tag].create(propsFor[tag]) as PIXI.mesh.Mesh;
+      const created = adapter.behaviors[tag].create(propsFor[tag]) as PIXI.mesh.Mesh;
       expect(created.constructor, tag).toBe(PIXI.mesh.Mesh);
       expect(created.texture, tag).toBe(texture);
       expect(created.vertices, tag).toBe(propsFor[tag].vertices);

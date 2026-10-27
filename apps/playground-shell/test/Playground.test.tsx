@@ -258,6 +258,19 @@ describe("Playground sidebar", () => {
     expect(groupLabel("Features")?.className).toContain("cursor-pointer");
   });
 
+  it("lists the Filters group between Features and Integrations", async () => {
+    examples.push({ ...example("filters-basic", "Basic"), group: "Filters" });
+    await render();
+    const labels = [...container.querySelectorAll<HTMLElement>("[data-sidebar=menu-button]")].map(
+      button => button.textContent
+    );
+    expect(labels.filter(label => ["Features", "Filters", "Integrations"].includes(label ?? ""))).toEqual([
+      "Features",
+      "Filters",
+      "Integrations",
+    ]);
+  });
+
   it("marks the current example with the primary color", async () => {
     await render();
     const current = container.querySelector<HTMLElement>("[data-sidebar=menu-sub-button][data-active=true]");
