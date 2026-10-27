@@ -1,21 +1,26 @@
-import { MeshMaterial, PlaneGeometry, Rectangle, Texture } from "pixi.js";
+import { MeshMaterial, PlaneGeometry, Spritesheet, Texture } from "pixi.js";
 import { useEffect, useMemo, useState } from "react";
 import { Mesh, Stage } from "react-pixi-fiber";
+// Frame names and rectangles: see the Features / Spritesheet example.
+import bunnysData from "./assets/bunnys.json";
 import bunnys from "./assets/bunnys.png";
+
+const bunnySheet = Texture.fromURL(bunnys).then(async texture => {
+  const sheet = new Spritesheet(texture, bunnysData);
+  await sheet.parse();
+  return sheet;
+});
 
 export default function MeshExample() {
   const [texture, setTexture] = useState<Texture>();
   useEffect(() => {
     let cancelled = false;
-    let bunny: Texture | undefined;
-    Texture.fromURL(bunnys).then(sheet => {
+    bunnySheet.then(sheet => {
       if (cancelled) return;
-      bunny = new Texture(sheet.baseTexture, new Rectangle(2, 47, 26, 37));
-      setTexture(bunny);
+      setTexture(sheet.textures.bunny);
     });
     return () => {
       cancelled = true;
-      bunny?.destroy();
     };
   }, []);
   const geometry = useMemo(() => new PlaneGeometry(104, 148, 2, 2), []);

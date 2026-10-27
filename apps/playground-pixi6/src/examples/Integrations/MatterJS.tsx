@@ -1,8 +1,10 @@
 import Matter from "matter-js";
 import type { Sprite as PixiSprite } from "pixi.js";
-import { Point, Rectangle, SCALE_MODES, settings, Texture } from "pixi.js";
+import { BaseTexture, Point, SCALE_MODES, settings, Spritesheet, Texture } from "pixi.js";
 import { useEffect, useRef, useState } from "react";
 import { Sprite, Stage, Text, usePixiTicker } from "react-pixi-fiber";
+// Frame names and rectangles: see the Features / Spritesheet example.
+import bunnysData from "./assets/bunnys.json";
 import bunnys from "./assets/bunnys.png";
 
 settings.SCALE_MODE = SCALE_MODES.NEAREST;
@@ -11,14 +13,13 @@ const centerAnchor = new Point(0.5, 0.5);
 const scale = 1.5;
 // The engine steps in fixed steps of 1/60 s, so the simulation runs at the same speed at any frame rate.
 const step = 1000 / 60;
-const bunnyTextures = Texture.from(bunnys);
-const textures = [
-  new Texture(bunnyTextures.baseTexture, new Rectangle(2, 47, 26, 37)),
-  new Texture(bunnyTextures.baseTexture, new Rectangle(2, 86, 26, 37)),
-  new Texture(bunnyTextures.baseTexture, new Rectangle(2, 125, 26, 37)),
-  new Texture(bunnyTextures.baseTexture, new Rectangle(2, 164, 26, 37)),
-  new Texture(bunnyTextures.baseTexture, new Rectangle(2, 2, 26, 43)),
-];
+const sheet = new Spritesheet(BaseTexture.from(bunnys), bunnysData);
+// parse fills sheet.textures before it returns, for a sheet this small.
+// The documented way waits for parse: see the Features / Spritesheet example.
+sheet.parse();
+
+const bunnyNames = ["bunny", "bunnyCute", "bunnySporty", "bunnyRobot", "bunnyAstronaut"] as const;
+const textures = bunnyNames.map(name => sheet.textures[name]);
 
 type Bunny = { body: Matter.Body; id: number; texture: Texture };
 

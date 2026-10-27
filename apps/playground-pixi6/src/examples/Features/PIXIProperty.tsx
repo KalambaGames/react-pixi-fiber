@@ -1,4 +1,4 @@
-import { Point, Rectangle, Texture } from "pixi.js";
+import { BaseTexture, Point, Spritesheet } from "pixi.js";
 import React, { type ComponentProps, type ComponentType, useCallback, useState } from "react";
 import {
   Container,
@@ -9,6 +9,8 @@ import {
   usePixiTicker,
   withApp,
 } from "react-pixi-fiber";
+// Frame names and rectangles: see the Features / Spritesheet example.
+import bunnysData from "./assets/bunnys.json";
 import bunnys from "./assets/bunnys.png";
 
 console.log(
@@ -17,14 +19,13 @@ console.log(
 
 const centerAnchor = new Point(0.5, 0.5);
 
-const bunnyTextures = Texture.from(bunnys);
-const textures = [
-  new Texture(bunnyTextures.baseTexture, new Rectangle(2, 47, 26, 37)),
-  new Texture(bunnyTextures.baseTexture, new Rectangle(2, 86, 26, 37)),
-  new Texture(bunnyTextures.baseTexture, new Rectangle(2, 125, 26, 37)),
-  new Texture(bunnyTextures.baseTexture, new Rectangle(2, 164, 26, 37)),
-  new Texture(bunnyTextures.baseTexture, new Rectangle(2, 2, 26, 43)),
-];
+const sheet = new Spritesheet(BaseTexture.from(bunnys), bunnysData);
+// parse fills sheet.textures before it returns, for a sheet this small.
+// The documented way waits for parse: see the Features / Spritesheet example.
+sheet.parse();
+
+const bunnyNames = ["bunny", "bunnyCute", "bunnySporty", "bunnyRobot", "bunnyAstronaut"] as const;
+const textures = bunnyNames.map(name => sheet.textures[name]);
 
 type BunnyProps = Omit<ComponentProps<typeof Sprite>, "texture"> & {
   // Component used to render the bunny, e.g. `Animated.Sprite`

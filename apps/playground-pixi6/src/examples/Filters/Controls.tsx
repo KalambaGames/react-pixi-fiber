@@ -1,9 +1,11 @@
 // Every filter and every parameter: https://pixijs.io/filters/examples/
 import { useControls } from "leva";
 import { AdjustmentFilter as PixiAdjustmentFilter, type AdjustmentFilterOptions } from "pixi-filters";
-import { Point, Rectangle, SCALE_MODES, settings, Texture } from "pixi.js";
+import { BaseTexture, Point, SCALE_MODES, settings, Spritesheet } from "pixi.js";
 import { useRef } from "react";
 import { Container, PIXIFilter, Sprite, Stage, Text } from "react-pixi-fiber";
+// Frame names and rectangles: see the Features / Spritesheet example.
+import bunnysData from "./assets/bunnys.json";
 import bunnys from "./assets/bunnys.png";
 
 settings.SCALE_MODE = SCALE_MODES.NEAREST;
@@ -13,14 +15,13 @@ const AdjustmentFilter = PIXIFilter(
   (props: Partial<AdjustmentFilterOptions>) => new PixiAdjustmentFilter(props)
 );
 
-const bunnyTextures = Texture.from(bunnys);
-const textures = [
-  new Texture(bunnyTextures.baseTexture, new Rectangle(2, 47, 26, 37)),
-  new Texture(bunnyTextures.baseTexture, new Rectangle(2, 86, 26, 37)),
-  new Texture(bunnyTextures.baseTexture, new Rectangle(2, 125, 26, 37)),
-  new Texture(bunnyTextures.baseTexture, new Rectangle(2, 164, 26, 37)),
-  new Texture(bunnyTextures.baseTexture, new Rectangle(2, 2, 26, 43)),
-];
+const sheet = new Spritesheet(BaseTexture.from(bunnys), bunnysData);
+// parse fills sheet.textures before it returns, for a sheet this small.
+// The documented way waits for parse: see the Features / Spritesheet example.
+sheet.parse();
+
+const bunnyNames = ["bunny", "bunnyCute", "bunnySporty", "bunnyRobot", "bunnyAstronaut"] as const;
+const textures = bunnyNames.map(name => sheet.textures[name]);
 const scale = new Point(2, 2);
 
 export default function ControlsExample() {
