@@ -1,6 +1,6 @@
 import * as PIXI from "pixi.js";
 import { describe, expect, it } from "vitest";
-import { allClasses } from "../src/all";
+import { allClasses } from "../src/allClasses";
 
 const KEYS = [
   "AlphaFilter",

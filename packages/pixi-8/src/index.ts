@@ -12,7 +12,7 @@ import type {
   RenderContainerProps,
   RenderLayerProps,
 } from "./types";
-import { allClasses } from "./all";
+import { allClasses } from "./allClasses";
 export { allClasses };
 export * from "./types";
 

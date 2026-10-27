@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import * as PIXI from "pixi.js";
-import { allClasses } from "../src/all";
+import { allClasses } from "../src/allClasses";
 import { factories, type Pixi8Tag } from "../src/factories";
 
 const texture = PIXI.Texture.WHITE;
