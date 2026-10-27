@@ -111,9 +111,15 @@ export function AppSidebar({
   }));
   const current = links.find(link => link.label === `PixiJS ${pixiMajor}`) ?? links[0];
   const [filter, setFilter] = useState("");
-  // Only the group of the current example starts open. A click on a group label opens or closes it.
+  // The group of the current example opens when the example moves to it, and the other groups keep their state.
+  // A click on a group label opens or closes it.
   const [openGroups, setOpenGroups] = useState<Partial<Record<ExampleGroup, boolean>>>({});
   const currentGroup = examples.find(example => example.id === selectedId)?.group;
+  const [shownGroup, setShownGroup] = useState<ExampleGroup>();
+  if (currentGroup !== undefined && currentGroup !== shownGroup) {
+    setShownGroup(currentGroup);
+    setOpenGroups(groups => ({ ...groups, [currentGroup]: true }));
+  }
   const needle = filter.trim().toLowerCase();
   const filtered = sections
     .map(section => ({ ...section, items: section.items.filter(item => item.title.toLowerCase().includes(needle)) }))
@@ -189,7 +195,7 @@ export function AppSidebar({
                     if (needle === "") setOpenGroups(groups => ({ ...groups, [name]: open }));
                   }}
                   // While the filter has text, every group with a match is open, and a click on its label changes nothing.
-                  open={needle !== "" || (openGroups[name] ?? name === currentGroup)}
+                  open={needle !== "" || openGroups[name] === true}
                 >
                   <SidebarMenuItem>
                     <CollapsibleTrigger asChild>
