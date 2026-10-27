@@ -5,6 +5,8 @@ import { Group, Layer as PixiLayer, Stage as LayersStage } from "pixi-layers";
 import * as PIXI from "pixi.js";
 import React from "react";
 import { Container, PIXIComponent, PIXIProperty, Sprite, Stage } from "react-pixi-fiber";
+// Frame names and rectangles: see the Features / Spritesheet example.
+import bunnysData from "./assets/bunnys.json";
 import bunnys from "./assets/bunnys.png";
 
 type RectProps = {
@@ -101,14 +103,13 @@ const DraggableContainer = PIXIComponent<DraggableContainerInstance, DraggableCo
 
 const centerAnchor = new PIXI.Point(0.5, 0.5);
 
-const bunnyTextures = PIXI.Texture.from(bunnys);
-const textures = [
-  new PIXI.Texture(bunnyTextures.baseTexture, new PIXI.Rectangle(2, 47, 26, 37)),
-  new PIXI.Texture(bunnyTextures.baseTexture, new PIXI.Rectangle(2, 86, 26, 37)),
-  new PIXI.Texture(bunnyTextures.baseTexture, new PIXI.Rectangle(2, 125, 26, 37)),
-  new PIXI.Texture(bunnyTextures.baseTexture, new PIXI.Rectangle(2, 164, 26, 37)),
-  new PIXI.Texture(bunnyTextures.baseTexture, new PIXI.Rectangle(2, 2, 26, 43)),
-];
+const sheet = new PIXI.Spritesheet(PIXI.BaseTexture.fromImage(bunnys), bunnysData);
+// parse fills sheet.textures before it returns, for a sheet this small.
+// The documented way waits for parse: see the Features / Spritesheet example.
+sheet.parse(() => {});
+
+const bunnyNames = ["bunny", "bunnyCute", "bunnySporty", "bunnyRobot", "bunnyAstronaut"] as const;
+const textures = bunnyNames.map(name => sheet.textures[name]);
 
 type BunnyProps = Omit<React.ComponentProps<typeof Sprite>, "texture"> & {
   // Component used to render the bunny, e.g. `Animated.Sprite`

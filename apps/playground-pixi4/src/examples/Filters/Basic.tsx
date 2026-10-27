@@ -1,7 +1,9 @@
 // Every filter and every parameter: https://pixijs.io/filters/examples/
 import { GlowFilter as PixiGlowFilter } from "pixi-filters";
-import { Point, Rectangle, SCALE_MODES, settings, Texture } from "pixi.js";
+import { BaseTexture, Point, SCALE_MODES, settings, Spritesheet } from "pixi.js";
 import { PIXIFilter, Sprite, Stage, Text } from "react-pixi-fiber";
+// Frame names and rectangles: see the Features / Spritesheet example.
+import bunnysData from "./assets/bunnys.json";
 import bunnys from "./assets/bunnys.png";
 
 settings.SCALE_MODE = SCALE_MODES.NEAREST;
@@ -14,7 +16,11 @@ const GlowFilter = PIXIFilter(
 
 const centerAnchor = new Point(0.5, 0.5);
 const scale = new Point(3, 3);
-const texture = new Texture(Texture.from(bunnys).baseTexture, new Rectangle(2, 47, 26, 37));
+const sheet = new Spritesheet(BaseTexture.fromImage(bunnys), bunnysData);
+// parse fills sheet.textures before it returns, for a sheet this small.
+// The documented way waits for parse: see the Features / Spritesheet example.
+sheet.parse(() => {});
+const texture = sheet.textures.bunny;
 
 export default function BasicExample() {
   return (

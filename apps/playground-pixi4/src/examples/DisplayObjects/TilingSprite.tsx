@@ -1,6 +1,8 @@
-import { Rectangle, Texture } from "pixi.js";
+import { Spritesheet, Texture } from "pixi.js";
 import { useCallback, useEffect, useState } from "react";
 import { Stage, TilingSprite, usePixiTicker } from "react-pixi-fiber";
+// Frame names and rectangles: see the Features / Spritesheet example.
+import bunnysData from "./assets/bunnys.json";
 import bunnys from "./assets/bunnys.png";
 
 // PixiJS 4 has no Texture.fromURL. The texture from Texture.fromImage loads in the background.
@@ -12,6 +14,14 @@ function fromURL(url: string) {
   });
 }
 
+const bunnySheet = fromURL(bunnys).then(texture => {
+  const sheet = new Spritesheet(texture.baseTexture, bunnysData);
+  // parse fills sheet.textures before it returns, for a sheet this small.
+  // The documented way waits for parse: see the Features / Spritesheet example.
+  sheet.parse(() => {});
+  return sheet;
+});
+
 function Tiles({ texture }: { texture: Texture }) {
   const [offset, setOffset] = useState(0);
   usePixiTicker(useCallback((delta: number) => setOffset(current => current + delta), []));
@@ -22,15 +32,12 @@ export default function TilingSpriteExample() {
   const [texture, setTexture] = useState<Texture>();
   useEffect(() => {
     let cancelled = false;
-    let bunny: Texture | undefined;
-    fromURL(bunnys).then(sheet => {
+    bunnySheet.then(sheet => {
       if (cancelled) return;
-      bunny = new Texture(sheet.baseTexture, new Rectangle(2, 47, 26, 37));
-      setTexture(bunny);
+      setTexture(sheet.textures.bunny);
     });
     return () => {
       cancelled = true;
-      bunny?.destroy();
     };
   }, []);
   return (

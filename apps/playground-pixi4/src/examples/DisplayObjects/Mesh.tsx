@@ -1,6 +1,8 @@
-import { mesh, Rectangle, Texture } from "pixi.js";
+import { mesh, Spritesheet, Texture } from "pixi.js";
 import { useEffect, useState } from "react";
 import { Mesh, Stage } from "react-pixi-fiber";
+// Frame names and rectangles: see the Features / Spritesheet example.
+import bunnysData from "./assets/bunnys.json";
 import bunnys from "./assets/bunnys.png";
 
 // PixiJS 4 has no Texture.fromURL. The texture from Texture.fromImage loads in the background.
@@ -12,6 +14,14 @@ function fromURL(url: string) {
   });
 }
 
+const bunnySheet = fromURL(bunnys).then(texture => {
+  const sheet = new Spritesheet(texture.baseTexture, bunnysData);
+  // parse fills sheet.textures before it returns, for a sheet this small.
+  // The documented way waits for parse: see the Features / Spritesheet example.
+  sheet.parse(() => {});
+  return sheet;
+});
+
 // A quad of two triangles. With uploadUvTransform the uvs cover the texture frame, not the whole sheet.
 const indices = new Uint16Array([0, 1, 2, 0, 2, 3]);
 const uvs = new Float32Array([0, 0, 1, 0, 1, 1, 0, 1]);
@@ -22,15 +32,12 @@ export default function MeshExample() {
   const [texture, setTexture] = useState<Texture>();
   useEffect(() => {
     let cancelled = false;
-    let bunny: Texture | undefined;
-    fromURL(bunnys).then(sheet => {
+    bunnySheet.then(sheet => {
       if (cancelled) return;
-      bunny = new Texture(sheet.baseTexture, new Rectangle(2, 47, 26, 37));
-      setTexture(bunny);
+      setTexture(sheet.textures.bunny);
     });
     return () => {
       cancelled = true;
-      bunny?.destroy();
     };
   }, []);
   return (
