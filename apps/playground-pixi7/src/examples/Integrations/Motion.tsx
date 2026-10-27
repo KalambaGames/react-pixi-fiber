@@ -1,19 +1,23 @@
 import { animate, motionValue } from "motion";
 import type { Sprite as PixiSprite } from "pixi.js";
-import { BaseTexture, Point, Rectangle, SCALE_MODES, Texture } from "pixi.js";
+import { BaseTexture, Point, SCALE_MODES } from "pixi.js";
 import { useEffect, useRef, useState } from "react";
 import { Sprite, Stage, Text } from "react-pixi-fiber";
+// useSpritesheet source, frame names and rectangles: see the Features / Spritesheet example.
+import bunnysData from "./assets/bunnys.json";
 import bunnys from "./assets/bunnys.png";
+import { useSpritesheet } from "./hooks/useSpritesheet";
 
 BaseTexture.defaultOptions.scaleMode = SCALE_MODES.NEAREST;
 
 const centerAnchor = new Point(0.5, 0.5);
 // The bunny squashes towards the ground, so it scales from its feet.
 const feetAnchor = new Point(0.5, 1);
-const bunny = new Texture(Texture.from(bunnys).baseTexture, new Rectangle(2, 47, 26, 37));
 const spring = { damping: 9, stiffness: 400, type: "spring" } as const;
 
 export default function MotionExample() {
+  const { textures } = useSpritesheet(bunnys, bunnysData);
+  const bunny = textures.bunny;
   const sprite = useRef<PixiSprite>(null);
   const hovered = useRef(false);
   const [scaleX] = useState(() => motionValue(3));
@@ -45,27 +49,29 @@ export default function MotionExample() {
         x={200}
         y={30}
       />
-      <Sprite
-        anchor={feetAnchor}
-        cursor="pointer"
-        eventMode="static"
-        onpointerdown={() => springTo(4.4, 2.2)}
-        onpointerout={() => {
-          hovered.current = false;
-          rest();
-        }}
-        onpointerover={() => {
-          hovered.current = true;
-          rest();
-        }}
-        onpointerup={rest}
-        onpointerupoutside={rest}
-        ref={sprite}
-        scale={3}
-        texture={bunny}
-        x={200}
-        y={240}
-      />
+      {bunny && (
+        <Sprite
+          anchor={feetAnchor}
+          cursor="pointer"
+          eventMode="static"
+          onpointerdown={() => springTo(4.4, 2.2)}
+          onpointerout={() => {
+            hovered.current = false;
+            rest();
+          }}
+          onpointerover={() => {
+            hovered.current = true;
+            rest();
+          }}
+          onpointerup={rest}
+          onpointerupoutside={rest}
+          ref={sprite}
+          scale={3}
+          texture={bunny}
+          x={200}
+          y={240}
+        />
+      )}
     </Stage>
   );
 }

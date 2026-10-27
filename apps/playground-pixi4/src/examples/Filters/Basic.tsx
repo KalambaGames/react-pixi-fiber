@@ -1,8 +1,11 @@
 // Every filter and every parameter: https://pixijs.io/filters/examples/
 import { GlowFilter as PixiGlowFilter } from "pixi-filters";
-import { Point, Rectangle, SCALE_MODES, settings, Texture } from "pixi.js";
+import { Point, SCALE_MODES, settings } from "pixi.js";
 import { PIXIFilter, Sprite, Stage, Text } from "react-pixi-fiber";
+// useSpritesheet source, frame names and rectangles: see the Features / Spritesheet example.
+import bunnysData from "./assets/bunnys.json";
 import bunnys from "./assets/bunnys.png";
+import { useSpritesheet } from "./hooks/useSpritesheet";
 
 settings.SCALE_MODE = SCALE_MODES.NEAREST;
 
@@ -14,9 +17,11 @@ const GlowFilter = PIXIFilter(
 
 const centerAnchor = new Point(0.5, 0.5);
 const scale = new Point(3, 3);
-const texture = new Texture(Texture.from(bunnys).baseTexture, new Rectangle(2, 47, 26, 37));
 
 export default function BasicExample() {
+  const { textures } = useSpritesheet(bunnys, bunnysData);
+  const texture = textures.bunny;
+
   return (
     <Stage options={{ backgroundColor: 0x1099bb, height: 300, width: 400 }}>
       <Text
@@ -25,9 +30,11 @@ export default function BasicExample() {
         x={10}
         y={8}
       />
-      <Sprite anchor={centerAnchor} scale={scale} texture={texture} x={200} y={160}>
-        <GlowFilter color={0xffff00} distance={15} outerStrength={4} />
-      </Sprite>
+      {texture && (
+        <Sprite anchor={centerAnchor} scale={scale} texture={texture} x={200} y={160}>
+          <GlowFilter color={0xffff00} distance={15} outerStrength={4} />
+        </Sprite>
+      )}
     </Stage>
   );
 }

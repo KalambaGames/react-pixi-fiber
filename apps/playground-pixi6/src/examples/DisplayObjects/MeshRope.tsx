@@ -1,26 +1,16 @@
-import { Point, Rectangle, Texture } from "pixi.js";
-import { useEffect, useState } from "react";
+import { Point } from "pixi.js";
 import { MeshRope, Stage } from "react-pixi-fiber";
+// useSpritesheet source, frame names and rectangles: see the Features / Spritesheet example.
+import bunnysData from "./assets/bunnys.json";
 import bunnys from "./assets/bunnys.png";
+import { useSpritesheet } from "./hooks/useSpritesheet";
 
 const points = Array.from({ length: 20 }, (_, i) => new Point(40 + i * 17, 150 + Math.sin(i / 2) * 50));
 
 // PixiJS 6 class: SimpleRope
 export default function MeshRopeExample() {
-  const [texture, setTexture] = useState<Texture>();
-  useEffect(() => {
-    let cancelled = false;
-    let bunny: Texture | undefined;
-    Texture.fromURL(bunnys).then(sheet => {
-      if (cancelled) return;
-      bunny = new Texture(sheet.baseTexture, new Rectangle(2, 47, 26, 37));
-      setTexture(bunny);
-    });
-    return () => {
-      cancelled = true;
-      bunny?.destroy();
-    };
-  }, []);
+  const { textures } = useSpritesheet(bunnys, bunnysData);
+  const texture = textures.bunny;
   return (
     <Stage options={{ backgroundColor: 0x1099bb, height: 300, width: 400 }}>
       {texture && <MeshRope points={points} texture={texture} />}

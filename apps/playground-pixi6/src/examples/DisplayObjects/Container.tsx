@@ -1,23 +1,12 @@
-import { Rectangle, Texture } from "pixi.js";
-import { useEffect, useState } from "react";
 import { Container, Sprite, Stage } from "react-pixi-fiber";
+// useSpritesheet source, frame names and rectangles: see the Features / Spritesheet example.
+import bunnysData from "./assets/bunnys.json";
 import bunnys from "./assets/bunnys.png";
+import { useSpritesheet } from "./hooks/useSpritesheet";
 
 export default function ContainerExample() {
-  const [texture, setTexture] = useState<Texture>();
-  useEffect(() => {
-    let cancelled = false;
-    let bunny: Texture | undefined;
-    Texture.fromURL(bunnys).then(sheet => {
-      if (cancelled) return;
-      bunny = new Texture(sheet.baseTexture, new Rectangle(2, 47, 26, 37));
-      setTexture(bunny);
-    });
-    return () => {
-      cancelled = true;
-      bunny?.destroy();
-    };
-  }, []);
+  const { textures } = useSpritesheet(bunnys, bunnysData);
+  const texture = textures.bunny;
   return (
     <Stage options={{ backgroundColor: 0x1099bb, height: 300, width: 400 }}>
       {texture && (

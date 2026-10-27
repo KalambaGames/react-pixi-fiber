@@ -1,21 +1,22 @@
 // Every filter and every parameter: https://pixijs.io/filters/examples/
 import { useControls } from "leva";
-import { BaseTexture, Point, Rectangle, SCALE_MODES, Texture } from "pixi.js";
-import { useState } from "react";
+import { BaseTexture, Point, SCALE_MODES, type Texture } from "pixi.js";
+import { useMemo, useState } from "react";
 import { BlurFilter, Container, type InstanceOf, Sprite, Stage, Text } from "react-pixi-fiber";
+// useSpritesheet source, frame names and rectangles: see the Features / Spritesheet example.
+import bunnysData from "./assets/bunnys.json";
 import bunnys from "./assets/bunnys.png";
+import { useSpritesheet } from "./hooks/useSpritesheet";
 
 BaseTexture.defaultOptions.scaleMode = SCALE_MODES.NEAREST;
 
 const centerAnchor = new Point(0.5, 0.5);
 const scale = new Point(3, 3);
-const bunnyTextures = Texture.from(bunnys);
-const textures = [
-  new Texture(bunnyTextures.baseTexture, new Rectangle(2, 47, 26, 37)),
-  new Texture(bunnyTextures.baseTexture, new Rectangle(2, 86, 26, 37)),
-];
+const bunnyNames = ["bunny", "bunnyCute"] as const;
 
 export default function UnmountExample() {
+  const { textures: frames } = useSpritesheet(bunnys, bunnysData);
+  const textures = useMemo(() => frames.bunny && bunnyNames.map(name => frames[name] as Texture), [frames]);
   const [filter, setFilter] = useState<InstanceOf<"BlurFilter"> | null>(null);
   const { container, secondBunny } = useControls({
     container: true,
@@ -36,8 +37,12 @@ export default function UnmountExample() {
         <Container>
           {/* React calls the ref callback with the filter on mount and with null when the filter element unmounts. */}
           <BlurFilter blur={2} ref={setFilter} />
-          <Sprite anchor={centerAnchor} scale={scale} texture={textures[0]} x={130} y={170} />
-          {secondBunny && <Sprite anchor={centerAnchor} scale={scale} texture={textures[1]} x={270} y={170} />}
+          {textures && (
+            <>
+              <Sprite anchor={centerAnchor} scale={scale} texture={textures[0]} x={130} y={170} />
+              {secondBunny && <Sprite anchor={centerAnchor} scale={scale} texture={textures[1]} x={270} y={170} />}
+            </>
+          )}
         </Container>
       )}
     </Stage>

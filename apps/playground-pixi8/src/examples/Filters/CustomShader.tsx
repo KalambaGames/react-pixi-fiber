@@ -1,10 +1,15 @@
 import { useControls } from "leva";
-import { Assets, Filter, Point, Rectangle, Texture, TextureSource } from "pixi.js";
-import { useEffect, useRef, useState } from "react";
+import { Filter, Point, type Texture, TextureSource } from "pixi.js";
+import { useMemo, useRef } from "react";
 import { Container, PIXIFilter, Sprite, Stage, Text, usePixiTicker } from "react-pixi-fiber";
+// useSpritesheet source, frame names and rectangles: see the Features / Spritesheet example.
+import bunnysData from "./assets/bunnys.json";
 import bunnys from "./assets/bunnys.png";
+import { useSpritesheet } from "./hooks/useSpritesheet";
 
 TextureSource.defaultOptions.scaleMode = "nearest";
+
+const bunnyNames = ["bunny", "bunnyCute", "bunnySporty", "bunnyRobot", "bunnyAstronaut"] as const;
 
 const scale = new Point(2, 2);
 
@@ -77,31 +82,11 @@ function Bunnies({ amplitude, textures }: { amplitude: number; textures: Texture
 }
 
 export default function CustomShaderExample() {
-  const [textures, setTextures] = useState<Texture[]>();
+  const { textures: frames } = useSpritesheet(bunnys, bunnysData);
+  const textures = useMemo(() => frames.bunny && bunnyNames.map(name => frames[name] as Texture), [frames]);
   const { amplitude } = useControls({
     amplitude: { max: 0.03, min: 0, pad: 3, step: 0.001, value: 0.005 },
   });
-
-  // PixiJS 8 loads the sprite sheet asynchronously, so the bunnies render once their textures exist.
-  useEffect(() => {
-    let cancelled = false;
-    let created: Texture[] = [];
-    Assets.load<Texture>(bunnys).then(({ source }) => {
-      if (cancelled) return;
-      created = [
-        new Texture({ frame: new Rectangle(2, 47, 26, 37), source }),
-        new Texture({ frame: new Rectangle(2, 86, 26, 37), source }),
-        new Texture({ frame: new Rectangle(2, 125, 26, 37), source }),
-        new Texture({ frame: new Rectangle(2, 164, 26, 37), source }),
-        new Texture({ frame: new Rectangle(2, 2, 26, 43), source }),
-      ];
-      setTextures(created);
-    });
-    return () => {
-      cancelled = true;
-      for (const texture of created) texture.destroy();
-    };
-  }, []);
 
   return (
     <Stage options={{ background: 0x1099bb, height: 300, width: 400 }}>

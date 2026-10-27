@@ -1,29 +1,16 @@
-import { Rectangle, Texture } from "pixi.js";
-import { useEffect, useState } from "react";
+import { Texture } from "pixi.js";
+import { useMemo } from "react";
 import { AnimatedSprite, Stage } from "react-pixi-fiber";
+// useSpritesheet source, frame names and rectangles: see the Features / Spritesheet example.
+import bunnysData from "./assets/bunnys.json";
 import bunnys from "./assets/bunnys.png";
+import { useSpritesheet } from "./hooks/useSpritesheet";
+
+const bunnyNames = ["bunny", "bunnyCute", "bunnySporty", "bunnyRobot", "bunnyAstronaut"] as const;
 
 export default function AnimatedSpriteExample() {
-  const [textures, setTextures] = useState<Texture[]>();
-  useEffect(() => {
-    let cancelled = false;
-    let frames: Texture[] = [];
-    Texture.fromURL(bunnys).then(sheet => {
-      if (cancelled) return;
-      frames = [
-        [47, 37],
-        [86, 37],
-        [125, 37],
-        [164, 37],
-        [2, 43],
-      ].map(([y, height]) => new Texture(sheet.baseTexture, new Rectangle(2, y, 26, height)));
-      setTextures(frames);
-    });
-    return () => {
-      cancelled = true;
-      for (const frame of frames) frame.destroy();
-    };
-  }, []);
+  const { textures: frames } = useSpritesheet(bunnys, bunnysData);
+  const textures = useMemo(() => frames.bunny && bunnyNames.map(name => frames[name] as Texture), [frames]);
   return (
     <Stage options={{ backgroundColor: 0x1099bb, height: 300, width: 400 }}>
       {textures && (

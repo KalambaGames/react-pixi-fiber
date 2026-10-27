@@ -1,19 +1,15 @@
 import { useControls } from "leva";
-import { BaseTexture, Filter, Point, Rectangle, SCALE_MODES, Texture } from "pixi.js";
-import { useRef } from "react";
+import { BaseTexture, Filter, Point, SCALE_MODES, type Texture } from "pixi.js";
+import { useMemo, useRef } from "react";
 import { Container, PIXIFilter, Sprite, Stage, Text, usePixiTicker } from "react-pixi-fiber";
+// useSpritesheet source, frame names and rectangles: see the Features / Spritesheet example.
+import bunnysData from "./assets/bunnys.json";
 import bunnys from "./assets/bunnys.png";
+import { useSpritesheet } from "./hooks/useSpritesheet";
 
 BaseTexture.defaultOptions.scaleMode = SCALE_MODES.NEAREST;
 
-const bunnyTextures = Texture.from(bunnys);
-const textures = [
-  new Texture(bunnyTextures.baseTexture, new Rectangle(2, 47, 26, 37)),
-  new Texture(bunnyTextures.baseTexture, new Rectangle(2, 86, 26, 37)),
-  new Texture(bunnyTextures.baseTexture, new Rectangle(2, 125, 26, 37)),
-  new Texture(bunnyTextures.baseTexture, new Rectangle(2, 164, 26, 37)),
-  new Texture(bunnyTextures.baseTexture, new Rectangle(2, 2, 26, 43)),
-];
+const bunnyNames = ["bunny", "bunnyCute", "bunnySporty", "bunnyRobot", "bunnyAstronaut"] as const;
 const scale = new Point(2, 2);
 
 // Moves each row of pixels sideways by a sine of its height and the time, as far as the amplitude.
@@ -41,7 +37,7 @@ const WaveFilter = PIXIFilter<Filter, { amplitude?: number }>("WaveFilter", {
   create: () => new Filter(undefined, fragment, { amplitude: 0.005, time: 0 }),
 });
 
-function Bunnies({ amplitude }: { amplitude: number }) {
+function Bunnies({ amplitude, textures }: { amplitude: number; textures: Texture[] }) {
   const wave = useRef<Filter>(null);
 
   // The ticker writes the time uniform on the filter itself, so the wave moves without a React render.
@@ -60,6 +56,8 @@ function Bunnies({ amplitude }: { amplitude: number }) {
 }
 
 export default function CustomShaderExample() {
+  const { textures: frames } = useSpritesheet(bunnys, bunnysData);
+  const textures = useMemo(() => frames.bunny && bunnyNames.map(name => frames[name] as Texture), [frames]);
   const { amplitude } = useControls({
     amplitude: { max: 0.03, min: 0, pad: 3, step: 0.001, value: 0.005 },
   });
@@ -72,7 +70,7 @@ export default function CustomShaderExample() {
         x={10}
         y={8}
       />
-      <Bunnies amplitude={amplitude} />
+      {textures && <Bunnies amplitude={amplitude} textures={textures} />}
     </Stage>
   );
 }

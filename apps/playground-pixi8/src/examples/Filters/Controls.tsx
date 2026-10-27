@@ -1,12 +1,17 @@
 // Every filter and every parameter: https://pixijs.io/filters/examples/
 import { useControls } from "leva";
 import { AdjustmentFilter as PixiAdjustmentFilter, type AdjustmentFilterOptions } from "pixi-filters";
-import { Assets, Point, Rectangle, Texture, TextureSource } from "pixi.js";
-import { useEffect, useRef, useState } from "react";
+import { Point, type Texture, TextureSource } from "pixi.js";
+import { useMemo, useRef } from "react";
 import { Container, PIXIFilter, Sprite, Stage, Text } from "react-pixi-fiber";
+// useSpritesheet source, frame names and rectangles: see the Features / Spritesheet example.
+import bunnysData from "./assets/bunnys.json";
 import bunnys from "./assets/bunnys.png";
+import { useSpritesheet } from "./hooks/useSpritesheet";
 
 TextureSource.defaultOptions.scaleMode = "nearest";
+
+const bunnyNames = ["bunny", "bunnyCute", "bunnySporty", "bunnyRobot", "bunnyAstronaut"] as const;
 
 const AdjustmentFilter = PIXIFilter(
   "AdjustmentFilter",
@@ -20,28 +25,8 @@ export default function ControlsExample() {
   const renders = useRef(0);
   renders.current += 1;
   const adjustment = useRef<PixiAdjustmentFilter>(null);
-  const [textures, setTextures] = useState<Texture[]>();
-
-  // PixiJS 8 loads the sprite sheet asynchronously, so the bunnies render once their textures exist.
-  useEffect(() => {
-    let cancelled = false;
-    let created: Texture[] = [];
-    Assets.load<Texture>(bunnys).then(({ source }) => {
-      if (cancelled) return;
-      created = [
-        new Texture({ frame: new Rectangle(2, 47, 26, 37), source }),
-        new Texture({ frame: new Rectangle(2, 86, 26, 37), source }),
-        new Texture({ frame: new Rectangle(2, 125, 26, 37), source }),
-        new Texture({ frame: new Rectangle(2, 164, 26, 37), source }),
-        new Texture({ frame: new Rectangle(2, 2, 26, 43), source }),
-      ];
-      setTextures(created);
-    });
-    return () => {
-      cancelled = true;
-      for (const texture of created) texture.destroy();
-    };
-  }, []);
+  const { textures: frames } = useSpritesheet(bunnys, bunnysData);
+  const textures = useMemo(() => frames.bunny && bunnyNames.map(name => frames[name] as Texture), [frames]);
 
   // useControls returns values, so a change of contrast or saturation re-renders the component.
   const { contrast, saturation } = useControls({

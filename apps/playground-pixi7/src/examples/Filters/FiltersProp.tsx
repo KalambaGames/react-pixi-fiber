@@ -1,10 +1,13 @@
 // Every filter and every parameter: https://pixijs.io/filters/examples/
 import { useControls } from "leva";
 import { GlowFilter as PixiGlowFilter, type GlowFilterOptions } from "pixi-filters";
-import { BaseTexture, Point, Rectangle, SCALE_MODES, Texture } from "pixi.js";
+import { BaseTexture, Point, SCALE_MODES } from "pixi.js";
 import { useEffect, useState } from "react";
 import { PIXIFilter, Sprite, Stage, Text } from "react-pixi-fiber";
+// useSpritesheet source, frame names and rectangles: see the Features / Spritesheet example.
+import bunnysData from "./assets/bunnys.json";
 import bunnys from "./assets/bunnys.png";
+import { useSpritesheet } from "./hooks/useSpritesheet";
 
 BaseTexture.defaultOptions.scaleMode = SCALE_MODES.NEAREST;
 
@@ -13,9 +16,10 @@ const GlowFilter = PIXIFilter("GlowFilter", (props: Partial<GlowFilterOptions>) 
 const centerAnchor = new Point(0.5, 0.5);
 const labelStyle = { fill: "white", fontFamily: "Arial", fontSize: 14 };
 const scale = new Point(3, 3);
-const texture = new Texture(Texture.from(bunnys).baseTexture, new Rectangle(2, 47, 26, 37));
 
 export default function FiltersPropExample() {
+  const { textures } = useSpritesheet(bunnys, bunnysData);
+  const texture = textures.bunny;
   const { glow: on } = useControls({ glow: true });
 
   // Creation: the app constructs the filter and keeps it in explicit state (a useState initializer or a useRef),
@@ -36,13 +40,24 @@ export default function FiltersPropExample() {
   return (
     <Stage options={{ backgroundColor: 0x1099bb, height: 300, width: 400 }}>
       <Text style={labelStyle} text="One glow, two ways to attach it" x={10} y={8} />
-      <Sprite anchor={centerAnchor} scale={scale} texture={texture} x={120} y={150}>
-        {/* The reconciler creates, orders and destroys this filter. */}
-        {on && <GlowFilter color={0xffff00} distance={15} outerStrength={4} />}
-      </Sprite>
-      <Text anchor={centerAnchor} style={labelStyle} text="child element" x={120} y={240} />
-      <Sprite anchor={centerAnchor} filters={on ? [glow] : undefined} scale={scale} texture={texture} x={280} y={150} />
-      <Text anchor={centerAnchor} style={labelStyle} text="filters prop" x={280} y={240} />
+      {texture && (
+        <>
+          <Sprite anchor={centerAnchor} scale={scale} texture={texture} x={120} y={150}>
+            {/* The reconciler creates, orders and destroys this filter. */}
+            {on && <GlowFilter color={0xffff00} distance={15} outerStrength={4} />}
+          </Sprite>
+          <Text anchor={centerAnchor} style={labelStyle} text="child element" x={120} y={240} />
+          <Sprite
+            anchor={centerAnchor}
+            filters={on ? [glow] : undefined}
+            scale={scale}
+            texture={texture}
+            x={280}
+            y={150}
+          />
+          <Text anchor={centerAnchor} style={labelStyle} text="filters prop" x={280} y={240} />
+        </>
+      )}
     </Stage>
   );
 }

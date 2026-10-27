@@ -1,40 +1,28 @@
 // Every filter and every parameter: https://pixijs.io/filters/examples/
 import { useControls } from "leva";
-import { Assets, Point, Rectangle, Texture, TextureSource } from "pixi.js";
-import { useEffect, useState } from "react";
+import { Point, type Texture, TextureSource } from "pixi.js";
+import { useMemo, useState } from "react";
 import { BlurFilter, Container, type InstanceOf, Sprite, Stage, Text } from "react-pixi-fiber";
+// useSpritesheet source, frame names and rectangles: see the Features / Spritesheet example.
+import bunnysData from "./assets/bunnys.json";
 import bunnys from "./assets/bunnys.png";
+import { useSpritesheet } from "./hooks/useSpritesheet";
 
 TextureSource.defaultOptions.scaleMode = "nearest";
+
+const bunnyNames = ["bunny", "bunnyCute"] as const;
 
 const centerAnchor = new Point(0.5, 0.5);
 const scale = new Point(3, 3);
 
 export default function UnmountExample() {
-  const [textures, setTextures] = useState<Texture[]>();
+  const { textures: frames } = useSpritesheet(bunnys, bunnysData);
+  const textures = useMemo(() => frames.bunny && bunnyNames.map(name => frames[name] as Texture), [frames]);
   const [filter, setFilter] = useState<InstanceOf<"BlurFilter"> | null>(null);
   const { container, secondBunny } = useControls({
     container: true,
     secondBunny: { label: "second bunny", value: true },
   });
-
-  // PixiJS 8 loads the sprite sheet asynchronously, so the bunnies render once their textures exist.
-  useEffect(() => {
-    let cancelled = false;
-    let created: Texture[] = [];
-    Assets.load<Texture>(bunnys).then(({ source }) => {
-      if (cancelled) return;
-      created = [
-        new Texture({ frame: new Rectangle(2, 47, 26, 37), source }),
-        new Texture({ frame: new Rectangle(2, 86, 26, 37), source }),
-      ];
-      setTextures(created);
-    });
-    return () => {
-      cancelled = true;
-      for (const texture of created) texture.destroy();
-    };
-  }, []);
 
   // react-pixi-fiber destroys a filter when its element unmounts, and when any ancestor of the element unmounts.
   // To filter several objects in one pass, put the filter on their parent: the one on this container filters both bunnies.

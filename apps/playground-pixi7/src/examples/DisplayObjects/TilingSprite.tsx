@@ -1,7 +1,10 @@
-import { Assets, Rectangle, Texture } from "pixi.js";
-import { useCallback, useEffect, useState } from "react";
+import { type Texture } from "pixi.js";
+import { useCallback, useState } from "react";
 import { Stage, TilingSprite, usePixiTicker } from "react-pixi-fiber";
+// useSpritesheet source, frame names and rectangles: see the Features / Spritesheet example.
+import bunnysData from "./assets/bunnys.json";
 import bunnys from "./assets/bunnys.png";
+import { useSpritesheet } from "./hooks/useSpritesheet";
 
 function Tiles({ texture }: { texture: Texture }) {
   const [offset, setOffset] = useState(0);
@@ -10,20 +13,8 @@ function Tiles({ texture }: { texture: Texture }) {
 }
 
 export default function TilingSpriteExample() {
-  const [texture, setTexture] = useState<Texture>();
-  useEffect(() => {
-    let cancelled = false;
-    let bunny: Texture | undefined;
-    Assets.load<Texture>(bunnys).then(sheet => {
-      if (cancelled) return;
-      bunny = new Texture(sheet.baseTexture, new Rectangle(2, 47, 26, 37));
-      setTexture(bunny);
-    });
-    return () => {
-      cancelled = true;
-      bunny?.destroy();
-    };
-  }, []);
+  const { textures } = useSpritesheet(bunnys, bunnysData);
+  const texture = textures.bunny;
   return (
     <Stage options={{ backgroundColor: 0x1099bb, height: 300, width: 400 }}>
       {texture && <Tiles texture={texture} />}

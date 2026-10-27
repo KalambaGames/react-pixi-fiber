@@ -1,24 +1,20 @@
 import { type Sound, sound } from "@pixi/sound";
 import type { Sprite as PixiSprite } from "pixi.js";
-import { Point, Rectangle, SCALE_MODES, settings, Texture } from "pixi.js";
-import { useEffect, useRef, useState } from "react";
+import { Point, SCALE_MODES, settings, type Texture } from "pixi.js";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Sprite, Stage, Text, usePixiTicker } from "react-pixi-fiber";
+// useSpritesheet source, frame names and rectangles: see the Features / Spritesheet example.
+import bunnysData from "./assets/bunnys.json";
 import bunnys from "./assets/bunnys.png";
 import sounds from "./assets/sounds.mp3";
+import { useSpritesheet } from "./hooks/useSpritesheet";
 
 settings.SCALE_MODE = SCALE_MODES.NEAREST;
 
 const centerAnchor = new Point(0.5, 0.5);
 // The frames differ in height, so the bunnies stand on their feet like in the AnimatedSprite example.
 const feetAnchor = new Point(0.5, 1);
-const bunnyTextures = Texture.from(bunnys);
-const textures = [
-  new Texture(bunnyTextures.baseTexture, new Rectangle(2, 47, 26, 37)),
-  new Texture(bunnyTextures.baseTexture, new Rectangle(2, 86, 26, 37)),
-  new Texture(bunnyTextures.baseTexture, new Rectangle(2, 125, 26, 37)),
-  new Texture(bunnyTextures.baseTexture, new Rectangle(2, 164, 26, 37)),
-  new Texture(bunnyTextures.baseTexture, new Rectangle(2, 2, 26, 43)),
-];
+const bunnyNames = ["bunny", "bunnyCute", "bunnySporty", "bunnyRobot", "bunnyAstronaut"] as const;
 const textStyle = { fill: "white", fontFamily: "Arial", fontSize: 14 } as const;
 
 // One audio sprite holds all the sounds. Each sound starts on a full second.
@@ -33,7 +29,7 @@ const sprites = {
 const names = ["bong", "drop", "glass", "pluck", "chime"];
 
 // A clicked bunny grows and the ticker shrinks it back, without a re-render.
-function Bunnies({ effects }: { effects: Sound }) {
+function Bunnies({ effects, textures }: { effects: Sound; textures: Texture[] }) {
   const bunnies = useRef<PixiSprite[]>([]);
   const bumps = useRef(textures.map(() => 0));
 
@@ -66,6 +62,9 @@ function Bunnies({ effects }: { effects: Sound }) {
 }
 
 export default function SoundExample() {
+  const { textures: frames } = useSpritesheet(bunnys, bunnysData);
+  const textures = useMemo(() => frames.bunny && bunnyNames.map(name => frames[name] as Texture), [frames]);
+
   const [effects, setEffects] = useState<Sound>();
   const [muted, setMuted] = useState(false);
   const [volume, setVolume] = useState(0.5);
@@ -109,7 +108,7 @@ export default function SoundExample() {
           x={200}
           y={60}
         />
-        {effects && <Bunnies effects={effects} />}
+        {effects && textures && <Bunnies effects={effects} textures={textures} />}
         {names.map((name, index) => (
           <Text anchor={centerAnchor} key={name} style={textStyle} text={name} x={80 + index * 60} y={210} />
         ))}

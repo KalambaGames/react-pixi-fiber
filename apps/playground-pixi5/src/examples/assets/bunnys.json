@@ -1,0 +1,14 @@
+{
+  "frames": {
+    "bunnyAstronaut": { "frame": { "x": 2, "y": 2, "w": 26, "h": 43 } },
+    "bunny": { "frame": { "x": 2, "y": 47, "w": 26, "h": 37 } },
+    "bunnyCute": { "frame": { "x": 2, "y": 86, "w": 26, "h": 37 } },
+    "bunnySporty": { "frame": { "x": 2, "y": 125, "w": 26, "h": 37 } },
+    "bunnyRobot": { "frame": { "x": 2, "y": 164, "w": 26, "h": 37 } }
+  },
+  "meta": {
+    "image": "bunnys.png",
+    "size": { "w": 30, "h": 203 },
+    "scale": "1"
+  }
+}

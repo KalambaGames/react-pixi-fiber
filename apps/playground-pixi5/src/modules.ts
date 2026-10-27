@@ -6,17 +6,21 @@ import * as react from "react";
 import * as jsxRuntime from "react/jsx-runtime";
 import * as reactDom from "react-dom";
 import * as reactPixiFiber from "react-pixi-fiber";
+import bunnysData from "./examples/assets/bunnys.json";
 import bunnys from "./examples/assets/bunnys.png";
 import sounds from "./examples/assets/sounds.mp3";
 import spineboy from "./examples/assets/spineboy.png";
 import tinyTown from "./examples/assets/tiny-town.png";
+import { useSpritesheet } from "./examples/hooks/useSpritesheet";
 import type { LazyModules } from "playground-shell/runner";
 
 export const modules: Record<string, unknown> = {
+  "./assets/bunnys.json": { default: bunnysData },
   "./assets/bunnys.png": bunnys,
   "./assets/sounds.mp3": sounds,
   "./assets/spineboy.png": spineboy,
   "./assets/tiny-town.png": tinyTown,
+  "./hooks/useSpritesheet": { useSpritesheet },
   "@react-pixi-fiber/pixi-5": pixi5,
   "pixi-layers": (globalThis as any).PIXI.display,
   "pixi.js": pixi,

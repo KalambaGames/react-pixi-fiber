@@ -1,14 +1,16 @@
 import { useSpring } from "@react-spring/core";
 import type { Graphics as PixiGraphics, Sprite as PixiSprite } from "pixi.js";
-import { Point, Rectangle, SCALE_MODES, settings, Texture } from "pixi.js";
+import { Point, SCALE_MODES, settings } from "pixi.js";
 import { useRef } from "react";
 import { Graphics, Sprite, Stage, Text } from "react-pixi-fiber";
+// useSpritesheet source, frame names and rectangles: see the Features / Spritesheet example.
+import bunnysData from "./assets/bunnys.json";
 import bunnys from "./assets/bunnys.png";
+import { useSpritesheet } from "./hooks/useSpritesheet";
 
 settings.SCALE_MODE = SCALE_MODES.NEAREST;
 
 const centerAnchor = new Point(0.5, 0.5);
-const bunny = new Texture(Texture.from(bunnys).baseTexture, new Rectangle(2, 47, 26, 37));
 const slots = [80, 160, 240, 320].map(x => ({ x, y: 220 }));
 const start = { x: 200, y: 110 };
 
@@ -18,6 +20,8 @@ const drawSlot = (graphics: PixiGraphics | null) => {
 };
 
 export default function ReactSpringExample() {
+  const { textures } = useSpritesheet(bunnys, bunnysData);
+  const bunny = textures.bunny;
   const sprite = useRef<PixiSprite>(null);
   const grab = useRef<{ x: number; y: number } | null>(null);
   // The spring writes the position to the sprite on every frame, so dragging does not re-render the component.
@@ -50,28 +54,30 @@ export default function ReactSpringExample() {
       {slots.map(slot => (
         <Graphics key={slot.x} ref={drawSlot} x={slot.x} y={slot.y} />
       ))}
-      <Sprite
-        anchor={centerAnchor}
-        cursor="pointer"
-        interactive
-        pointerdown={event => {
-          const { x, y } = event.data.global;
-          grab.current = { x: x - (sprite.current?.x ?? 0), y: y - (sprite.current?.y ?? 0) };
-        }}
-        // PixiJS 6 sends pointermove to every interactive object, also when the pointer is outside it.
-        pointermove={event => {
-          if (!grab.current) return;
-          const { x, y } = event.data.global;
-          api.start({ immediate: true, x: x - grab.current.x, y: y - grab.current.y });
-        }}
-        pointerup={release}
-        pointerupoutside={release}
-        ref={sprite}
-        scale={2}
-        texture={bunny}
-        x={start.x}
-        y={start.y}
-      />
+      {bunny && (
+        <Sprite
+          anchor={centerAnchor}
+          cursor="pointer"
+          interactive
+          pointerdown={event => {
+            const { x, y } = event.data.global;
+            grab.current = { x: x - (sprite.current?.x ?? 0), y: y - (sprite.current?.y ?? 0) };
+          }}
+          // PixiJS 6 sends pointermove to every interactive object, also when the pointer is outside it.
+          pointermove={event => {
+            if (!grab.current) return;
+            const { x, y } = event.data.global;
+            api.start({ immediate: true, x: x - grab.current.x, y: y - grab.current.y });
+          }}
+          pointerup={release}
+          pointerupoutside={release}
+          ref={sprite}
+          scale={2}
+          texture={bunny}
+          x={start.x}
+          y={start.y}
+        />
+      )}
     </Stage>
   );
 }

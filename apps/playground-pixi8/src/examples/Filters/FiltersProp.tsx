@@ -1,10 +1,13 @@
 // Every filter and every parameter: https://pixijs.io/filters/examples/
 import { useControls } from "leva";
 import { GlowFilter as PixiGlowFilter, type GlowFilterOptions } from "pixi-filters";
-import { Assets, Point, Rectangle, Texture, TextureSource } from "pixi.js";
+import { Point, TextureSource } from "pixi.js";
 import { useEffect, useState } from "react";
 import { PIXIFilter, Sprite, Stage, Text } from "react-pixi-fiber";
+// useSpritesheet source, frame names and rectangles: see the Features / Spritesheet example.
+import bunnysData from "./assets/bunnys.json";
 import bunnys from "./assets/bunnys.png";
+import { useSpritesheet } from "./hooks/useSpritesheet";
 
 TextureSource.defaultOptions.scaleMode = "nearest";
 
@@ -16,22 +19,8 @@ const scale = new Point(3, 3);
 
 export default function FiltersPropExample() {
   const { glow: on } = useControls({ glow: true });
-  const [texture, setTexture] = useState<Texture>();
-
-  // PixiJS 8 loads the sprite sheet asynchronously, so the bunnies render once their texture exists.
-  useEffect(() => {
-    let cancelled = false;
-    let created: Texture | undefined;
-    Assets.load<Texture>(bunnys).then(({ source }) => {
-      if (cancelled) return;
-      created = new Texture({ frame: new Rectangle(2, 47, 26, 37), source });
-      setTexture(created);
-    });
-    return () => {
-      cancelled = true;
-      created?.destroy();
-    };
-  }, []);
+  const { textures } = useSpritesheet(bunnys, bunnysData);
+  const texture = textures.bunny;
 
   // Creation: the app constructs the filter and keeps it in explicit state (a useState initializer or a useRef),
   // or every render constructs a new one. The reconciler constructs a child element once.

@@ -1,9 +1,12 @@
 import Matter from "matter-js";
 import type { Sprite as PixiSprite } from "pixi.js";
-import { Point, Rectangle, SCALE_MODES, settings, Texture } from "pixi.js";
-import { useEffect, useRef, useState } from "react";
+import { Point, SCALE_MODES, settings, Texture } from "pixi.js";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Sprite, Stage, Text, usePixiTicker } from "react-pixi-fiber";
+// useSpritesheet source, frame names and rectangles: see the Features / Spritesheet example.
+import bunnysData from "./assets/bunnys.json";
 import bunnys from "./assets/bunnys.png";
+import { useSpritesheet } from "./hooks/useSpritesheet";
 
 settings.SCALE_MODE = SCALE_MODES.NEAREST;
 
@@ -11,18 +14,11 @@ const centerAnchor = new Point(0.5, 0.5);
 const scale = 1.5;
 // The engine steps in fixed steps of 1/60 s, so the simulation runs at the same speed at any frame rate.
 const step = 1000 / 60;
-const bunnyTextures = Texture.from(bunnys);
-const textures = [
-  new Texture(bunnyTextures.baseTexture, new Rectangle(2, 47, 26, 37)),
-  new Texture(bunnyTextures.baseTexture, new Rectangle(2, 86, 26, 37)),
-  new Texture(bunnyTextures.baseTexture, new Rectangle(2, 125, 26, 37)),
-  new Texture(bunnyTextures.baseTexture, new Rectangle(2, 164, 26, 37)),
-  new Texture(bunnyTextures.baseTexture, new Rectangle(2, 2, 26, 43)),
-];
+const bunnyNames = ["bunny", "bunnyCute", "bunnySporty", "bunnyRobot", "bunnyAstronaut"] as const;
 
 type Bunny = { body: Matter.Body; id: number; texture: Texture };
 
-function World() {
+function World({ textures }: { textures: Texture[] }) {
   const [engine] = useState(() => Matter.Engine.create());
   const [bunnies, setBunnies] = useState<Bunny[]>([]);
   const sprites = useRef(new Map<number, PixiSprite>());
@@ -93,6 +89,9 @@ function World() {
 }
 
 export default function MatterJSExample() {
+  const { textures: frames } = useSpritesheet(bunnys, bunnysData);
+  const textures = useMemo(() => frames.bunny && bunnyNames.map(name => frames[name] as Texture), [frames]);
+
   return (
     <Stage options={{ backgroundColor: 0x1099bb, height: 300, width: 400 }}>
       <Text
@@ -102,7 +101,7 @@ export default function MatterJSExample() {
         x={200}
         y={30}
       />
-      <World />
+      {textures && <World textures={textures} />}
     </Stage>
   );
 }

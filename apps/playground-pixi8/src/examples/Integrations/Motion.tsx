@@ -1,9 +1,12 @@
 import { animate, motionValue } from "motion";
 import type { Sprite as PixiSprite } from "pixi.js";
-import { Assets, Point, Rectangle, Texture, TextureSource } from "pixi.js";
+import { Point, TextureSource } from "pixi.js";
 import { useEffect, useRef, useState } from "react";
 import { Sprite, Stage, Text } from "react-pixi-fiber";
+// useSpritesheet source, frame names and rectangles: see the Features / Spritesheet example.
+import bunnysData from "./assets/bunnys.json";
 import bunnys from "./assets/bunnys.png";
+import { useSpritesheet } from "./hooks/useSpritesheet";
 
 TextureSource.defaultOptions.scaleMode = "nearest";
 
@@ -13,26 +16,12 @@ const feetAnchor = new Point(0.5, 1);
 const spring = { damping: 9, stiffness: 400, type: "spring" } as const;
 
 export default function MotionExample() {
-  const [bunny, setBunny] = useState<Texture>();
+  const { textures } = useSpritesheet(bunnys, bunnysData);
+  const bunny = textures.bunny;
   const sprite = useRef<PixiSprite>(null);
   const hovered = useRef(false);
   const [scaleX] = useState(() => motionValue(3));
   const [scaleY] = useState(() => motionValue(3));
-
-  // PixiJS 8 loads the sprite sheet asynchronously, so the bunny renders once its texture exists.
-  useEffect(() => {
-    let cancelled = false;
-    let created: Texture | undefined;
-    Assets.load<Texture>(bunnys).then(({ source }) => {
-      if (cancelled) return;
-      created = new Texture({ frame: new Rectangle(2, 47, 26, 37), source });
-      setBunny(created);
-    });
-    return () => {
-      cancelled = true;
-      created?.destroy();
-    };
-  }, []);
 
   // The motion values write to the sprite, so hover and press do not re-render the component.
   useEffect(() => {

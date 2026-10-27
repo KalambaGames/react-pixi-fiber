@@ -1,9 +1,12 @@
 // Every filter and every parameter: https://pixijs.io/filters/examples/
 import { useControls } from "leva";
 import { OutlineFilter as PixiOutlineFilter, PixelateFilter as PixiPixelateFilter } from "pixi-filters";
-import { Point, Rectangle, SCALE_MODES, settings, Texture } from "pixi.js";
+import { Point, SCALE_MODES, settings } from "pixi.js";
 import { BlurFilter, PIXIFilter, Sprite, Stage, Text } from "react-pixi-fiber";
+// useSpritesheet source, frame names and rectangles: see the Features / Spritesheet example.
+import bunnysData from "./assets/bunnys.json";
 import bunnys from "./assets/bunnys.png";
+import { useSpritesheet } from "./hooks/useSpritesheet";
 
 settings.SCALE_MODE = SCALE_MODES.NEAREST;
 
@@ -15,9 +18,11 @@ const PixelateFilter = PIXIFilter("PixelateFilter", (props: { size?: number }) =
 
 const centerAnchor = new Point(0.5, 0.5);
 const scale = new Point(4, 4);
-const texture = new Texture(Texture.from(bunnys).baseTexture, new Rectangle(2, 47, 26, 37));
 
 export default function StackExample() {
+  const { textures } = useSpritesheet(bunnys, bunnysData);
+  const texture = textures.bunny;
+
   const { blur, order, outline, pixelate } = useControls({
     pixelate: true,
     outline: true,
@@ -38,10 +43,12 @@ export default function StackExample() {
         x={10}
         y={8}
       />
-      <Sprite anchor={centerAnchor} scale={scale} texture={texture} x={200} y={160}>
-        {order === "outline first" ? [outlined, pixelated] : [pixelated, outlined]}
-        {blur && <BlurFilter blur={2} />}
-      </Sprite>
+      {texture && (
+        <Sprite anchor={centerAnchor} scale={scale} texture={texture} x={200} y={160}>
+          {order === "outline first" ? [outlined, pixelated] : [pixelated, outlined]}
+          {blur && <BlurFilter blur={2} />}
+        </Sprite>
+      )}
     </Stage>
   );
 }
