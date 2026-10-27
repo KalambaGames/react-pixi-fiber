@@ -42,7 +42,7 @@ const tiers = {
     absent: [],
   },
   "tier two, trimmed list with Application": {
-    code: 'import { Application, Container, Sprite, Text } from "pixi.js";\nimport { pixi8WithComponents } from "@react-pixi-fiber/pixi-8";\nexport const adapter = pixi8WithComponents({ components: { Application, Container, Sprite, Text } });\n',
+    code: 'import { Application, Container, Sprite, Text } from "pixi.js";\nimport { pixi8WithClasses } from "@react-pixi-fiber/pixi-8";\nexport const adapter = pixi8WithClasses({ classes: { Application, Container, Sprite, Text } });\n',
     present: [...FLOOR, ...RENDERERS],
     absent: UNLISTED,
   },
@@ -50,8 +50,8 @@ const tiers = {
   "tier three, trimmed list without Application": {
     code: [
       'import { Container, Sprite, Text, Ticker, WebGLRenderer } from "pixi.js";',
-      'import { pixi8WithComponents } from "@react-pixi-fiber/pixi-8";',
-      "export const adapter = pixi8WithComponents({ components: { Container, Sprite, Text } });",
+      'import { pixi8WithClasses } from "@react-pixi-fiber/pixi-8";',
+      "export const adapter = pixi8WithClasses({ classes: { Container, Sprite, Text } });",
       "const renderer = new WebGLRenderer();",
       "await renderer.init({ width: 800, height: 600 });",
       "const stage = new Container();",

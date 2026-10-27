@@ -114,7 +114,7 @@ Every React adapter works with every PixiJS adapter:
 ### PixiJS 8
 
 - `@react-pixi-fiber/pixi-8` needs PixiJS 8.9 or newer, the first with every tag it exports (`DOMContainer`; `ParticleContainer` with `Particle` since 8.5, `PerspectiveMesh` since 8.3, `RenderLayer` since 8.7).
-- `pixi8()` bundles every PixiJS class that the adapter can create and the built-in filters. `pixi8WithComponents({ components })` takes the PixiJS classes the app renders, and the bundle holds only those. A tag left out of the list throws at first render, naming the class to add, see [Choosing the classes](../pixi-8/README.md#choosing-the-classes).
+- `pixi8()` bundles every PixiJS class that the adapter can create. `pixi8WithClasses({ classes })` takes the PixiJS classes the app renders, and the bundle holds only those. A tag left out of the list throws at first render, naming the class to add, see [Choosing the classes](../pixi-8/README.md#choosing-the-classes).
 - `Stage` creates the application with the asynchronous `app.init()`, so it renders its children after the application exists. Read the application in [`onInit`](#read-the-application-in-oninit-not-from-the-ref-at-mount).
 - `usePixiTicker` callbacks receive the PixiJS 8 `Ticker`, not a delta: read `ticker.deltaTime`.
 - `tint` accepts color strings as well as numbers.

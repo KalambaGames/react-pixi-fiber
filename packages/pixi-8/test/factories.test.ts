@@ -1,6 +1,6 @@
 import { describe, it, expect } from "vitest";
 import * as PIXI from "pixi.js";
-import { allComponents } from "../src/all";
+import { allClasses } from "../src/all";
 import { factories, type Pixi8Tag } from "../src/factories";
 
 const texture = PIXI.Texture.WHITE;
@@ -59,21 +59,21 @@ const classFor: Record<Pixi8Tag, new (...args: any[]) => unknown> = {
 };
 
 describe("factories", () => {
-  it("has one factory per tag, the keys of allComponents minus Application", () => {
-    expect(Object.keys(factories)).toEqual(Object.keys(allComponents).filter(key => key !== "Application"));
+  it("has one factory per tag, the keys of allClasses minus Application", () => {
+    expect(Object.keys(factories)).toEqual(Object.keys(allClasses).filter(key => key !== "Application"));
   });
   it("creates every tag with the class it is given", () => {
     for (const tag of Object.keys(classFor) as Pixi8Tag[]) {
-      const behavior = factories[tag](allComponents[tag] as never, allComponents);
+      const behavior = factories[tag](allClasses[tag] as never, allClasses);
       expect(behavior.create(propsFor[tag]), tag).toBeInstanceOf(classFor[tag]);
     }
   });
   it("leaves out constructor options that are not set, so the PixiJS defaults apply", () => {
     const mesh = factories
-      .PerspectiveMesh(PIXI.PerspectiveMesh, allComponents)
+      .PerspectiveMesh(PIXI.PerspectiveMesh, allClasses)
       .create({ texture }) as PIXI.PerspectiveMesh;
     expect(mesh.geometry.positions.every(Number.isFinite)).toBe(true);
-    expect((factories.Text(PIXI.Text, allComponents).create({}) as PIXI.Text).text).toBe("");
+    expect((factories.Text(PIXI.Text, allClasses).create({}) as PIXI.Text).text).toBe("");
   });
   it("AlphaFilter creates the filter with alpha when it is set", () => {
     const args: unknown[][] = [];
@@ -83,7 +83,7 @@ describe("factories", () => {
         args.push(rest);
       }
     }
-    const behavior = factories.AlphaFilter(Recorded as never, allComponents);
+    const behavior = factories.AlphaFilter(Recorded as never, allClasses);
     const filter = behavior.create({ alpha: 0.5 }) as PIXI.AlphaFilter;
     behavior.create({});
     expect(behavior.kind).toBe("filter");
@@ -99,7 +99,7 @@ describe("factories", () => {
         args.push(rest);
       }
     }
-    const behavior = factories.BlurFilter(Recorded as never, allComponents);
+    const behavior = factories.BlurFilter(Recorded as never, allClasses);
     const props = { kernelSize: 7, quality: 2, resolution: 2, strength: 5, strengthX: 3, strengthY: 4 };
     const filter = behavior.create(props) as PIXI.BlurFilter;
     behavior.create({ strength: 6 });
@@ -116,7 +116,7 @@ describe("factories", () => {
         args.push(rest);
       }
     }
-    const behavior = factories.ColorMatrixFilter(Recorded, allComponents);
+    const behavior = factories.ColorMatrixFilter(Recorded, allClasses);
     const filter = behavior.create({});
     expect(behavior.kind).toBe("filter");
     expect(filter).toBeInstanceOf(PIXI.ColorMatrixFilter);
@@ -130,7 +130,7 @@ describe("factories", () => {
         args.push(rest);
       }
     }
-    const behavior = factories.DisplacementFilter(Recorded as never, allComponents);
+    const behavior = factories.DisplacementFilter(Recorded as never, allClasses);
     const filter = behavior.create({ scale: 10, sprite });
     expect(behavior.kind).toBe("filter");
     expect(filter).toBeInstanceOf(PIXI.DisplacementFilter);
@@ -148,7 +148,7 @@ describe("factories", () => {
         args.push(rest);
       }
     }
-    const behavior = factories.NoiseFilter(Recorded as never, allComponents);
+    const behavior = factories.NoiseFilter(Recorded as never, allClasses);
     const filter = behavior.create({ noise: 0.25, seed: 0.75 }) as PIXI.NoiseFilter;
     behavior.create({ noise: 0.25 });
     expect(behavior.kind).toBe("filter");
@@ -157,14 +157,14 @@ describe("factories", () => {
     expect(args).toStrictEqual([[{ noise: 0.25, seed: 0.75 }], [{ noise: 0.25 }]]);
   });
   it("ParticleContainer throws when it inserts before a particle it does not hold", () => {
-    const { create, insertBefore } = factories.ParticleContainer(PIXI.ParticleContainer, allComponents);
+    const { create, insertBefore } = factories.ParticleContainer(PIXI.ParticleContainer, allClasses);
     const container = create({});
     expect(() => insertBefore?.(container, new PIXI.Particle(texture), new PIXI.Particle(texture))).toThrow(
       "`ParticleContainer` cannot insert a `Particle` before one it does not hold."
     );
   });
-  it("ParticleContainer rejects a child that is not components.Particle", () => {
-    const { create, appendChild } = factories.ParticleContainer(PIXI.ParticleContainer, allComponents);
+  it("ParticleContainer rejects a child that is not classes.Particle", () => {
+    const { create, appendChild } = factories.ParticleContainer(PIXI.ParticleContainer, allClasses);
     expect(() => appendChild?.(create({}), new PIXI.Sprite(texture))).toThrow(
       "`ParticleContainer` takes only `Particle` children from `@react-pixi-fiber/pixi-8`, not Scene Objects."
     );

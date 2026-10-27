@@ -1,9 +1,9 @@
 import type * as PIXI from "pixi.js";
 import type { Behavior } from "react-pixi-fiber";
-import type { Pixi8Components } from "./types";
+import type { Pixi8Classes } from "./types";
 
-export type Pixi8Tag = Exclude<keyof Pixi8Components, "Application">;
-export type Factory<K extends Pixi8Tag> = (Ctor: Pixi8Components[K], components: Partial<Pixi8Components>) => Behavior;
+export type Pixi8Tag = Exclude<keyof Pixi8Classes, "Application">;
+export type Factory<K extends Pixi8Tag> = (Ctor: Pixi8Classes[K], classes: Partial<Pixi8Classes>) => Behavior;
 
 // PixiJS 8 constructors spread their options over the class defaults, so a key set to `undefined` would win over the
 // default. Only the props that are set are passed.
@@ -27,7 +27,7 @@ function blurAxes<P extends Record<string, unknown>>(props: P | undefined): P | 
 // A particle has no parent pointer, so a prop change finds the container to `update()` here.
 const particleParents = new WeakMap<PIXI.Particle, PIXI.ParticleContainer>();
 
-function asParticle(child: unknown, Particle: Pixi8Components["Particle"] | undefined): PIXI.Particle {
+function asParticle(child: unknown, Particle: Pixi8Classes["Particle"] | undefined): PIXI.Particle {
   if (Particle === undefined || !(child instanceof Particle)) {
     throw new Error(
       "`ParticleContainer` takes only `Particle` children from `@react-pixi-fiber/pixi-8`, not Scene Objects."
@@ -132,7 +132,7 @@ export const factories: { [K in Pixi8Tag]: Factory<K> } = {
       if (container && changesStaticAttributes(container, oldProps, newProps)) container.update();
     },
   }),
-  ParticleContainer: (Ctor, components) => ({
+  ParticleContainer: (Ctor, classes) => ({
     create: p =>
       new Ctor(
         defined({
@@ -143,13 +143,13 @@ export const factories: { [K in Pixi8Tag]: Factory<K> } = {
         })
       ),
     appendChild(container: PIXI.ParticleContainer, child) {
-      const particle = asParticle(child, components.Particle);
+      const particle = asParticle(child, classes.Particle);
       container.removeParticle(particle);
       container.addParticle(particle);
       particleParents.set(particle, container);
     },
     insertBefore(container: PIXI.ParticleContainer, child, before) {
-      const particle = asParticle(child, components.Particle);
+      const particle = asParticle(child, classes.Particle);
       container.removeParticle(particle);
       const index = container.particleChildren.indexOf(before as PIXI.Particle);
       if (index === -1) throw new Error("`ParticleContainer` cannot insert a `Particle` before one it does not hold.");

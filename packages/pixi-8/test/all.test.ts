@@ -1,6 +1,6 @@
 import * as PIXI from "pixi.js";
 import { describe, expect, it } from "vitest";
-import { allComponents } from "../src/all";
+import { allClasses } from "../src/all";
 
 const KEYS = [
   "AlphaFilter",
@@ -45,14 +45,14 @@ const NOT_TAGS = [
 // of `BlendModeFilter` implement the advanced `blendMode` values and are no tag either.
 const NOT_FILTER_TAGS = ["BlendModeFilter", "BlurFilterPass", "Filter", "MaskFilter", "PassthroughFilter"];
 
-describe("allComponents", () => {
+describe("allClasses", () => {
   it("lists the 24 tags and Application, alphabetical", () => {
-    expect(Object.keys(allComponents)).toEqual(KEYS);
+    expect(Object.keys(allClasses)).toEqual(KEYS);
   });
 
   it("maps every key to the pixi.js class of that name", () => {
     for (const key of KEYS) {
-      expect(allComponents[key as keyof typeof allComponents], key).toBe(PIXI[key as keyof typeof PIXI]);
+      expect(allClasses[key as keyof typeof allClasses], key).toBe(PIXI[key as keyof typeof PIXI]);
     }
   });
 

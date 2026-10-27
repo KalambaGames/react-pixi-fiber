@@ -1,6 +1,6 @@
 import * as PIXI from "pixi.js";
 
-export const allComponents = {
+export const allClasses = {
   AlphaFilter: PIXI.AlphaFilter,
   AnimatedSprite: PIXI.AnimatedSprite,
   Application: PIXI.Application,

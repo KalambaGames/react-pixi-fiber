@@ -8,12 +8,12 @@ import type {
   HTMLTextProps,
   ParticleProps,
   PerspectiveMeshProps,
-  Pixi8Components,
+  Pixi8Classes,
   RenderContainerProps,
   RenderLayerProps,
 } from "./types";
-import { allComponents } from "./all";
-export { allComponents };
+import { allClasses } from "./all";
+export { allClasses };
 export * from "./types";
 
 // A tag is a string at runtime and a component in the type system, like the core tags.
@@ -30,11 +30,11 @@ export const RenderContainer = "RenderContainer" as unknown as PixiComponent<
 >;
 export const RenderLayer = "RenderLayer" as unknown as PixiComponent<RenderLayerProps, PIXI.RenderLayer>;
 
-// The keys come from the factories, not from `allComponents`, so `pixi8WithComponents` references no PixiJS class.
+// The keys come from the factories, not from `allClasses`, so `pixi8WithClasses` references no PixiJS class.
 const KNOWN_KEYS = [...Object.keys(factories), "Application"].sort();
 
-function build<K extends Pixi8Tag>(tag: K, Ctor: Pixi8Components[K], components: Partial<Pixi8Components>): Behavior {
-  return factories[tag](Ctor, components);
+function build<K extends Pixi8Tag>(tag: K, Ctor: Pixi8Classes[K], classes: Partial<Pixi8Classes>): Behavior {
+  return factories[tag](Ctor, classes);
 }
 
 // `String` throws for an object with no primitive form, such as a module namespace.
@@ -50,9 +50,7 @@ function printValue(value: unknown): string {
 function stub(tag: string): Behavior {
   return {
     create: () => {
-      throw new Error(
-        `\`${tag}\` is not in \`pixi8WithComponents({ components })\`. Add \`${tag}\` from \`pixi.js\` to it.`
-      );
+      throw new Error(`\`${tag}\` is not in \`pixi8WithClasses({ classes })\`. Add \`${tag}\` from \`pixi.js\` to it.`);
     },
   };
 }
@@ -68,12 +66,12 @@ export interface Pixi8Options {
   defaults?: Record<string, Record<string, unknown>>;
 }
 
-export interface Pixi8WithComponentsOptions extends Pixi8Options {
+export interface Pixi8WithClassesOptions extends Pixi8Options {
   /**
    * The PixiJS classes the app renders, keyed by the tag as written in JSX, plus `Application`. A bundler drops every
    * class left out. A tag left out throws when it is first rendered.
    */
-  components: Partial<Pixi8Components>;
+  classes: Partial<Pixi8Classes>;
 }
 
 // PixiJS 6 props that PixiJS 8 sets and never reads. Only the development build lists them, to warn.
@@ -120,48 +118,46 @@ function warnLegacyProps(type: string, props: Record<string, unknown>): Record<s
   return props;
 }
 
-// The adapter with every class in `allComponents`.
+// The adapter with every class in `allClasses`.
 export default function pixi8(options: Pixi8Options = {}): PixiAdapter {
-  if ((options as Partial<Pixi8WithComponentsOptions> | null)?.components !== undefined) {
-    throw new Error(
-      "`pixi8` takes no `components`. Pass them to `pixi8WithComponents` from `@react-pixi-fiber/pixi-8`."
-    );
+  if ((options as Partial<Pixi8WithClassesOptions> | null)?.classes !== undefined) {
+    throw new Error("`pixi8` takes no `classes`. Pass them to `pixi8WithClasses` from `@react-pixi-fiber/pixi-8`.");
   }
-  return pixi8WithComponents({ ...options, components: allComponents });
+  return pixi8WithClasses({ ...options, classes: allClasses });
 }
 
-export function pixi8WithComponents(options: Pixi8WithComponentsOptions): PixiAdapter {
-  // A JavaScript call without options reaches the `components` message, not a destructuring TypeError.
-  const { compat, components: given, defaults } = options ?? ({} as Pixi8WithComponentsOptions);
+export function pixi8WithClasses(options: Pixi8WithClassesOptions): PixiAdapter {
+  // A JavaScript call without options reaches the `classes` message, not a destructuring TypeError.
+  const { compat, classes: given, defaults } = options ?? ({} as Pixi8WithClassesOptions);
   if (given === null || typeof given !== "object") {
-    throw new Error("`pixi8WithComponents` needs `components`. Pass the PixiJS classes the app renders.");
+    throw new Error("`pixi8WithClasses` needs `classes`. Pass the PixiJS classes the app renders.");
   }
   // A later change to the caller's object changes no tag.
-  const components = { ...given };
-  for (const key of Object.keys(components)) {
+  const classes = { ...given };
+  for (const key of Object.keys(classes)) {
     if (!KNOWN_KEYS.includes(key)) {
       throw new Error(
-        `\`pixi8WithComponents({ components })\` got unknown key \`${key}\`. Known keys: ${KNOWN_KEYS.join(", ")}.`
+        `\`pixi8WithClasses({ classes })\` got unknown key \`${key}\`. Known keys: ${KNOWN_KEYS.join(", ")}.`
       );
     }
   }
-  if (components.ParticleContainer !== undefined && components.Particle === undefined) {
+  if (classes.ParticleContainer !== undefined && classes.Particle === undefined) {
     throw new Error(
-      "`ParticleContainer` needs `Particle`. Add `Particle` from `pixi.js` to `pixi8WithComponents({ components })`."
+      "`ParticleContainer` needs `Particle`. Add `Particle` from `pixi.js` to `pixi8WithClasses({ classes })`."
     );
   }
   for (const key of KNOWN_KEYS) {
-    const value: unknown = components[key as keyof Pixi8Components];
+    const value: unknown = classes[key as keyof Pixi8Classes];
     if (value !== undefined && typeof value !== "function") {
       throw new Error(
-        `\`pixi8WithComponents({ components })\` got \`${printValue(value)}\` for \`${key}\`; expected the class from \`pixi.js\`.`
+        `\`pixi8WithClasses({ classes })\` got \`${printValue(value)}\` for \`${key}\`; expected the class from \`pixi.js\`.`
       );
     }
   }
   const behaviors: Record<string, Behavior> = {};
   for (const tag of Object.keys(factories) as Pixi8Tag[]) {
-    const Ctor = components[tag];
-    behaviors[tag] = Ctor === undefined ? stub(tag) : build(tag, Ctor, components);
+    const Ctor = classes[tag];
+    behaviors[tag] = Ctor === undefined ? stub(tag) : build(tag, Ctor, classes);
   }
   const adapter: PixiAdapter = {
     components: behaviors,
@@ -172,10 +168,10 @@ export function pixi8WithComponents(options: Pixi8WithComponentsOptions): PixiAd
       (target as PIXI.Point).copyFrom(value);
     },
     createApplication: async options => {
-      const { Application } = components;
+      const { Application } = classes;
       if (Application === undefined) {
         throw new Error(
-          "Add `Application` from `pixi.js` to `pixi8WithComponents({ components })`, or pass an `app` to `Stage`."
+          "Add `Application` from `pixi.js` to `pixi8WithClasses({ classes })`, or pass an `app` to `Stage`."
         );
       }
       // `view` is the Stage's canvas, or 2.x's name for an external one; PixiJS 8 calls that option `canvas`.

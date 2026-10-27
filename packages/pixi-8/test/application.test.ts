@@ -7,7 +7,7 @@ import * as PIXI from "pixi.js";
 import { Application } from "pixi.js";
 import react18 from "@react-pixi-fiber/react-18";
 import { configure, Sprite, Stage } from "react-pixi-fiber";
-import pixi8, { pixi8WithComponents } from "../src/index";
+import pixi8, { pixi8WithClasses } from "../src/index";
 
 it("PixiJS 8 Application.init resolves under jsdom with the WebGL mock", async () => {
   const app = new Application();
@@ -95,7 +95,7 @@ describe("Stage with the pixi-8 adapter", () => {
   });
 
   it("mounts on a provided app that has only stage and ticker, renders no canvas and never creates an application", async () => {
-    const trimmed = pixi8WithComponents({ components: { Container: PIXI.Container, Sprite: PIXI.Sprite } });
+    const trimmed = pixi8WithClasses({ classes: { Container: PIXI.Container, Sprite: PIXI.Sprite } });
     const createApplication = vi.spyOn(trimmed, "createApplication");
     configure({ react: react18(), pixi: trimmed });
     const stage = new PIXI.Container();
