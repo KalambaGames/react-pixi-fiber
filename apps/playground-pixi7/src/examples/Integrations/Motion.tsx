@@ -1,8 +1,10 @@
 import { animate, motionValue } from "motion";
 import type { Sprite as PixiSprite } from "pixi.js";
-import { BaseTexture, Point, Rectangle, SCALE_MODES, Texture } from "pixi.js";
+import { BaseTexture, Point, SCALE_MODES, Spritesheet } from "pixi.js";
 import { useEffect, useRef, useState } from "react";
 import { Sprite, Stage, Text } from "react-pixi-fiber";
+// Frame names and rectangles: see the Features / Spritesheet example.
+import bunnysData from "./assets/bunnys.json";
 import bunnys from "./assets/bunnys.png";
 
 BaseTexture.defaultOptions.scaleMode = SCALE_MODES.NEAREST;
@@ -10,7 +12,11 @@ BaseTexture.defaultOptions.scaleMode = SCALE_MODES.NEAREST;
 const centerAnchor = new Point(0.5, 0.5);
 // The bunny squashes towards the ground, so it scales from its feet.
 const feetAnchor = new Point(0.5, 1);
-const bunny = new Texture(Texture.from(bunnys).baseTexture, new Rectangle(2, 47, 26, 37));
+const sheet = new Spritesheet(BaseTexture.from(bunnys), bunnysData);
+// parse fills sheet.textures before it returns, for a sheet this small.
+// The documented way waits for parse: see the Features / Spritesheet example.
+sheet.parse();
+const bunny = sheet.textures.bunny;
 const spring = { damping: 9, stiffness: 400, type: "spring" } as const;
 
 export default function MotionExample() {

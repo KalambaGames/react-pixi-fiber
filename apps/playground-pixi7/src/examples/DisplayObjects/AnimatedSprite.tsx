@@ -1,27 +1,28 @@
-import { Assets, Rectangle, Texture } from "pixi.js";
+import { Assets, Spritesheet, Texture } from "pixi.js";
 import { useEffect, useState } from "react";
 import { AnimatedSprite, Stage } from "react-pixi-fiber";
+// Frame names and rectangles: see the Features / Spritesheet example.
+import bunnysData from "./assets/bunnys.json";
 import bunnys from "./assets/bunnys.png";
+
+const bunnySheet = Assets.load<Texture>(bunnys).then(async texture => {
+  const sheet = new Spritesheet(texture, bunnysData);
+  await sheet.parse();
+  return sheet;
+});
+
+const bunnyNames = ["bunny", "bunnyCute", "bunnySporty", "bunnyRobot", "bunnyAstronaut"] as const;
 
 export default function AnimatedSpriteExample() {
   const [textures, setTextures] = useState<Texture[]>();
   useEffect(() => {
     let cancelled = false;
-    let frames: Texture[] = [];
-    Assets.load<Texture>(bunnys).then(sheet => {
+    bunnySheet.then(sheet => {
       if (cancelled) return;
-      frames = [
-        [47, 37],
-        [86, 37],
-        [125, 37],
-        [164, 37],
-        [2, 43],
-      ].map(([y, height]) => new Texture(sheet.baseTexture, new Rectangle(2, y, 26, height)));
-      setTextures(frames);
+      setTextures(bunnyNames.map(name => sheet.textures[name]));
     });
     return () => {
       cancelled = true;
-      for (const frame of frames) frame.destroy();
     };
   }, []);
   return (

@@ -1,8 +1,10 @@
 // Every filter and every parameter: https://pixijs.io/filters/examples/
 import { ShockwaveFilter as PixiShockwaveFilter } from "pixi-filters";
-import { BaseTexture, Rectangle, SCALE_MODES, Texture } from "pixi.js";
+import { BaseTexture, Rectangle, SCALE_MODES, Spritesheet } from "pixi.js";
 import { useRef } from "react";
 import { Container, PIXIFilter, Sprite, Stage, Text, usePixiTicker } from "react-pixi-fiber";
+// Frame names and rectangles: see the Features / Spritesheet example.
+import bunnysData from "./assets/bunnys.json";
 import bunnys from "./assets/bunnys.png";
 
 BaseTexture.defaultOptions.scaleMode = SCALE_MODES.NEAREST;
@@ -13,14 +15,13 @@ const ShockwaveFilter = PIXIFilter(
     new PixiShockwaveFilter(center, options)
 );
 
-const bunnyTextures = Texture.from(bunnys);
-const textures = [
-  new Texture(bunnyTextures.baseTexture, new Rectangle(2, 47, 26, 37)),
-  new Texture(bunnyTextures.baseTexture, new Rectangle(2, 86, 26, 37)),
-  new Texture(bunnyTextures.baseTexture, new Rectangle(2, 125, 26, 37)),
-  new Texture(bunnyTextures.baseTexture, new Rectangle(2, 164, 26, 37)),
-  new Texture(bunnyTextures.baseTexture, new Rectangle(2, 2, 26, 43)),
-];
+const sheet = new Spritesheet(BaseTexture.from(bunnys), bunnysData);
+// parse fills sheet.textures before it returns, for a sheet this small.
+// The documented way waits for parse: see the Features / Spritesheet example.
+sheet.parse();
+
+const bunnyNames = ["bunny", "bunnyCute", "bunnySporty", "bunnyRobot", "bunnyAstronaut"] as const;
+const textures = bunnyNames.map(name => sheet.textures[name]);
 const center = [200, 150];
 const stageArea = new Rectangle(0, 0, 400, 300);
 const grid = Array.from({ length: 40 }, (_, index) => ({

@@ -1,14 +1,20 @@
 import { useSpring } from "@react-spring/core";
 import type { Graphics as PixiGraphics, Sprite as PixiSprite } from "pixi.js";
-import { BaseTexture, Point, Rectangle, SCALE_MODES, Texture } from "pixi.js";
+import { BaseTexture, Point, SCALE_MODES, Spritesheet } from "pixi.js";
 import { useRef } from "react";
 import { Graphics, Sprite, Stage, Text } from "react-pixi-fiber";
+// Frame names and rectangles: see the Features / Spritesheet example.
+import bunnysData from "./assets/bunnys.json";
 import bunnys from "./assets/bunnys.png";
 
 BaseTexture.defaultOptions.scaleMode = SCALE_MODES.NEAREST;
 
 const centerAnchor = new Point(0.5, 0.5);
-const bunny = new Texture(Texture.from(bunnys).baseTexture, new Rectangle(2, 47, 26, 37));
+const sheet = new Spritesheet(BaseTexture.from(bunnys), bunnysData);
+// parse fills sheet.textures before it returns, for a sheet this small.
+// The documented way waits for parse: see the Features / Spritesheet example.
+sheet.parse();
+const bunny = sheet.textures.bunny;
 const slots = [80, 160, 240, 320].map(x => ({ x, y: 220 }));
 const start = { x: 200, y: 110 };
 

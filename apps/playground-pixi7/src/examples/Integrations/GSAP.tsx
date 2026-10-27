@@ -1,9 +1,11 @@
 import { gsap } from "gsap";
 import { PixiPlugin } from "gsap/PixiPlugin";
 import * as PIXI from "pixi.js";
-import { BaseTexture, Point, Rectangle, SCALE_MODES, Texture } from "pixi.js";
+import { BaseTexture, Point, SCALE_MODES, Spritesheet } from "pixi.js";
 import { useEffect, useRef } from "react";
 import { Sprite, Stage, Text } from "react-pixi-fiber";
+// Frame names and rectangles: see the Features / Spritesheet example.
+import bunnysData from "./assets/bunnys.json";
 import bunnys from "./assets/bunnys.png";
 
 // PixiPlugin animates PixiJS properties such as scale and alpha through the `pixi` key.
@@ -15,14 +17,13 @@ BaseTexture.defaultOptions.scaleMode = SCALE_MODES.NEAREST;
 const centerAnchor = new Point(0.5, 0.5);
 // The frames differ in height, so the bunnies stand on their feet like in the AnimatedSprite example.
 const feetAnchor = new Point(0.5, 1);
-const bunnyTextures = Texture.from(bunnys);
-const textures = [
-  new Texture(bunnyTextures.baseTexture, new Rectangle(2, 47, 26, 37)),
-  new Texture(bunnyTextures.baseTexture, new Rectangle(2, 86, 26, 37)),
-  new Texture(bunnyTextures.baseTexture, new Rectangle(2, 125, 26, 37)),
-  new Texture(bunnyTextures.baseTexture, new Rectangle(2, 164, 26, 37)),
-  new Texture(bunnyTextures.baseTexture, new Rectangle(2, 2, 26, 43)),
-];
+const sheet = new Spritesheet(BaseTexture.from(bunnys), bunnysData);
+// parse fills sheet.textures before it returns, for a sheet this small.
+// The documented way waits for parse: see the Features / Spritesheet example.
+sheet.parse();
+
+const bunnyNames = ["bunny", "bunnyCute", "bunnySporty", "bunnyRobot", "bunnyAstronaut"] as const;
+const textures = bunnyNames.map(name => sheet.textures[name]);
 
 export default function GSAPExample() {
   const logo = useRef<PIXI.Text>(null);
