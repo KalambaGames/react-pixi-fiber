@@ -16,6 +16,17 @@ This repository holds [`react-pixi-fiber`](./packages/react-pixi-fiber), a React
 
 Try the [playgrounds](https://react-pixi-fiber.pages.dev) in your browser. The link opens the playground for the newest supported PixiJS version. The [hosted playgrounds](#hosted-playgrounds) section lists the playgrounds for older versions.
 
+## What's new in 3.0
+
+- **One renderer for React 17, 18 and 19 and PixiJS 4 to 8.** An app installs one React adapter and one PixiJS adapter. Then it calls `configure` once. Components import only from `react-pixi-fiber`. A shared component library therefore does not depend on the React or PixiJS version. See [Setup](./packages/react-pixi-fiber/README.md#setup).
+- **PixiJS 8 support.** The PixiJS 7 and PixiJS 8 adapters take a `compat` option that translates the PixiJS 6 prop names, for example `interactive` to `eventMode`. See [PixiJS 8](./packages/react-pixi-fiber/README.md#pixijs-8).
+- **Filters are children.** Put a filter tag inside an element, for example `<BlurFilter strength={2} />` inside a `<Sprite>`. Every PixiJS adapter implements 5 filter tags. See [Filters](./packages/react-pixi-fiber/README.md#filters).
+- **13 Display Object tags in every PixiJS adapter.** The new tags are `AnimatedSprite`, `Mesh`, `MeshPlane`, `MeshRope`, `MeshSimple` and `NineSliceSprite`. See [Tags](./packages/react-pixi-fiber/README.md#tags).
+- **`Stage` props `onInit` and `bridgeContexts`.** `onInit(app)` runs after `Stage` creates the application and renders the children. `bridgeContexts` lets the children of `Stage` read React contexts provided outside it. See [`<Stage />`](./packages/react-pixi-fiber/README.md#stage-).
+- **Fragment refs on React 19.** A `<Fragment ref>` inside `Stage` receives the Display Objects of the fragment. See [React 19](./packages/react-pixi-fiber/README.md#react-19).
+
+To upgrade from 2.x, read [Migrating to 3.0.0](./packages/react-pixi-fiber/README.md#migrating-to-300). The [changelog](./packages/react-pixi-fiber/CHANGELOG.md) lists every change.
+
 ## Layout
 
 | Path | Package | Peer dependencies |

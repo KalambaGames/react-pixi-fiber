@@ -30,6 +30,8 @@ Install the core, one React adapter and one PixiJS adapter next to [React] and [
 
 This package works with [Vite](https://vite.dev) and webpack based setups such as [Create React App](https://github.com/facebookincubator/create-react-app) – the examples below use Vite.
 
+To upgrade from 2.x, read [Migrating to 3.0.0](#migrating-to-300).
+
 ## What does it look like?
 
 ```jsx
