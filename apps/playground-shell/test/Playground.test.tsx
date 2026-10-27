@@ -291,6 +291,13 @@ describe("Playground sidebar", () => {
     expect(titles()).toContain("Tilemap");
   });
 
+  it("keeps the group of the previous example open when the hash moves to another group", async () => {
+    await render();
+    window.history.replaceState(null, "", "#tilemap");
+    await act(async () => window.dispatchEvent(new HashChangeEvent("hashchange")));
+    expect(titles()).toEqual(["First", "Sprite", "Tilemap"]);
+  });
+
   it("filters the examples by title, ignoring case, and hides the groups without matches", async () => {
     await render();
     filter("SPRITE");

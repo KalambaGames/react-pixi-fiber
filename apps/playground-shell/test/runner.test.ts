@@ -252,4 +252,20 @@ describe("startRunner", () => {
     expect(texts).toContain('{"texture":"[Texture]","x":2}');
     expect(texts).toContain('{"first":{"n":1},"second":{"n":1}}');
   });
+
+  // PixiJS puts the message of a deprecation warning in a group label and only the stack in the warning.
+  it("logs the label of a console group", () => {
+    vi.stubGlobal("origin", "null");
+    const post = vi.spyOn(window.parent, "postMessage").mockImplementation(() => {});
+    // A browser prints the label itself, where Node prints it through console.log.
+    console.group = vi.fn();
+    console.groupCollapsed = vi.fn();
+    startRunner({ modules: {}, render: vi.fn() });
+    console.groupCollapsed("%cDeprecation: %cold API", "color: red", "color: blue");
+    console.group("plain group");
+    console.group();
+    const texts = post.mock.calls.flatMap(([message]) => (message as { text?: string }).text ?? []);
+    expect(texts).toEqual(["Deprecation: old API", "plain group"]);
+    expect(post).toHaveBeenCalledWith(expect.objectContaining({ level: "log", text: "plain group" }), "*");
+  });
 });

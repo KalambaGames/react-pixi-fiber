@@ -99,6 +99,14 @@ export function startRunner(options: {
       send(level, format(args));
     };
   }
+  // PixiJS puts the message of a deprecation warning in the group label and only the stack in the warning.
+  for (const method of ["group", "groupCollapsed"] as const) {
+    const original = console[method];
+    console[method] = (...args: unknown[]) => {
+      original.apply(console, args);
+      if (args.length > 0) send("log", format(args));
+    };
+  }
   window.addEventListener("error", event => send("error", stringify(event.error ?? event.message)));
   window.addEventListener("unhandledrejection", event => send("error", stringify(event.reason)));
 
