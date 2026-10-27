@@ -1,22 +1,17 @@
 import { Viewport as PixiViewport } from "pixi-viewport";
 import type { Application, Sprite as PixiSprite } from "pixi.js";
-import { BaseTexture, Point, SCALE_MODES, settings, Spritesheet } from "pixi.js";
-import { useEffect, useRef } from "react";
+import { Point, SCALE_MODES, settings, type Texture } from "pixi.js";
+import { useEffect, useMemo, useRef } from "react";
 import { PIXIComponent, Sprite, Stage, Text, usePixiApp, usePixiTicker } from "react-pixi-fiber";
-// Frame names and rectangles: see the Features / Spritesheet example.
+// useSpritesheet source, frame names and rectangles: see the Features / Spritesheet example.
 import bunnysData from "./assets/bunnys.json";
 import bunnys from "./assets/bunnys.png";
+import { useSpritesheet } from "./hooks/useSpritesheet";
 
 settings.SCALE_MODE = SCALE_MODES.NEAREST;
 
 const centerAnchor = new Point(0.5, 0.5);
-const sheet = new Spritesheet(BaseTexture.from(bunnys), bunnysData);
-// parse fills sheet.textures before it returns, for a sheet this small.
-// The documented way waits for parse: see the Features / Spritesheet example.
-sheet.parse();
-
 const bunnyNames = ["bunny", "bunnyCute", "bunnySporty", "bunnyRobot", "bunnyAstronaut"] as const;
-const textures = bunnyNames.map(name => sheet.textures[name]);
 const screen = { height: 300, width: 400 };
 const world = { height: 600, width: 800 };
 
@@ -29,13 +24,14 @@ const clusterCenters = [
   { radius: 130, x: 160, y: 470 },
   { radius: 130, x: 640, y: 470 },
 ];
-const bunnies = clusterCenters.flatMap((center, cluster) =>
+const bunnies = clusterCenters.flatMap((center, frame) =>
   Array.from({ length: 16 }, (_, index) => {
     const angle = index * 2.4;
     const radius = center.radius * Math.sqrt((index + 0.5) / 16);
     return {
+      frame,
       phase: index,
-      texture: textures[cluster],
+
       x: center.x + Math.cos(angle) * radius,
       y: center.y + Math.sin(angle) * radius,
     };
@@ -69,7 +65,7 @@ const Viewport = PIXIComponent<PixiViewport, ViewportProps>("Viewport", {
   },
 });
 
-function World() {
+function World({ textures }: { textures: Texture[] }) {
   const app = usePixiApp();
   const viewport = useRef<PixiViewport>(null);
   const sprites = useRef<PixiSprite[]>([]);
@@ -108,7 +104,7 @@ function World() {
           ref={sprite => {
             if (sprite) sprites.current[index] = sprite;
           }}
-          texture={bunny.texture}
+          texture={textures[bunny.frame]}
           x={bunny.x}
           y={bunny.y}
         />
@@ -118,9 +114,12 @@ function World() {
 }
 
 export default function ViewportExample() {
+  const { textures: frames } = useSpritesheet(bunnys, bunnysData);
+  const textures = useMemo(() => frames.bunny && bunnyNames.map(name => frames[name] as Texture), [frames]);
+
   return (
     <Stage options={{ backgroundColor: 0x1099bb, height: screen.height, width: screen.width }}>
-      <World />
+      {textures && <World textures={textures} />}
       <Text
         style={{ fill: "white", fontFamily: "Arial", fontSize: 14 }}
         text="Drag to pan, scroll to zoom, click a bunny to follow it"
