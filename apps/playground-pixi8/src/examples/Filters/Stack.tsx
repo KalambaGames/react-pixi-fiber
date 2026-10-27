@@ -5,7 +5,7 @@ import {
   type OutlineFilterOptions,
   PixelateFilter as PixiPixelateFilter,
 } from "pixi-filters";
-import { Assets, Point, Spritesheet, Texture, TextureSource } from "pixi.js";
+import { Assets, Point, Spritesheet, type Texture, TextureSource } from "pixi.js";
 import { useEffect, useState } from "react";
 import { BlurFilter, PIXIFilter, Sprite, Stage, Text } from "react-pixi-fiber";
 // Frame names and rectangles: see the Features / Spritesheet example.

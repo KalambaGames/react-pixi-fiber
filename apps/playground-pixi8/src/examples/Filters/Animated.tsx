@@ -1,6 +1,6 @@
 // Every filter and every parameter: https://pixijs.io/filters/examples/
 import { ShockwaveFilter as PixiShockwaveFilter, type ShockwaveFilterOptions } from "pixi-filters";
-import { Assets, Rectangle, Spritesheet, Texture, TextureSource } from "pixi.js";
+import { Assets, Rectangle, Spritesheet, type Texture, TextureSource } from "pixi.js";
 import { useEffect, useRef, useState } from "react";
 import { Container, PIXIFilter, Sprite, Stage, Text, usePixiTicker } from "react-pixi-fiber";
 // Frame names and rectangles: see the Features / Spritesheet example.

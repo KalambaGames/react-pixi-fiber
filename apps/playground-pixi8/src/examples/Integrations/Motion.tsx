@@ -1,6 +1,6 @@
 import { animate, motionValue } from "motion";
 import type { Sprite as PixiSprite } from "pixi.js";
-import { Assets, Point, Spritesheet, Texture, TextureSource } from "pixi.js";
+import { Assets, Point, Spritesheet, type Texture, TextureSource } from "pixi.js";
 import { useEffect, useRef, useState } from "react";
 import { Sprite, Stage, Text } from "react-pixi-fiber";
 // Frame names and rectangles: see the Features / Spritesheet example.

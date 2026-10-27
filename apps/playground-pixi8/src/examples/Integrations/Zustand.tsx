@@ -1,5 +1,5 @@
 import type { Sprite as PixiSprite, Text as PixiText } from "pixi.js";
-import { Assets, GraphicsContext, Point, Spritesheet, Texture, TextureSource } from "pixi.js";
+import { Assets, GraphicsContext, Point, Spritesheet, type Texture, TextureSource } from "pixi.js";
 import { useEffect, useRef, useState } from "react";
 import { Container, Graphics, Sprite, Stage, Text, usePixiTicker } from "react-pixi-fiber";
 import { create } from "zustand";

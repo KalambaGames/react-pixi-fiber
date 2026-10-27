@@ -1,6 +1,6 @@
 // Every filter and every parameter: https://pixijs.io/filters/examples/
 import { useControls } from "leva";
-import { Assets, Point, Spritesheet, Texture, TextureSource } from "pixi.js";
+import { Assets, Point, Spritesheet, type Texture, TextureSource } from "pixi.js";
 import { useEffect, useState } from "react";
 import { BlurFilter, Container, type InstanceOf, Sprite, Stage, Text } from "react-pixi-fiber";
 // Frame names and rectangles: see the Features / Spritesheet example.

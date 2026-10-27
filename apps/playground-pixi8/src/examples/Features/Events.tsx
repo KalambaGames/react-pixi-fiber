@@ -1,4 +1,4 @@
-import { Assets, type FederatedPointerEvent, Point, Spritesheet, Texture, TextureSource } from "pixi.js";
+import { Assets, type FederatedPointerEvent, Point, Spritesheet, type Texture, TextureSource } from "pixi.js";
 import {
   type ComponentProps,
   type ComponentType,

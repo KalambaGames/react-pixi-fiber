@@ -1,6 +1,6 @@
 import { Viewport as PixiViewport } from "pixi-viewport";
 import type { Application, Sprite as PixiSprite } from "pixi.js";
-import { Assets, Point, Spritesheet, Texture, TextureSource } from "pixi.js";
+import { Assets, Point, Spritesheet, type Texture, TextureSource } from "pixi.js";
 import { useEffect, useRef, useState } from "react";
 import { PIXIComponent, Sprite, Stage, Text, usePixiApp, usePixiTicker } from "react-pixi-fiber";
 // Frame names and rectangles: see the Features / Spritesheet example.

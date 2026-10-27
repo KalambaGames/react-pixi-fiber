@@ -1,4 +1,4 @@
-import { Assets, Point, Spritesheet, Texture, TextureSource } from "pixi.js";
+import { Assets, Point, Spritesheet, type Texture, TextureSource } from "pixi.js";
 import {
   type ComponentProps,
   type ComponentType,

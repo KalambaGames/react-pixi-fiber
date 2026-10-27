@@ -1,4 +1,4 @@
-import { Assets, type SimpleMesh, Spritesheet, Texture } from "pixi.js";
+import { Assets, type SimpleMesh, Spritesheet, type Texture } from "pixi.js";
 import { useEffect, useState } from "react";
 import { MeshSimple, Stage } from "react-pixi-fiber";
 // Frame names and rectangles: see the Features / Spritesheet example.

@@ -1,4 +1,4 @@
-import { Application, Assets, Point, Spritesheet, Texture, type Ticker } from "pixi.js";
+import { Application, Assets, Point, Spritesheet, type Texture, type Ticker } from "pixi.js";
 import {
   type ComponentProps,
   type ComponentType,

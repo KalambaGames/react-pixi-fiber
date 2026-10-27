@@ -1,4 +1,4 @@
-import { Assets, Spritesheet, Texture } from "pixi.js";
+import { Assets, Spritesheet, type Texture } from "pixi.js";
 import { useEffect, useState } from "react";
 import { Container, Stage, TilingSprite } from "react-pixi-fiber";
 // Frame names and rectangles: see the Features / Spritesheet example.

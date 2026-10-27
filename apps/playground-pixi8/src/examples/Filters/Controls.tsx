@@ -1,7 +1,7 @@
 // Every filter and every parameter: https://pixijs.io/filters/examples/
 import { useControls } from "leva";
 import { AdjustmentFilter as PixiAdjustmentFilter, type AdjustmentFilterOptions } from "pixi-filters";
-import { Assets, Point, Spritesheet, Texture, TextureSource } from "pixi.js";
+import { Assets, Point, Spritesheet, type Texture, TextureSource } from "pixi.js";
 import { useEffect, useRef, useState } from "react";
 import { Container, PIXIFilter, Sprite, Stage, Text } from "react-pixi-fiber";
 // Frame names and rectangles: see the Features / Spritesheet example.

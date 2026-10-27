@@ -1,4 +1,4 @@
-import { Assets, Point, Spritesheet, Texture, type Ticker } from "pixi.js";
+import { Assets, Point, Spritesheet, type Texture, type Ticker } from "pixi.js";
 import React, {
   type ComponentProps,
   type ComponentType,

@@ -1,5 +1,5 @@
 import { useControls } from "leva";
-import { Assets, Filter, Point, Spritesheet, Texture, TextureSource } from "pixi.js";
+import { Assets, Filter, Point, Spritesheet, type Texture, TextureSource } from "pixi.js";
 import { useEffect, useRef, useState } from "react";
 import { Container, PIXIFilter, Sprite, Stage, Text, usePixiTicker } from "react-pixi-fiber";
 // Frame names and rectangles: see the Features / Spritesheet example.

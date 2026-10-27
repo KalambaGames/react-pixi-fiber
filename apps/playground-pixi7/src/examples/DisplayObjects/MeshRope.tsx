@@ -1,4 +1,4 @@
-import { Assets, Point, Spritesheet, Texture } from "pixi.js";
+import { Assets, Point, Spritesheet, type Texture } from "pixi.js";
 import { useEffect, useState } from "react";
 import { MeshRope, Stage } from "react-pixi-fiber";
 // Frame names and rectangles: see the Features / Spritesheet example.

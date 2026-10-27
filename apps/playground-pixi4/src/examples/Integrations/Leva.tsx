@@ -1,6 +1,6 @@
 import { useControls } from "leva";
 import type { Sprite as PixiSprite } from "pixi.js";
-import { BaseTexture, Point, SCALE_MODES, settings, Spritesheet, Texture } from "pixi.js";
+import { BaseTexture, Point, SCALE_MODES, settings, Spritesheet, type Texture } from "pixi.js";
 import { type RefObject, useRef } from "react";
 import { Sprite, Stage, Text, usePixiTicker } from "react-pixi-fiber";
 // Frame names and rectangles: see the Features / Spritesheet example.
