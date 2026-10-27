@@ -1,11 +1,19 @@
 import { animate, motionValue } from "motion";
 import type { Sprite as PixiSprite } from "pixi.js";
-import { Assets, Point, Rectangle, Texture, TextureSource } from "pixi.js";
+import { Assets, Point, Spritesheet, Texture, TextureSource } from "pixi.js";
 import { useEffect, useRef, useState } from "react";
 import { Sprite, Stage, Text } from "react-pixi-fiber";
+// Frame names and rectangles: see the Features / Spritesheet example.
+import bunnysData from "./assets/bunnys.json";
 import bunnys from "./assets/bunnys.png";
 
 TextureSource.defaultOptions.scaleMode = "nearest";
+
+const bunnySheet = Assets.load<Texture>(bunnys).then(async texture => {
+  const sheet = new Spritesheet(texture, bunnysData);
+  await sheet.parse();
+  return sheet;
+});
 
 const centerAnchor = new Point(0.5, 0.5);
 // The bunny squashes towards the ground, so it scales from its feet.
@@ -22,15 +30,12 @@ export default function MotionExample() {
   // PixiJS 8 loads the sprite sheet asynchronously, so the bunny renders once its texture exists.
   useEffect(() => {
     let cancelled = false;
-    let created: Texture | undefined;
-    Assets.load<Texture>(bunnys).then(({ source }) => {
+    bunnySheet.then(sheet => {
       if (cancelled) return;
-      created = new Texture({ frame: new Rectangle(2, 47, 26, 37), source });
-      setBunny(created);
+      setBunny(sheet.textures.bunny);
     });
     return () => {
       cancelled = true;
-      created?.destroy();
     };
   }, []);
 

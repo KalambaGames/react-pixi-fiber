@@ -1,22 +1,27 @@
-import { Assets, Rectangle, Texture } from "pixi.js";
+import { Assets, Spritesheet, Texture } from "pixi.js";
 import { useEffect, useState } from "react";
 import { Container, Stage, TilingSprite } from "react-pixi-fiber";
+// Frame names and rectangles: see the Features / Spritesheet example.
+import bunnysData from "./assets/bunnys.json";
 import bunnys from "./assets/bunnys.png";
+
+const bunnySheet = Assets.load<Texture>(bunnys).then(async texture => {
+  const sheet = new Spritesheet(texture, bunnysData);
+  await sheet.parse();
+  return sheet;
+});
 
 export default function MigratingFromPixi7Example() {
   const [texture, setTexture] = useState<Texture>();
   const [tint, setTint] = useState(0xffffff);
   useEffect(() => {
     let cancelled = false;
-    let bunny: Texture | undefined;
-    Assets.load<Texture>(bunnys).then(sheet => {
+    bunnySheet.then(sheet => {
       if (cancelled) return;
-      bunny = new Texture({ frame: new Rectangle(2, 47, 26, 37), source: sheet.source });
-      setTexture(bunny);
+      setTexture(sheet.textures.bunny);
     });
     return () => {
       cancelled = true;
-      bunny?.destroy();
     };
   }, []);
   return (

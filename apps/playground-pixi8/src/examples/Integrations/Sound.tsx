@@ -1,12 +1,22 @@
 import { type Sound, sound } from "@pixi/sound";
 import type { Sprite as PixiSprite } from "pixi.js";
-import { Assets, Point, Rectangle, Texture, TextureSource } from "pixi.js";
+import { Assets, Point, Spritesheet, Texture, TextureSource } from "pixi.js";
 import { useEffect, useRef, useState } from "react";
 import { Sprite, Stage, Text, usePixiTicker } from "react-pixi-fiber";
+// Frame names and rectangles: see the Features / Spritesheet example.
+import bunnysData from "./assets/bunnys.json";
 import bunnys from "./assets/bunnys.png";
 import sounds from "./assets/sounds.mp3";
 
 TextureSource.defaultOptions.scaleMode = "nearest";
+
+const bunnySheet = Assets.load<Texture>(bunnys).then(async texture => {
+  const sheet = new Spritesheet(texture, bunnysData);
+  await sheet.parse();
+  return sheet;
+});
+
+const bunnyNames = ["bunny", "bunnyCute", "bunnySporty", "bunnyRobot", "bunnyAstronaut"] as const;
 
 const centerAnchor = new Point(0.5, 0.5);
 // The frames differ in height, so the bunnies stand on their feet like in the AnimatedSprite example.
@@ -66,21 +76,12 @@ export default function SoundExample() {
   // PixiJS 8 loads the sprite sheet asynchronously, so the bunnies render once their textures exist.
   useEffect(() => {
     let cancelled = false;
-    let created: Texture[] = [];
-    Assets.load<Texture>(bunnys).then(({ source }) => {
+    bunnySheet.then(sheet => {
       if (cancelled) return;
-      created = [
-        new Texture({ frame: new Rectangle(2, 47, 26, 37), source }),
-        new Texture({ frame: new Rectangle(2, 86, 26, 37), source }),
-        new Texture({ frame: new Rectangle(2, 125, 26, 37), source }),
-        new Texture({ frame: new Rectangle(2, 164, 26, 37), source }),
-        new Texture({ frame: new Rectangle(2, 2, 26, 43), source }),
-      ];
-      setTextures(created);
+      setTextures(bunnyNames.map(name => sheet.textures[name]));
     });
     return () => {
       cancelled = true;
-      for (const texture of created) texture.destroy();
     };
   }, []);
 

@@ -1,12 +1,20 @@
 // Every filter and every parameter: https://pixijs.io/filters/examples/
 import { useControls } from "leva";
 import { GlowFilter as PixiGlowFilter, type GlowFilterOptions } from "pixi-filters";
-import { Assets, Point, Rectangle, Texture, TextureSource } from "pixi.js";
+import { Assets, Point, Spritesheet, Texture, TextureSource } from "pixi.js";
 import { useEffect, useState } from "react";
 import { PIXIFilter, Sprite, Stage, Text } from "react-pixi-fiber";
+// Frame names and rectangles: see the Features / Spritesheet example.
+import bunnysData from "./assets/bunnys.json";
 import bunnys from "./assets/bunnys.png";
 
 TextureSource.defaultOptions.scaleMode = "nearest";
+
+const bunnySheet = Assets.load<Texture>(bunnys).then(async texture => {
+  const sheet = new Spritesheet(texture, bunnysData);
+  await sheet.parse();
+  return sheet;
+});
 
 const GlowFilter = PIXIFilter("GlowFilter", (props: Partial<GlowFilterOptions>) => new PixiGlowFilter(props));
 
@@ -21,15 +29,12 @@ export default function FiltersPropExample() {
   // PixiJS 8 loads the sprite sheet asynchronously, so the bunnies render once their texture exists.
   useEffect(() => {
     let cancelled = false;
-    let created: Texture | undefined;
-    Assets.load<Texture>(bunnys).then(({ source }) => {
+    bunnySheet.then(sheet => {
       if (cancelled) return;
-      created = new Texture({ frame: new Rectangle(2, 47, 26, 37), source });
-      setTexture(created);
+      setTexture(sheet.textures.bunny);
     });
     return () => {
       cancelled = true;
-      created?.destroy();
     };
   }, []);
 

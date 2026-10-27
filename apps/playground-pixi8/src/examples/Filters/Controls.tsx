@@ -1,12 +1,22 @@
 // Every filter and every parameter: https://pixijs.io/filters/examples/
 import { useControls } from "leva";
 import { AdjustmentFilter as PixiAdjustmentFilter, type AdjustmentFilterOptions } from "pixi-filters";
-import { Assets, Point, Rectangle, Texture, TextureSource } from "pixi.js";
+import { Assets, Point, Spritesheet, Texture, TextureSource } from "pixi.js";
 import { useEffect, useRef, useState } from "react";
 import { Container, PIXIFilter, Sprite, Stage, Text } from "react-pixi-fiber";
+// Frame names and rectangles: see the Features / Spritesheet example.
+import bunnysData from "./assets/bunnys.json";
 import bunnys from "./assets/bunnys.png";
 
 TextureSource.defaultOptions.scaleMode = "nearest";
+
+const bunnySheet = Assets.load<Texture>(bunnys).then(async texture => {
+  const sheet = new Spritesheet(texture, bunnysData);
+  await sheet.parse();
+  return sheet;
+});
+
+const bunnyNames = ["bunny", "bunnyCute", "bunnySporty", "bunnyRobot", "bunnyAstronaut"] as const;
 
 const AdjustmentFilter = PIXIFilter(
   "AdjustmentFilter",
@@ -25,21 +35,12 @@ export default function ControlsExample() {
   // PixiJS 8 loads the sprite sheet asynchronously, so the bunnies render once their textures exist.
   useEffect(() => {
     let cancelled = false;
-    let created: Texture[] = [];
-    Assets.load<Texture>(bunnys).then(({ source }) => {
+    bunnySheet.then(sheet => {
       if (cancelled) return;
-      created = [
-        new Texture({ frame: new Rectangle(2, 47, 26, 37), source }),
-        new Texture({ frame: new Rectangle(2, 86, 26, 37), source }),
-        new Texture({ frame: new Rectangle(2, 125, 26, 37), source }),
-        new Texture({ frame: new Rectangle(2, 164, 26, 37), source }),
-        new Texture({ frame: new Rectangle(2, 2, 26, 43), source }),
-      ];
-      setTextures(created);
+      setTextures(bunnyNames.map(name => sheet.textures[name]));
     });
     return () => {
       cancelled = true;
-      for (const texture of created) texture.destroy();
     };
   }, []);
 

@@ -1,7 +1,15 @@
-import { Assets, Rectangle, Texture } from "pixi.js";
+import { Assets, Spritesheet, Texture } from "pixi.js";
 import { useEffect, useState } from "react";
 import { MeshSimple, Stage } from "react-pixi-fiber";
+// Frame names and rectangles: see the Features / Spritesheet example.
+import bunnysData from "./assets/bunnys.json";
 import bunnys from "./assets/bunnys.png";
+
+const bunnySheet = Assets.load<Texture>(bunnys).then(async texture => {
+  const sheet = new Spritesheet(texture, bunnysData);
+  await sheet.parse();
+  return sheet;
+});
 
 const indices = new Uint16Array([0, 1, 2, 0, 2, 3]);
 const uvs = new Float32Array([0, 0, 1, 0, 1, 1, 0, 1]);
@@ -11,15 +19,12 @@ export default function MeshSimpleExample() {
   const [texture, setTexture] = useState<Texture>();
   useEffect(() => {
     let cancelled = false;
-    let bunny: Texture | undefined;
-    Assets.load<Texture>(bunnys).then(sheet => {
+    bunnySheet.then(sheet => {
       if (cancelled) return;
-      bunny = new Texture({ frame: new Rectangle(2, 47, 26, 37), source: sheet.source });
-      setTexture(bunny);
+      setTexture(sheet.textures.bunny);
     });
     return () => {
       cancelled = true;
-      bunny?.destroy();
     };
   }, []);
   return (

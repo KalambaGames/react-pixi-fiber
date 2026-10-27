@@ -1,5 +1,5 @@
 import { Particle } from "@react-pixi-fiber/pixi-8";
-import { Assets, Rectangle, Texture } from "pixi.js";
+import { Assets, Spritesheet, Texture } from "pixi.js";
 import { Stats } from "pixi-stats";
 import { Fragment, useCallback, useEffect, useState } from "react";
 import {
@@ -11,7 +11,17 @@ import {
   usePixiTicker,
   withApp,
 } from "react-pixi-fiber";
+// Frame names and rectangles: see the Features / Spritesheet example.
+import bunnysData from "./assets/bunnys.json";
 import bunnysImage from "./assets/bunnys.png";
+
+const bunnySheet = Assets.load<Texture>(bunnysImage).then(async texture => {
+  const sheet = new Spritesheet(texture, bunnysData);
+  await sheet.parse();
+  return sheet;
+});
+
+const bunnyNames = ["bunny", "bunnyCute", "bunnySporty", "bunnyRobot", "bunnyAstronaut"] as const;
 
 const maxSize = 200000;
 const bunniesAddedPerFrame = 100;
@@ -90,24 +100,15 @@ const Bunnymark = withApp(function Bunnymark({ app, overlay }: PixiAppProperties
   // PixiJS 8 loads the sprite sheet asynchronously.
   useEffect(() => {
     let cancelled = false;
-    let created: Texture[] = [];
-    Assets.load<Texture>(bunnysImage).then(({ source }) => {
+    bunnySheet.then(sheet => {
       if (cancelled) return;
-      const bunny1 = new Texture({ frame: new Rectangle(2, 47, 26, 37), source });
-      const bunny2 = new Texture({ frame: new Rectangle(2, 86, 26, 37), source });
-      const bunny3 = new Texture({ frame: new Rectangle(2, 125, 26, 37), source });
-      const bunny4 = new Texture({ frame: new Rectangle(2, 164, 26, 37), source });
-      const bunny5 = new Texture({ frame: new Rectangle(2, 2, 26, 43), source });
-      created = [bunny1, bunny2, bunny3, bunny4, bunny5];
-
-      setBunnyTextures(created);
+      setBunnyTextures(bunnyNames.map(name => sheet.textures[name]));
       const currentTexture = 2;
       setBunnys([generateBunny(currentTexture), generateBunny(currentTexture)]);
       setCurrentTexture(currentTexture);
     });
     return () => {
       cancelled = true;
-      for (const texture of created) texture.destroy();
     };
   }, []);
 

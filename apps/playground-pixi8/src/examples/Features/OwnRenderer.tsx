@@ -1,4 +1,4 @@
-import { Application, Assets, Point, Rectangle, Texture, type Ticker } from "pixi.js";
+import { Application, Assets, Point, Spritesheet, Texture, type Ticker } from "pixi.js";
 import {
   type ComponentProps,
   type ComponentType,
@@ -12,7 +12,17 @@ import {
   useState,
 } from "react";
 import { type PixiAppProperties, Sprite, Stage, usePixiTicker, withApp } from "react-pixi-fiber";
+// Frame names and rectangles: see the Features / Spritesheet example.
+import bunnysData from "./assets/bunnys.json";
 import bunnys from "./assets/bunnys.png";
+
+const bunnySheet = Assets.load<Texture>(bunnys).then(async texture => {
+  const sheet = new Spritesheet(texture, bunnysData);
+  await sheet.parse();
+  return sheet;
+});
+
+const bunnyNames = ["bunny", "bunnyCute", "bunnySporty", "bunnyRobot", "bunnyAstronaut"] as const;
 
 const centerAnchor = new Point(0.5, 0.5);
 
@@ -23,21 +33,12 @@ function BunnyTexturesProvider({ children }: { children: ReactNode }) {
   const [textures, setTextures] = useState<Texture[]>();
   useEffect(() => {
     let cancelled = false;
-    let created: Texture[] = [];
-    Assets.load<Texture>(bunnys).then(({ source }) => {
+    bunnySheet.then(sheet => {
       if (cancelled) return;
-      created = [
-        new Texture({ frame: new Rectangle(2, 47, 26, 37), source }),
-        new Texture({ frame: new Rectangle(2, 86, 26, 37), source }),
-        new Texture({ frame: new Rectangle(2, 125, 26, 37), source }),
-        new Texture({ frame: new Rectangle(2, 164, 26, 37), source }),
-        new Texture({ frame: new Rectangle(2, 2, 26, 43), source }),
-      ];
-      setTextures(created);
+      setTextures(bunnyNames.map(name => sheet.textures[name]));
     });
     return () => {
       cancelled = true;
-      for (const texture of created) texture.destroy();
     };
   }, []);
   return textures ? <BunnyTextures.Provider value={textures}>{children}</BunnyTextures.Provider> : null;

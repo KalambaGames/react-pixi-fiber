@@ -10,7 +10,17 @@ import {
   usePixiTicker,
   withApp,
 } from "react-pixi-fiber";
+// Frame names and rectangles: see the Features / Spritesheet example.
+import bunnysData from "./assets/bunnys.json";
 import bunnysImage from "./assets/bunnys.png";
+
+const bunnySheet = PIXI.Assets.load<PIXI.Texture>(bunnysImage).then(async texture => {
+  const sheet = new PIXI.Spritesheet(texture, bunnysData);
+  await sheet.parse();
+  return sheet;
+});
+
+const bunnyNames = ["bunny", "bunnyCute", "bunnySporty", "bunnyRobot", "bunnyAstronaut"] as const;
 
 type ParticleProps = {
   anchorX: number;
@@ -107,24 +117,15 @@ const CustomBunnymark = withApp(function CustomBunnymark(props: PixiAppPropertie
   // PixiJS 8 loads the sprite sheet asynchronously.
   useEffect(() => {
     let cancelled = false;
-    let created: PIXI.Texture[] = [];
-    PIXI.Assets.load<PIXI.Texture>(bunnysImage).then(({ source }) => {
+    bunnySheet.then(sheet => {
       if (cancelled) return;
-      const bunny1 = new PIXI.Texture({ frame: new PIXI.Rectangle(2, 47, 26, 37), source });
-      const bunny2 = new PIXI.Texture({ frame: new PIXI.Rectangle(2, 86, 26, 37), source });
-      const bunny3 = new PIXI.Texture({ frame: new PIXI.Rectangle(2, 125, 26, 37), source });
-      const bunny4 = new PIXI.Texture({ frame: new PIXI.Rectangle(2, 164, 26, 37), source });
-      const bunny5 = new PIXI.Texture({ frame: new PIXI.Rectangle(2, 2, 26, 43), source });
-      created = [bunny1, bunny2, bunny3, bunny4, bunny5];
-
-      setBunnyTextures(created);
+      setBunnyTextures(bunnyNames.map(name => sheet.textures[name]));
       const currentTexture = 2;
       setBunnys([generateBunny(currentTexture), generateBunny(currentTexture)]);
       setCurrentTexture(currentTexture);
     });
     return () => {
       cancelled = true;
-      for (const texture of created) texture.destroy();
     };
   }, []);
 
