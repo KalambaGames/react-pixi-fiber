@@ -20,24 +20,52 @@ const bunnysData = {
   },
 };
 
-const sheet = new Spritesheet(BaseTexture.fromImage(bunnys), bunnysData);
-// parse calls the callback when every frame is ready.
-const bunnyTextures = new Promise<Record<string, Texture>>(resolve => sheet.parse(() => resolve(sheet.textures)));
+// The other examples import the same hook from ./hooks/useSpritesheet.
+// One sheet per image, shared by every component that uses it.
+// The cache keeps each sheet while the page is open. An app that unloads a sheet must destroy it.
+const loading = new Map<string, Promise<Spritesheet>>();
+const ready = new Map<string, Spritesheet>();
 
-function Bunnies() {
-  const [textures, setTextures] = useState<Record<string, Texture>>();
+function load(image: string, data: { frames: Record<string, unknown> }) {
+  let promise = loading.get(image);
+  if (!promise) {
+    const sheet = new Spritesheet(BaseTexture.fromImage(image), data);
+    // parse calls the callback when every frame is ready.
+    promise = new Promise<Spritesheet>(resolve =>
+      sheet.parse(() => {
+        ready.set(image, sheet);
+        resolve(sheet);
+      })
+    );
+    // A failed load leaves the cache, so the next mount tries again.
+    promise.catch(() => loading.delete(image));
+    loading.set(image, promise);
+  }
+  return promise;
+}
+
+// textures is empty until the sheet is ready.
+function useSpritesheet<Data extends { frames: Record<string, unknown> }>(image: string, data: Data) {
+  const [sheet, setSheet] = useState(() => ready.get(image));
 
   useEffect(() => {
+    if (sheet) return;
     let cancelled = false;
-    bunnyTextures.then(parsed => {
-      if (!cancelled) setTextures(parsed);
-    });
+    load(image, data)
+      .then(loaded => {
+        if (!cancelled) setSheet(loaded);
+      })
+      .catch(console.error);
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [image, data, sheet]);
 
-  if (!textures) return null;
+  return { textures: (sheet?.textures ?? {}) as Partial<Record<keyof Data["frames"] & string, Texture>> };
+}
+
+function Bunnies() {
+  const { textures } = useSpritesheet(bunnys, bunnysData);
 
   // The frame names are the keys of sheet.textures.
   return Object.entries(textures).map(([name, texture], i) => (
