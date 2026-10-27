@@ -751,6 +751,22 @@ Yes, you can pass `app` property to `Stage` component, e.g. `<Stage app={app} />
 
 Two `Stage` components sharing one `app` are not supported: both render into `app.stage`, so the second replaces the first's children and unmounting either empties both.
 
+### How do I register PixiJS extensions?
+
+With PixiJS. `Stage` and `configure` take no extensions, because PixiJS keeps every extension in one global registry. Add them once in the app entry, before the first render:
+
+```js
+import { extensions } from "pixi.js";
+import { configure } from "react-pixi-fiber";
+import react18 from "@react-pixi-fiber/react-18";
+import pixi8 from "@react-pixi-fiber/pixi-8";
+
+extensions.add(MyExtension);
+configure({ react: react18(), pixi: pixi8() });
+```
+
+Add a renderer or application extension before `Stage` creates the application, or before the app creates the `app` it passes to `Stage`. Add a loader extension before the first asset load. `extensions.add` exists since PixiJS 6.5, and in PixiJS 7 and 8. PixiJS 4, 5 and 6 before 6.5 register a plugin on the class it extends, for example `Renderer.registerPlugin`. See the PixiJS documentation of that version.
+
 ### What does `unmount` return?
 
 `unmount(container)` never throws. It returns `true` for a container that was rendered into (calling it again is a no-op that returns `true`) and `false`, with a warning in development, for a container that never was.
