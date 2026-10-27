@@ -3,7 +3,7 @@
 // https://pixijs.io/examples/#/layers/zorder.js
 import { RenderLayer } from "@react-pixi-fiber/pixi-8";
 import * as PIXI from "pixi.js";
-import { Assets, Point, Spritesheet, Texture } from "pixi.js";
+import { Assets, Point, Spritesheet, type Texture } from "pixi.js";
 import {
   type ComponentProps,
   type ComponentType,
@@ -14,7 +14,6 @@ import {
   useContext,
   useEffect,
   useLayoutEffect,
-  useRef,
   useState,
 } from "react";
 import { Container, PIXIComponent, PIXIProperty, Sprite, Stage } from "react-pixi-fiber";
