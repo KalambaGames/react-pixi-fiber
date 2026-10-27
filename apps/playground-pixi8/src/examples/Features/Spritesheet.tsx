@@ -43,9 +43,9 @@ function Bunnies() {
   if (!textures) return null;
 
   // The frame names are the keys of sheet.textures.
-  return Object.keys(textures).map((name, i) => (
+  return Object.entries(textures).map(([name, texture], i) => (
     <Container key={name} x={48 + i * 76} y={150}>
-      <Sprite anchor={{ x: 0.5, y: 1 }} scale={2} texture={textures[name]} />
+      <Sprite anchor={{ x: 0.5, y: 1 }} scale={2} texture={texture} />
       <Text anchor={{ x: 0.5, y: 0 }} style={{ fill: 0xffffff, fontSize: 11 }} text={name} y={8} />
     </Container>
   ));
