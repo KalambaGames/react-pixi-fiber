@@ -1,24 +1,29 @@
 import { useControls } from "leva";
 import type { Sprite as PixiSprite } from "pixi.js";
-import { BaseTexture, Point, SCALE_MODES, settings, Spritesheet, type Texture } from "pixi.js";
-import { type RefObject, useRef } from "react";
+import { Point, SCALE_MODES, settings, type Texture } from "pixi.js";
+import { type RefObject, useMemo, useRef } from "react";
 import { Sprite, Stage, Text, usePixiTicker } from "react-pixi-fiber";
-// Frame names and rectangles: see the Features / Spritesheet example.
+// useSpritesheet source, frame names and rectangles: see the Features / Spritesheet example.
 import bunnysData from "./assets/bunnys.json";
 import bunnys from "./assets/bunnys.png";
+import { useSpritesheet } from "./hooks/useSpritesheet";
 
 settings.SCALE_MODE = SCALE_MODES.NEAREST;
 
 const centerAnchor = new Point(0.5, 0.5);
-const sheet = new Spritesheet(BaseTexture.from(bunnys), bunnysData);
-// parse fills sheet.textures before it returns, for a sheet this small.
-// The documented way waits for parse: see the Features / Spritesheet example.
-sheet.parse(() => {});
-
 const bunnyNames = ["bunny", "bunnyCute", "bunnySporty", "bunnyRobot", "bunnyAstronaut"] as const;
-const textures = bunnyNames.map(name => sheet.textures[name]);
 
-function Bunnies({ count, speed, tint }: { count: number; speed: RefObject<number>; tint: number }) {
+function Bunnies({
+  count,
+  speed,
+  textures,
+  tint,
+}: {
+  count: number;
+  speed: RefObject<number>;
+  textures: Texture[];
+  tint: number;
+}) {
   const sprites = useRef<PixiSprite[]>([]);
   const data = useRef<{ texture: Texture; vx: number; vy: number; x: number; y: number }[]>([]);
   // The bunnies keep their position and speed, so a new count only adds or removes bunnies at the end.
@@ -64,6 +69,8 @@ export default function LevaExample() {
   // Counts the renders of this component, to show which controls re-render it.
   const renders = useRef(0);
   renders.current += 1;
+  const { textures: frames } = useSpritesheet(bunnys, bunnysData);
+  const textures = useMemo(() => frames.bunny && bunnyNames.map(name => frames[name] as Texture), [frames]);
   // useControls returns values, so a change of count or tint re-renders the component.
   const { count, tint } = useControls({ count: { max: 300, min: 1, step: 1, value: 40 }, tint: "#ffffff" });
   // A control with onChange is transient: it writes to the ref and does not re-render.
@@ -87,7 +94,9 @@ export default function LevaExample() {
         x={10}
         y={8}
       />
-      <Bunnies count={count} speed={speed} tint={Number.parseInt(tint.slice(1), 16)} />
+      {textures && (
+        <Bunnies count={count} speed={speed} textures={textures} tint={Number.parseInt(tint.slice(1), 16)} />
+      )}
     </Stage>
   );
 }

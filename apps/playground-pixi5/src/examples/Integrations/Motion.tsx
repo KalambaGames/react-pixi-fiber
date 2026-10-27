@@ -1,25 +1,23 @@
 import { animate, motionValue } from "motion";
 import type { Sprite as PixiSprite } from "pixi.js";
-import { BaseTexture, Point, SCALE_MODES, settings, Spritesheet } from "pixi.js";
+import { Point, SCALE_MODES, settings } from "pixi.js";
 import { useEffect, useRef, useState } from "react";
 import { Sprite, Stage, Text } from "react-pixi-fiber";
-// Frame names and rectangles: see the Features / Spritesheet example.
+// useSpritesheet source, frame names and rectangles: see the Features / Spritesheet example.
 import bunnysData from "./assets/bunnys.json";
 import bunnys from "./assets/bunnys.png";
+import { useSpritesheet } from "./hooks/useSpritesheet";
 
 settings.SCALE_MODE = SCALE_MODES.NEAREST;
 
 const centerAnchor = new Point(0.5, 0.5);
 // The bunny squashes towards the ground, so it scales from its feet.
 const feetAnchor = new Point(0.5, 1);
-const sheet = new Spritesheet(BaseTexture.from(bunnys), bunnysData);
-// parse fills sheet.textures before it returns, for a sheet this small.
-// The documented way waits for parse: see the Features / Spritesheet example.
-sheet.parse(() => {});
-const bunny = sheet.textures.bunny;
 const spring = { damping: 9, stiffness: 400, type: "spring" } as const;
 
 export default function MotionExample() {
+  const { textures } = useSpritesheet(bunnys, bunnysData);
+  const bunny = textures.bunny;
   const sprite = useRef<PixiSprite>(null);
   const hovered = useRef(false);
   const [scaleX] = useState(() => motionValue(3));
@@ -51,27 +49,29 @@ export default function MotionExample() {
         x={200}
         y={30}
       />
-      <Sprite
-        anchor={feetAnchor}
-        cursor="pointer"
-        interactive
-        pointerdown={() => springTo(4.4, 2.2)}
-        pointerout={() => {
-          hovered.current = false;
-          rest();
-        }}
-        pointerover={() => {
-          hovered.current = true;
-          rest();
-        }}
-        pointerup={rest}
-        pointerupoutside={rest}
-        ref={sprite}
-        scale={3}
-        texture={bunny}
-        x={200}
-        y={240}
-      />
+      {bunny && (
+        <Sprite
+          anchor={feetAnchor}
+          cursor="pointer"
+          interactive
+          pointerdown={() => springTo(4.4, 2.2)}
+          pointerout={() => {
+            hovered.current = false;
+            rest();
+          }}
+          pointerover={() => {
+            hovered.current = true;
+            rest();
+          }}
+          pointerup={rest}
+          pointerupoutside={rest}
+          ref={sprite}
+          scale={3}
+          texture={bunny}
+          x={200}
+          y={240}
+        />
+      )}
     </Stage>
   );
 }

@@ -1,30 +1,14 @@
-import { MeshGeometry, MeshMaterial, Spritesheet, Texture } from "pixi.js";
-import { useEffect, useMemo, useState } from "react";
+import { MeshGeometry, MeshMaterial } from "pixi.js";
+import { useMemo } from "react";
 import { Mesh, Stage } from "react-pixi-fiber";
-// Frame names and rectangles: see the Features / Spritesheet example.
+// useSpritesheet source, frame names and rectangles: see the Features / Spritesheet example.
 import bunnysData from "./assets/bunnys.json";
 import bunnys from "./assets/bunnys.png";
-
-const bunnySheet = Texture.fromURL(bunnys).then(texture => {
-  const sheet = new Spritesheet(texture, bunnysData);
-  // parse fills sheet.textures before it returns, for a sheet this small.
-  // The documented way waits for parse: see the Features / Spritesheet example.
-  sheet.parse(() => {});
-  return sheet;
-});
+import { useSpritesheet } from "./hooks/useSpritesheet";
 
 export default function MeshExample() {
-  const [texture, setTexture] = useState<Texture>();
-  useEffect(() => {
-    let cancelled = false;
-    bunnySheet.then(sheet => {
-      if (cancelled) return;
-      setTexture(sheet.textures.bunny);
-    });
-    return () => {
-      cancelled = true;
-    };
-  }, []);
+  const { textures } = useSpritesheet(bunnys, bunnysData);
+  const texture = textures.bunny;
   // PixiJS 5 has no PlaneGeometry, so the geometry is a quad of two triangles.
   const geometry = useMemo(
     () => new MeshGeometry([0, 0, 104, 0, 104, 148, 0, 148], [0, 0, 1, 0, 1, 1, 0, 1], [0, 1, 2, 0, 2, 3]),
