@@ -1,4 +1,5 @@
 ---
+"@react-pixi-fiber/pixi-4": patch
 "@react-pixi-fiber/pixi-5": patch
 "@react-pixi-fiber/pixi-6": patch
 "@react-pixi-fiber/pixi-7": patch
@@ -10,6 +11,19 @@ A behavior can list in `constructorOnly` the props that its `create` gives to th
 
 `<Graphics geometry={geometry} />` no longer throws `Cannot set property geometry` on PixiJS 5, 6 and 7. The Graphics uses the geometry from its constructor.
 
-On PixiJS 8, a change after mount to these props now changes the Scene Object: `indices`, `topology` and `uvs` of MeshSimple, `verticesX` and `verticesY` of MeshPlane and PerspectiveMesh, `points` and `textureScale` of MeshRope, and the corners `x0` to `y3` of PerspectiveMesh. A change to `dynamicProperties` of ParticleContainer warns.
+A change after mount to these props now changes the Scene Object:
 
-On PixiJS 5, 6 and 7, a change after mount to these props now changes the Scene Object: `uvs` and `indices` of MeshSimple, `verticesX` and `verticesY` of MeshPlane, `points` and `textureScale` of MeshRope, `properties` of ParticleContainer, and the `style` of BitmapText. A change to `maxSize` or `batchSize` of ParticleContainer, or to `canvas` of Text, warns.
+- BitmapText: `style` on PixiJS 4 to 7.
+- Mesh: `uvs` and `indices` on PixiJS 4.
+- MeshPlane: `verticesX` and `verticesY`.
+- MeshRope: `points`, and `textureScale` on PixiJS 5 to 8.
+- MeshSimple: `uvs` and `indices`, and `topology` on PixiJS 8.
+- ParticleContainer: `properties` on PixiJS 5 to 7.
+- PerspectiveMesh: `verticesX`, `verticesY` and the corners `x0` to `y3`.
+
+A change after mount to these props warns:
+
+- AnimatedSprite: `autoUpdate` on PixiJS 4.
+- Graphics: `geometry` on PixiJS 5 to 7.
+- ParticleContainer: `maxSize` and `batchSize` on PixiJS 4 to 7, `properties` on PixiJS 4, `dynamicProperties` on PixiJS 8.
+- Text: `canvas` on PixiJS 4 to 7.

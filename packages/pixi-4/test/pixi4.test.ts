@@ -1,6 +1,13 @@
 import { describe, it, expect, vi } from "vitest";
 import * as PIXI from "pixi.js";
 import { DISPLAY_OBJECT_TAGS, FILTER_TAGS, TAGS } from "../../react-pixi-fiber/src/tags";
+import { configure } from "../../react-pixi-fiber/src/configure";
+import {
+  createInstance,
+  diffProperties,
+  setInitialProperties,
+  updateProperties,
+} from "../../react-pixi-fiber/src/ReactPixiFiberComponent";
 import pixi4, { FXAAFilter, NineSlicePlane, Plane, Rope } from "../src/index";
 
 const texture = PIXI.Texture.WHITE;
@@ -247,5 +254,126 @@ describe("AnimatedSprite applyProps", () => {
     update({ loop: false, playing: false, textures: frames });
     update({ loop: false, playing: true, textures: frames });
     expect([animated.playing, animated.currentFrame]).toEqual([true, 1]);
+  });
+});
+
+describe("props after mount", () => {
+  // The core needs a React adapter only for its StrictMode bit and stack addendum here, so a stub stands in for it.
+  const react18 = () => ({ createRenderer: () => ({ getStackAddendum: () => "" }), strictModeBit: 1 }) as never;
+  const strict = { mode: 1, return: null };
+  // Creates the tag and writes its props through the core, then returns an `update` that writes a prop change the
+  // way a commit does, under StrictMode.
+  function mount(tag: string, props: Record<string, unknown>) {
+    configure({ react: react18(), pixi: pixi4() });
+    const instance = createInstance(tag, props) as any;
+    setInitialProperties(tag, instance, props);
+    let current = props;
+    const update = (next: Record<string, unknown>) => {
+      updateProperties(tag, instance, diffProperties(tag, instance, current, next) ?? [], current, next, strict);
+      current = next;
+    };
+    return { instance, update };
+  }
+  function constructorWarnings(error: ReturnType<typeof vi.spyOn>, prop: string) {
+    return error.mock.calls.filter((c: unknown[]) =>
+      String(c[0]).includes(`reads \`${prop}\` only in its constructor`)
+    );
+  }
+
+  it("marks the Mesh uvs and indices for upload when they change", () => {
+    const vertices = new Float32Array(6);
+    const { instance, update } = mount("Mesh", { texture, vertices });
+    const [dirty, indexDirty] = [instance.dirty, instance.indexDirty];
+    const uvs = new Float32Array(6);
+    const indices = new Uint16Array([0, 1, 2]);
+    update({ indices, texture, uvs, vertices });
+    expect([instance.uvs, instance.indices]).toEqual([uvs, indices]);
+    expect([instance.dirty, instance.indexDirty]).toEqual([dirty + 1, indexDirty + 1]);
+  });
+
+  it("rebuilds the MeshPlane when verticesX or verticesY changes", () => {
+    const { instance, update } = mount("MeshPlane", { texture, verticesX: 2, verticesY: 2 });
+    expect(instance.vertices.length).toBe(2 * 2 * 2);
+    update({ texture, verticesX: 3, verticesY: 4 });
+    expect(instance.vertices.length).toBe(3 * 4 * 2);
+  });
+
+  it("rebuilds the MeshRope when the number of points changes", () => {
+    const two = [new PIXI.Point(0, 0), new PIXI.Point(10, 0)];
+    const { instance, update } = mount("MeshRope", { points: two, texture });
+    expect(instance.vertices.length).toBe(2 * 4);
+    update({ points: [...two, new PIXI.Point(20, 0)], texture });
+    expect(instance.vertices.length).toBe(3 * 4);
+  });
+
+  it("gives the Mesh uvs and indices the constructor default when they are removed", () => {
+    const vertices = new Float32Array(6);
+    const { instance, update } = mount("Mesh", {
+      indices: new Uint16Array([0, 1, 2]),
+      texture,
+      uvs: new Float32Array(6),
+      vertices,
+    });
+    const [dirty, indexDirty] = [instance.dirty, instance.indexDirty];
+    update({ texture, vertices });
+    expect(instance.uvs).toEqual(new Float32Array([0, 0, 1, 0, 1, 1, 0, 1]));
+    expect(instance.indices).toEqual(new Uint16Array([0, 1, 3, 2]));
+    expect([instance.dirty, instance.indexDirty]).toEqual([dirty + 1, indexDirty + 1]);
+  });
+
+  it("rebuilds the MeshPlane with 10 by 10 vertices when verticesX and verticesY are removed", () => {
+    const { instance, update } = mount("MeshPlane", { texture, verticesX: 2, verticesY: 2 });
+    update({ texture });
+    expect(instance.vertices.length).toBe(10 * 10 * 2);
+  });
+
+  it("keeps the MeshRope points when they are removed", () => {
+    const two = [new PIXI.Point(0, 0), new PIXI.Point(10, 0)];
+    const three = [...two, new PIXI.Point(20, 0)];
+    const { instance, update } = mount("MeshRope", { points: two, texture });
+    update({ points: three, texture });
+    update({ texture });
+    expect(instance.points).toBe(three);
+    expect(instance.vertices.length).toBe(3 * 4);
+  });
+
+  it("warns once when a ParticleContainer constructor argument changes", () => {
+    const error = vi.spyOn(console, "error").mockImplementation(() => {});
+    const { update } = mount("ParticleContainer", { batchSize: 10, maxSize: 10, properties: { rotation: true } });
+    update({ batchSize: 20, maxSize: 20, properties: { uvs: true } });
+    update({ batchSize: 30, maxSize: 30, properties: { tint: true } });
+    for (const prop of ["batchSize", "maxSize", "properties"])
+      expect(constructorWarnings(error, prop), prop).toHaveLength(__DEV__ ? 1 : 0);
+    error.mockRestore();
+  });
+
+  it("warns once when the AnimatedSprite autoUpdate changes", () => {
+    const error = vi.spyOn(console, "error").mockImplementation(() => {});
+    const textures = [texture, texture];
+    const { update } = mount("AnimatedSprite", { autoUpdate: true, textures });
+    update({ autoUpdate: false, textures });
+    update({ autoUpdate: true, textures });
+    expect(constructorWarnings(error, "autoUpdate")).toHaveLength(__DEV__ ? 1 : 0);
+    error.mockRestore();
+  });
+
+  it("writes a changed BitmapText style through the setters of its keys, the props winning over the style", () => {
+    const { instance, update } = mount("BitmapText", { style: { font: "10px test" }, text: "t" });
+    update({ style: { align: "right", font: "20px test" }, text: "t" });
+    expect(instance.align).toBe("right");
+    expect(instance.font).toMatchObject({ size: 20 });
+    update({ font: "30px test", style: { align: "right", font: "20px test" }, text: "t" });
+    expect(instance.font).toMatchObject({ size: 30 });
+  });
+
+  it("warns once when the Text canvas changes", () => {
+    const error = vi.spyOn(console, "error").mockImplementation(() => {});
+    const canvas = document.createElement("canvas");
+    const { instance, update } = mount("Text", { canvas, text: "t" });
+    expect(instance.canvas).toBe(canvas);
+    update({ canvas: document.createElement("canvas"), text: "t" });
+    expect(instance.canvas).toBe(canvas);
+    expect(constructorWarnings(error, "canvas")).toHaveLength(__DEV__ ? 1 : 0);
+    error.mockRestore();
   });
 });
