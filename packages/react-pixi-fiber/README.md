@@ -320,7 +320,7 @@ A Display Object is an object in the scene graph: a `PIXI.DisplayObject` on Pixi
 
 | Tag | Renders |
 | --- | --- |
-| `<AnimatedSprite />` | an animated sprite, `PIXI.AnimatedSprite` |
+| `<AnimatedSprite />` | an animated sprite, `PIXI.AnimatedSprite`. Set `playing` to play it. It keeps playing when `textures` changes. |
 | `<BitmapText />` | bitmap font text, [`PIXI.BitmapText`] |
 | `<Container />` | a container, [`PIXI.Container`] |
 | `<Graphics />` | vector graphics, [`PIXI.Graphics`] |
@@ -1223,7 +1223,7 @@ A prop name the library does not type is set as-is, like `@pixi/react` does, so 
 const AnimatedSprite = CustomPIXIComponent(props => new PIXI.AnimatedSprite(props.textures), "AnimatedSprite");
 // 3.0.0
 import { AnimatedSprite } from "react-pixi-fiber";
-<AnimatedSprite textures={textures} />
+<AnimatedSprite playing textures={textures} />
 ```
 
 A component you register under one of these names keeps winning over the built-in tag, with a development warning. Rename your component or remove it and use the built-in one.
