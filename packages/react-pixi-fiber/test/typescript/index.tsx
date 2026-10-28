@@ -191,6 +191,13 @@ const Circle = PIXIComponent<PIXI.Graphics, CircleProps>("Circle", {
 // A bare function is the `create` of a behavior.
 const PlainGraphics = PIXIComponent("PlainGraphics", () => new PIXI.Graphics());
 
+// `constructorOnly` names the props that `create` reads and that the core does not write.
+const SizedGraphics = PIXIComponent<PIXI.Graphics, { size: number }>("SizedGraphics", {
+  constructorOnly: ["size"],
+  create: ({ size }) => new PIXI.Graphics().drawRect(0, 0, size, size),
+});
+console.log(SizedGraphics);
+
 // A filter class registers with `PIXIFilter`: its fields and setters are props, Display Object props are not.
 class GlowFilter extends PIXI.Filter {
   private _strength = 1;

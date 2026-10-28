@@ -7,6 +7,7 @@ import { createRegisteredInstance, normalizeBehavior } from "../src/registry";
 import { shouldIgnoreAttribute, shouldRemoveAttribute } from "../src/PixiProperty";
 import { setPixiValue } from "../src/utils";
 import { getPixiAdapter } from "../src/configure";
+import { applyDisplayObjectProps, updateProperties } from "../src/ReactPixiFiberComponent";
 import { strictModeBit } from "@react-pixi-fiber/react-18";
 
 // The mocks call the real implementations unless a test overrides them; `mockReset` restores that.
@@ -328,6 +329,66 @@ describe("PixiPropertyOperations", () => {
       setValueForProperty("Noise", filter, "seed", 3, strict);
       const warnings = error.mock.calls.filter(c => /reads `seed` only in its constructor/.test(String(c[0])));
       expect(warnings).toHaveLength(__DEV__ ? 1 : 0);
+    });
+
+    describe("constructorOnly", () => {
+      // An object with a getter-only `geometry`, like a PixiJS 5-7 Graphics.
+      function shape() {
+        const geometry = {};
+        return createRegisteredInstance(
+          "Shape",
+          normalizeBehavior("Shape", {
+            constructorOnly: ["geometry"],
+            create: () => Object.defineProperty({ x: 0 }, "geometry", { get: () => geometry }),
+          }),
+          {},
+          applyDisplayObjectProps
+        );
+      }
+
+      it("never writes a prop the behavior reads only in its constructor", () => {
+        const error = vi.spyOn(console, "error").mockImplementation(() => {});
+        const instance = shape();
+        const geometry = instance.geometry;
+        expect(() => setValueForProperty("Shape", instance, "geometry", geometry)).not.toThrow();
+        expect(() => setValueForProperty("Shape", instance, "geometry", {})).not.toThrow();
+        expect(() => setValueForProperty("Shape", instance, "geometry", undefined)).not.toThrow();
+        expect(instance.geometry).toBe(geometry);
+        setValueForProperty("Shape", instance, "x", 1);
+        expect(instance.x).toBe(1);
+        expect(error).not.toHaveBeenCalled();
+      });
+
+      it("warns once under StrictMode about a change after mount", () => {
+        const error = vi.spyOn(console, "error").mockImplementation(() => {});
+        const strict = { mode: strictModeBit, return: null };
+        const instance = shape();
+        setValueForProperty("Shape", instance, "geometry", {}, strict);
+        setValueForProperty("Shape", instance, "geometry", {}, strict);
+        const warnings = error.mock.calls.filter(c => /reads `geometry` only in its constructor/.test(String(c[0])));
+        expect(warnings).toHaveLength(__DEV__ ? 1 : 0);
+      });
+
+      it("warns under StrictMode about a change that an applyProps passes on", () => {
+        const error = vi.spyOn(console, "error").mockImplementation(() => {});
+        const strict = { mode: strictModeBit, return: null };
+        const geometry = {};
+        const instance = createRegisteredInstance(
+          "Shape",
+          normalizeBehavior("Shape", {
+            applyProps(_instance, oldProps, newProps) {
+              this.applyDisplayObjectProps(oldProps, newProps);
+            },
+            constructorOnly: ["geometry"],
+            create: () => Object.defineProperty({}, "geometry", { get: () => geometry }),
+          }),
+          {},
+          applyDisplayObjectProps
+        );
+        expect(() => updateProperties("Shape", instance, [], { geometry }, { geometry: {} }, strict)).not.toThrow();
+        const warnings = error.mock.calls.filter(c => /reads `geometry` only in its constructor/.test(String(c[0])));
+        expect(warnings).toHaveLength(__DEV__ ? 1 : 0);
+      });
     });
 
     it("throws when the first filter child mounts on a parent with a filters value", () => {

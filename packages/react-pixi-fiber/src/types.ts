@@ -413,6 +413,8 @@ export interface PIXIComponentBehaviorDefinition<T extends object, P> {
   applyProps?: DisplayObjectPropSetter<T, P>;
   afterAdd?: DisplayObjectAttachHandler<T>;
   beforeRemove?: DisplayObjectDetachHandler<T>;
+  // The props that `create` gives to the constructor and that the core does not write. A change after mount warns.
+  constructorOnly?: readonly string[];
 }
 
 // The 2.x `behavior` object keys. The registry maps them to the new keys and warns once per key in development.

@@ -4,13 +4,15 @@ import { getPixiAdapter, getStackAddendum, getStrictModeBit } from "./configure"
 import { getRecordedDefault, recordDefault } from "./defaults";
 import { filtersPropWritten } from "./filters";
 import { getOwn, getPropertyInfo, shouldIgnoreAttribute, shouldRemoveAttribute } from "./PixiProperty";
-import { getInstanceTag, isFilterInstance } from "./registry";
+import { getBoundBehavior, getInstanceTag, isFilterInstance } from "./registry";
 import { findStrictRoot, parsePoint, setPixiValue } from "./utils";
 
 const warnedInvalid = new Set<string>();
 // The filter props that the instance did not have before the core first wrote them: options the constructor reads.
 // A later write of one changes nothing, so an update warns one time.
 const constructorOnly = new WeakMap<object, Set<string>>();
+// The `constructorOnly` props of a behavior that already warned on an instance.
+const warnedConstructorOnly = new WeakMap<object, Set<string>>();
 
 /**
  * The value a prop returns to: the adapter's `defaults` entry for the tag the instance was created as, else the value
@@ -59,6 +61,26 @@ export function setValueForProperty(
   }
 
   if (propName === "filters" && filtersPropWritten(type, instance, value)) return;
+
+  const bound = getBoundBehavior(instance);
+  if (bound !== undefined && bound.constructorOnly !== undefined && bound.constructorOnly.includes(propName)) {
+    // The initial write has no handle, so only a change after mount warns.
+    if (__DEV__ && strictRoot != null) {
+      let warned = warnedConstructorOnly.get(instance);
+      if (warned === undefined) warnedConstructorOnly.set(instance, (warned = new Set()));
+      if (!warned.has(propName)) {
+        warned.add(propName);
+        warning(
+          false,
+          "`<%s />` reads `%s` only in its constructor. Give the element a new `key` to change it.%s",
+          type,
+          propName,
+          getStackAddendum()
+        );
+      }
+    }
+    return;
+  }
 
   if (__DEV__ && isFilterInstance(instance)) {
     let names = constructorOnly.get(instance);

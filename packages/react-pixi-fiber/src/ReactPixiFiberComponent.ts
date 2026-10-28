@@ -19,6 +19,8 @@ type Props = Record<string, any>;
 export const CHILDREN = "children";
 
 const warnedDeprecatedTags = new Set<string>();
+// The fiber of the update that an `applyProps` runs for, so the props it passes on can warn under StrictMode.
+let applyPropsHandle: unknown;
 const warnedShadowedTags = new Set<string>();
 
 // The adapter's `translateProps` renames props before anything reads them, so validation, the initial write and
@@ -173,7 +175,7 @@ export function applyDisplayObjectProps<T extends object, P>(
 ): void {
   const updatePayload = diffProperties(type, instance, oldProps as Props, newProps as Props);
   if (updatePayload !== null) {
-    updatePixiProperties(type, instance, updatePayload);
+    updatePixiProperties(type, instance, updatePayload, undefined, undefined, applyPropsHandle);
   }
 }
 
@@ -209,7 +211,12 @@ export function updateProperties(
   const bound = getBoundBehavior(instance);
   if (bound && bound.applyProps) {
     const tag = getInstanceTag(instance) ?? type;
-    bound.applyProps(instance, withDefaults(tag, prevProps as Props), withDefaults(tag, nextProps as Props));
+    applyPropsHandle = internalHandle;
+    try {
+      bound.applyProps(instance, withDefaults(tag, prevProps as Props), withDefaults(tag, nextProps as Props));
+    } finally {
+      applyPropsHandle = undefined;
+    }
     return;
   }
 
