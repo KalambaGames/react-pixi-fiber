@@ -29,6 +29,9 @@ export const particle = <Particle texture={PIXI.Texture.WHITE} tint="red" />;
 
 // @ts-expect-error a key only in the options type does not become a prop
 export const autoPlay = <AnimatedSprite autoPlay textures={[PIXI.Texture.WHITE]} />;
+export const playing = <AnimatedSprite loop={false} onComplete={() => {}} playing textures={[PIXI.Texture.WHITE]} />;
+// @ts-expect-error `playing` takes a boolean
+export const playingString = <AnimatedSprite playing="yes" textures={[PIXI.Texture.WHITE]} />;
 
 // `BlurFilterOptions` declares `strength`. `blur` is a deprecated setter of the filter, so it still type-checks.
 export const blurStrength = <BlurFilter strength={2} />;

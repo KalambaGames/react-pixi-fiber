@@ -175,6 +175,16 @@ export type AlphaFilterProps = FilterProps<InstanceOf<"AlphaFilter">>;
 export type AnimatedSpriteProps = Props<InstanceOf<"AnimatedSprite">> & {
   // `autoUpdate` is not a property on the instance, but is used in constructor
   autoUpdate?: boolean;
+  /**
+   * Calls `play()` or `stop()` on the sprite. It is a command and does not show the state of the sprite.
+   *
+   * - After a change to `textures`, the sprite plays again from frame 0.
+   * - When you remove `playing`, the sprite stops.
+   * - A stop through a ref, or the end of an animation with `loop={false}`, does not change the prop. To keep your
+   *   state the same as the sprite, set it in `onComplete`.
+   * - A finished sprite with `loop={false}` plays again from frame 0 when `playing` changes to `true`.
+   */
+  playing?: boolean;
 };
 export type BitmapTextProps = Props<InstanceOf<"BitmapText">> & {
   // `font` and `style` are not properties on the instance, but are used in constructor
