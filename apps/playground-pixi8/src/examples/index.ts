@@ -88,6 +88,7 @@ export const examples: Example[] = [
   feature("PIXIComponent", "PIXIComponent"),
   feature("PIXIProperty", "PIXIProperty"),
   feature("PointLikeProps", "Point-like props"),
+  feature("Resize", "Resize"),
   feature("SmokeTest", "Smoke test"),
   feature("Spritesheet", "Spritesheet"),
   feature("Suspense", "Suspense"),

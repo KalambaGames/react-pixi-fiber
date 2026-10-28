@@ -306,6 +306,8 @@ Expects **one** the following props:
 * `app` - pass your own [`PIXI.Application`] instance,
 * `options` - pass only the [`PIXI.Application`] options.
 
+A change to `options.width` or `options.height` resizes the renderer. A change to any other `options` key recreates the application. To follow the window or an element, see [Can I resize `Stage`?](#can-i-resize-stage).
+
 `onInit(app)` is called once the application exists and the children are rendered.
 
 `bridgeContexts` lists React contexts provided around `<Stage />` that its children can read, see [Context – Using a context provided outside `Stage`](#context--using-a-context-provided-outside-stage).
@@ -806,6 +808,25 @@ Yes. The packages include their types. See the TypeScript example in [What does 
 Yes, you can pass `app` property to `Stage` component, e.g. `<Stage app={app} />`.
 
 Two `Stage` components sharing one `app` are not supported: both render into `app.stage`, so the second replaces the first's children and unmounting either empties both.
+
+### Can I resize `Stage`?
+
+Yes. A change to `options.width` or `options.height` resizes the renderer and keeps the application.
+
+To follow the window or an element, use the PixiJS `resizeTo` option on PixiJS 5 to 8. `<Stage options={{ resizeTo: window }} />` keeps the canvas at the window size. To resize to an element you render, set `app.resizeTo` in `onInit`. `options.resizeTo` cannot take a React ref, because the first render builds `options` while `ref.current` is still `null`. Give that element a size of its own, or the canvas inside it grows on every resize:
+
+```jsx
+const ref = useRef(null);
+<div ref={ref} style={{ height: 300 }}>
+  <Stage onInit={app => { app.resizeTo = ref.current; }} />
+</div>
+```
+
+PixiJS measures the `resizeTo` element on a window `resize` only. When the element changes size for another reason, for example a CSS `resize` handle or a sidebar that opens, call `app.resize()` from a `ResizeObserver` on that element.
+
+PixiJS 4 has no `resizeTo`. Call `app.renderer.resize(width, height)` from a window `resize` listener or a `ResizeObserver`.
+
+A later change to `options.resizeTo` recreates the application, and `onInit` runs again. To change the target without a new application, assign `app.resizeTo` on the application from `onInit`. A component inside `Stage` can also call `usePixiApp()` and set `app.resizeTo` in an effect that depends on the target. Then the application from `onInit` does not need to live in state.
 
 ### How do I register PixiJS extensions?
 
