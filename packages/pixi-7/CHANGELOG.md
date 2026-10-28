@@ -1,5 +1,11 @@
 # @react-pixi-fiber/pixi-7
 
+## 1.0.0-beta.0
+
+### Patch Changes
+
+- First beta. No new features are planned before the stable release. The API changes only to fix a problem found in use.
+
 ## 1.0.0-alpha.2
 
 ### Minor Changes

@@ -1,5 +1,11 @@
 # @react-pixi-fiber/react-19
 
+## 1.0.0-beta.0
+
+### Patch Changes
+
+- First beta. No new features are planned before the stable release. The API changes only to fix a problem found in use.
+
 ## 1.0.0-alpha.0
 
 ### Major Changes

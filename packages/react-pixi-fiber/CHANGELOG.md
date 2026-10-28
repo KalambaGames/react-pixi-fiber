@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 This project adheres to [Semantic Versioning](http://semver.org/). From 3.0.0 on, [Changesets](https://github.com/changesets/changesets) writes the entries from `.changeset/` at release; the entries up to 2.x follow [Keep a Changelog](http://keepachangelog.com/).
 
+## 3.0.0-beta.0
+
+### Patch Changes
+
+- First beta. No new features are planned before the stable release. The API changes only to fix a problem found in use.
+
 ## 3.0.0-alpha.3
 
 ### Minor Changes
