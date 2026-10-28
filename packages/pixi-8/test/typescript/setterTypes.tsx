@@ -1,7 +1,7 @@
 // Type-checked by `check-types`, not run: a prop accepts what the PixiJS setter accepts, not only the getter type.
 import React from "react";
 import * as PIXI from "pixi.js";
-import { AnimatedSprite, BlurFilter, Graphics, PIXIComponent, Text } from "react-pixi-fiber";
+import { AnimatedSprite, BlurFilter, Graphics, MeshRope, PIXIComponent, Text } from "react-pixi-fiber";
 import { HTMLText, Particle } from "../../src/index";
 
 const style = { fill: "white", fontSize: 16 } as const;
@@ -39,3 +39,8 @@ export const blurKernelSize = <BlurFilter kernelSize={7} />;
 export const blurBlur = <BlurFilter blur={2} />;
 // @ts-expect-error a filter has no Scene Object props
 export const blurX = <BlurFilter x={1} />;
+
+// Every PixiJS constructor needs `points`.
+export const rope = <MeshRope points={[new PIXI.Point(0, 0)]} texture={PIXI.Texture.WHITE} />;
+// @ts-expect-error `points` is required
+export const ropeWithoutPoints = <MeshRope texture={PIXI.Texture.WHITE} />;

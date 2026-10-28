@@ -10,6 +10,11 @@ export interface Behavior<I = any, P = any> {
   applyProps?(this: ApplyPropsContext<P>, instance: I, oldProps: P | undefined, newProps: P): void;
   afterAdd?(instance: I): void;
   beforeRemove?(instance: I): void;
+  /**
+   * Props that `create` passes to the constructor and that have no setter which works after it. The core never writes
+   * them, and warns in development when one changes after mount.
+   */
+  constructorOnly?: readonly string[];
   /** `"filter"` marks a filter: the parent keeps it in its `filters` array, not in its children. */
   kind?: "filter";
   /**
@@ -42,6 +47,7 @@ export interface BoundBehavior {
   afterAdd?: (instance: any) => void;
   appendChild?: (parent: any, child: any) => void;
   beforeRemove?: (instance: any) => void;
+  constructorOnly?: readonly string[];
   insertBefore?: (parent: any, child: any, before: any) => void;
   kind?: "filter";
   removeChild?: (parent: any, child: any) => void;
@@ -160,6 +166,7 @@ export function createRegisteredInstance(
   }
   if (typeof behavior.afterAdd === "function") bound.afterAdd = behavior.afterAdd;
   if (typeof behavior.beforeRemove === "function") bound.beforeRemove = behavior.beforeRemove;
+  if (Array.isArray(behavior.constructorOnly)) bound.constructorOnly = behavior.constructorOnly;
   if (typeof behavior.appendChild === "function") bound.appendChild = behavior.appendChild;
   if (typeof behavior.insertBefore === "function") bound.insertBefore = behavior.insertBefore;
   if (typeof behavior.removeChild === "function") bound.removeChild = behavior.removeChild;

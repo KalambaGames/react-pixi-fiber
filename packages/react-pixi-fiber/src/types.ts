@@ -174,7 +174,7 @@ export type FilterProps<T, S = SetterTypesOf<T>> = Partial<
 
 export type AlphaFilterProps = FilterProps<InstanceOf<"AlphaFilter">>;
 export type AnimatedSpriteProps = Props<InstanceOf<"AnimatedSprite">> & {
-  // `autoUpdate` is not a property on the instance, but is used in constructor
+  // A constructor argument. PixiJS 5 and later can change it after mount. On PixiJS 4 a change warns.
   autoUpdate?: boolean;
   /**
    * Calls `play()` or `stop()` on the sprite. It is a command and does not show the state of the sprite.
@@ -188,7 +188,7 @@ export type AnimatedSpriteProps = Props<InstanceOf<"AnimatedSprite">> & {
   playing?: boolean;
 };
 export type BitmapTextProps = Props<InstanceOf<"BitmapText">> & {
-  // `font` and `style` are not properties on the instance, but are used in constructor
+  // Constructor arguments. A change after mount goes to the setter of each style key.
   font?: unknown;
   style?: unknown;
 };
@@ -205,17 +205,18 @@ export type DisplacementFilterProps = FilterProps<InstanceOf<"DisplacementFilter
 export type GraphicsProps = Props<InstanceOf<"Graphics">>;
 export type MeshProps = Props<InstanceOf<"Mesh">>;
 export type MeshPlaneProps = Props<InstanceOf<"MeshPlane">> & {
-  // Constructor arguments that are not properties on the instance
+  // Constructor arguments. A change after mount rebuilds the geometry.
   verticesX?: number;
   verticesY?: number;
 };
 export type MeshRopeProps = Props<InstanceOf<"MeshRope">> & {
-  // Constructor arguments that are not properties on the instance
-  points?: PointLikeObject[];
+  // Constructor arguments. A change after mount rebuilds the geometry. PixiJS 4 has no `textureScale`. Every PixiJS
+  // constructor needs `points`.
+  points: PointLikeObject[];
   textureScale?: number;
 };
 export type MeshSimpleProps = Props<InstanceOf<"MeshSimple">> & {
-  // Constructor arguments that are not properties on the instance
+  // Constructor arguments. A change after mount goes to the geometry.
   indices?: Uint16Array | number[];
   uvs?: Float32Array | number[];
 };
@@ -224,7 +225,8 @@ export type NineSlicePlaneProps = NineSliceSpriteProps;
 export type NineSliceSpriteProps = Props<InstanceOf<"NineSliceSprite">>;
 export type NoiseFilterProps = FilterProps<InstanceOf<"NoiseFilter">>;
 export type ParticleContainerProps = Props<InstanceOf<"ParticleContainer">> & {
-  // Constructor arguments that are not properties on the instance
+  // Constructor arguments. A change after mount warns, except a change to `properties` on PixiJS 5 to 7. Give the
+  // element a new `key` to change one.
   dynamicProperties?: Record<string, boolean>;
   maxSize?: number;
   properties?: Partial<Record<"alpha" | "position" | "rotation" | "scale" | "tint" | "uvs" | "vertices", boolean>>;
@@ -413,6 +415,8 @@ export interface PIXIComponentBehaviorDefinition<T extends object, P> {
   applyProps?: DisplayObjectPropSetter<T, P>;
   afterAdd?: DisplayObjectAttachHandler<T>;
   beforeRemove?: DisplayObjectDetachHandler<T>;
+  // The props that `create` gives to the constructor and that the core does not write. A change after mount warns.
+  constructorOnly?: readonly string[];
 }
 
 // The 2.x `behavior` object keys. The registry maps them to the new keys and warns once per key in development.

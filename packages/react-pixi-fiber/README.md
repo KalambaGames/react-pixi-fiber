@@ -371,11 +371,36 @@ configure({ react: react18(), pixi: pixi6({ defaults: { Sprite: { alpha: 0.5 }, 
 - **When the instance is created**, a prop that is missing or `undefined` gets its default. `create` receives it, so a
   prop the constructor reads, such as `Text` `text`, sees it too, and so does a component's own `applyProps`.
 - **When a prop is removed** or set to `undefined` (or to an invalid value), it returns to its default. A prop with no
-  entry returns to the value the instance had before React Pixi Fiber first set it.
+  entry returns to the value it had before React Pixi Fiber set it. For a prop that `create` gives to the constructor,
+  that is the value the constructor sets when it does not get the prop.
 - An explicit `null` is not replaced: it is set as `null`.
 - Entries are keyed by the tag as you write it, `PIXIComponent` tags included, and by the prop names of the adapter.
   A tag an adapter adds under its PixiJS class name is a tag of its own, see
   [Adapter tags are recorded under their own name](#adapter-tags-are-recorded-under-their-own-name).
+
+
+#### Constructor-only props
+
+Some props go to the PixiJS constructor. When one of them changes after mount, the PixiJS adapter gives it to PixiJS:
+a mesh rebuilds its geometry, and `BitmapText` writes each `style` key through its setter. PixiJS cannot change these
+props after the constructor:
+
+- `AnimatedSprite`: `autoUpdate` on PixiJS 4.
+- `Graphics`: `geometry` on PixiJS 5 to 7.
+- `ParticleContainer`: `maxSize` and `batchSize` on PixiJS 4 to 7, `properties` on PixiJS 4, `dynamicProperties` on
+  PixiJS 8.
+- `Text`: `canvas` on PixiJS 4 to 7.
+
+To change one of these props, give the element a new `key`. React then creates a new Display Object. In development,
+under StrictMode, a change logs a warning.
+
+When you remove a prop that goes to the PixiJS constructor, the Display Object gets the value that a new Display Object
+without that prop has. `MeshRope` `points` is the exception: PixiJS cannot make a rope without points, so the rope
+keeps the points it has.
+
+```jsx harmony
+<ParticleContainer key={maxSize} maxSize={maxSize} />
+```
 
 
 #### Custom Props / Plugins
@@ -727,7 +752,7 @@ A `filters` value on an element with filter children throws: "`<Sprite />` has b
 
 ### Custom Components
 
-`PIXIComponent(type, behavior)` registers a component under the `type` string and returns it. `behavior` is an object with the following 4 properties.
+`PIXIComponent(type, behavior)` registers a component under the `type` string and returns it. `behavior` is an object with the following properties.
 
 #### `create(props)`
 
@@ -748,6 +773,12 @@ Use this to do something after `displayObject` is added to its parent. It runs o
 #### `beforeRemove(displayObject)` (optional)
 
 Use this to do something (usually cleanup) before `displayObject` is removed from its parent.
+
+#### `constructorOnly` (optional)
+
+The names of the props that `create` gives to the constructor and that the Display Object cannot change later. React
+Pixi Fiber does not write these props. In development, under StrictMode, a change after mount logs a warning that tells
+the user to give the element a new `key`.
 
 #### Simple Graphics example
 

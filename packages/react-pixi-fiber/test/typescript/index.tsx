@@ -70,6 +70,13 @@ const AliasExample: React.FC<{ texture: PIXI.Texture }> = ({ texture }) => (
 );
 console.log(AliasExample);
 
+// Every PixiJS constructor needs `points`.
+// @ts-expect-error `points` is required
+const ropeWithoutPoints = <MeshRope texture={PIXI.Texture.WHITE} />;
+// @ts-expect-error `points` is required
+const simpleRopeWithoutPoints = <SimpleRope texture={PIXI.Texture.WHITE} />;
+console.log(ropeWithoutPoints, simpleRopeWithoutPoints);
+
 const anchor = new PIXI.ObservablePoint(() => {}, undefined, 0.5, 0.5);
 
 const texture = PIXI.Texture.from("https://i.imgur.com/IaUrttj.png");
@@ -190,6 +197,13 @@ const Circle = PIXIComponent<PIXI.Graphics, CircleProps>("Circle", {
 
 // A bare function is the `create` of a behavior.
 const PlainGraphics = PIXIComponent("PlainGraphics", () => new PIXI.Graphics());
+
+// `constructorOnly` names the props that `create` reads and that the core does not write.
+const SizedGraphics = PIXIComponent<PIXI.Graphics, { size: number }>("SizedGraphics", {
+  constructorOnly: ["size"],
+  create: ({ size }) => new PIXI.Graphics().drawRect(0, 0, size, size),
+});
+console.log(SizedGraphics);
 
 // A filter class registers with `PIXIFilter`: its fields and setters are props, Display Object props are not.
 class GlowFilter extends PIXI.Filter {

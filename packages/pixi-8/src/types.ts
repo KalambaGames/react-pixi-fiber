@@ -71,11 +71,11 @@ export type DOMContainerProps = Props<PIXI.DOMContainer>;
 export type HTMLTextProps = Props<PIXI.HTMLText>;
 export type ParticleProps = Omit<Props<PIXI.Particle>, "texture"> & { texture: PIXI.Texture };
 export type ParticleContainerProps = Props<PIXI.ParticleContainer> & {
-  // Constructor argument that is not a property on the instance
+  // A constructor argument. A change after mount warns. Give the element a new `key` to change it.
   dynamicProperties?: PIXI.ParticleContainerOptions["dynamicProperties"];
 };
 export type PerspectiveMeshProps = Props<PIXI.PerspectiveMesh> & {
-  // Constructor arguments that are not properties on the instance
+  // Constructor arguments. A change after mount rebuilds the geometry or sets the corners.
   verticesX?: number;
   verticesY?: number;
   x0?: number;

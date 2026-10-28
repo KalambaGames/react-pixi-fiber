@@ -24,6 +24,21 @@ function blurAxes<P extends Record<string, unknown>>(props: P | undefined): P | 
   return { ...rest, strengthX: rest.strengthX ?? strength, strengthY: rest.strengthY ?? strength } as unknown as P;
 }
 
+// Whether one of `keys` changed after mount. The core writes these constructor options to the instance as well, where
+// PixiJS does not read them, so `applyProps` passes them to the geometry.
+function changed(oldProps: Record<string, unknown> | undefined, newProps: Record<string, unknown>, keys: string[]) {
+  return oldProps !== undefined && keys.some(key => oldProps[key] !== newProps[key]);
+}
+
+// `build` takes the size from the geometry first, so a removed size gets the PlaneGeometry default.
+function rebuildPlane(geometry: PIXI.PlaneGeometry, props: Record<string, any>) {
+  geometry.verticesX = props.verticesX;
+  geometry.verticesY = props.verticesY;
+  geometry.build({});
+}
+
+const CORNERS = ["x0", "y0", "x1", "y1", "x2", "y2", "x3", "y3"];
+
 // A particle has no parent pointer, so a prop change finds the container to `update()` here.
 const particleParents = new WeakMap<PIXI.Particle, PIXI.ParticleContainer>();
 
@@ -131,15 +146,43 @@ export const factories: { [K in Pixi8Tag]: Factory<K> } = {
   }),
   MeshPlane: Ctor => ({
     create: p => new Ctor(defined({ texture: p.texture, verticesX: p.verticesX, verticesY: p.verticesY })),
+    applyProps(mesh: PIXI.MeshPlane, oldProps, newProps) {
+      this.applyDisplayObjectProps(oldProps, newProps);
+      if (changed(oldProps, newProps, ["verticesX", "verticesY"]))
+        rebuildPlane(mesh.geometry as PIXI.PlaneGeometry, newProps);
+    },
   }),
+  // RopeGeometry resizes its buffers only in a private method, so a new geometry replaces the one the constructor
+  // built, which is destroyed with its buffers. Without `points` the rope keeps the points it has, because PixiJS
+  // cannot build a rope with none.
   MeshRope: Ctor => ({
     create: p => new Ctor(defined({ points: p.points, texture: p.texture, textureScale: p.textureScale })),
+    applyProps(rope: PIXI.MeshRope, oldProps, newProps) {
+      this.applyDisplayObjectProps(oldProps, newProps);
+      if (!changed(oldProps, newProps, ["points", "textureScale"])) return;
+      const old = rope.geometry as PIXI.RopeGeometry;
+      const Geometry = old.constructor as typeof PIXI.RopeGeometry;
+      const textureScale = newProps.textureScale ?? Ctor.defaultOptions.textureScale;
+      rope.geometry = new Geometry({ points: newProps.points ?? old.points, textureScale, width: old.width });
+      old.destroy(true);
+      if (textureScale > 0) rope.texture.source.style.addressMode = "repeat";
+    },
   }),
+  // A removed `indices`, `topology` or `uvs` gets the value the constructor gives a mesh with vertices.
   MeshSimple: Ctor => ({
     create: p =>
       new Ctor(
         defined({ indices: p.indices, texture: p.texture, topology: p.topology, uvs: p.uvs, vertices: p.vertices })
       ),
+    applyProps(mesh: PIXI.MeshSimple, oldProps, newProps) {
+      this.applyDisplayObjectProps(oldProps, newProps);
+      const geometry = mesh.geometry as PIXI.MeshGeometry;
+      if (changed(oldProps, newProps, ["uvs"]))
+        geometry.uvs = newProps.uvs ?? new Float32Array(geometry.positions.length);
+      if (changed(oldProps, newProps, ["indices"]))
+        geometry.indices = newProps.indices ?? new Uint32Array([0, 1, 2, 0, 2, 3]);
+      if (changed(oldProps, newProps, ["topology"])) geometry.topology = newProps.topology ?? "triangle-list";
+    },
   }),
   NineSliceSprite: Ctor => ({
     create: p =>
@@ -165,7 +208,9 @@ export const factories: { [K in Pixi8Tag]: Factory<K> } = {
       if (container && changesStaticAttributes(container, oldProps, newProps)) container.update();
     },
   }),
+  // The renderer reads `dynamicProperties` when it first draws the container.
   ParticleContainer: (Ctor, classes) => ({
+    constructorOnly: ["dynamicProperties"],
     create: p =>
       new Ctor(
         defined({
@@ -211,6 +256,17 @@ export const factories: { [K in Pixi8Tag]: Factory<K> } = {
           y3: p.y3,
         })
       ),
+    // `build` resets the positions that the corners project, so a rebuild sets the corners again.
+    applyProps(mesh: PIXI.PerspectiveMesh, oldProps, newProps) {
+      this.applyDisplayObjectProps(oldProps, newProps);
+      const rebuild = changed(oldProps, newProps, ["verticesX", "verticesY"]);
+      if (rebuild) rebuildPlane(mesh.geometry, newProps);
+      if (rebuild || changed(oldProps, newProps, CORNERS)) {
+        const defaults = Ctor.defaultOptions as unknown as Record<string, number>;
+        const [x0, y0, x1, y1, x2, y2, x3, y3] = CORNERS.map(key => newProps[key] ?? defaults[key]);
+        mesh.setCorners(x0, y0, x1, y1, x2, y2, x3, y3);
+      }
+    },
   }),
   RenderContainer: Ctor => ({
     create: p => new Ctor(defined({ addBounds: p.addBounds, containsPoint: p.containsPoint, render: p.render })),
