@@ -66,7 +66,26 @@ function changesStaticAttributes(
 
 export const factories: { [K in Pixi8Tag]: Factory<K> } = {
   AlphaFilter: Ctor => ({ kind: "filter", create: p => new Ctor(defined({ alpha: p.alpha })) }),
-  AnimatedSprite: Ctor => ({ create: p => new Ctor(p.textures, p.autoUpdate) }),
+  // `playing` calls `play()` or `stop()` and does not write a property. The `textures` setter stops the sprite, so
+  // `applyProps` sets the playback after the other props. Without `playing`, a sprite that played before a `textures`
+  // change plays again after it. A removed `playing` stops the sprite, as before the first `play()`. A finished sprite
+  // with `loop` false plays again from frame 0, like a media element that ended.
+  AnimatedSprite: Ctor => ({
+    create: p => new Ctor(p.textures, p.autoUpdate),
+    applyProps(animated: PIXI.AnimatedSprite, oldProps, newProps) {
+      const { playing: oldPlaying, ...oldRest } = oldProps ?? {};
+      const { playing, ...props } = newProps;
+      const wasPlaying = animated.playing;
+      this.applyDisplayObjectProps(oldProps && oldRest, props);
+      const texturesChanged = oldProps !== undefined && oldRest.textures !== props.textures;
+      if (playing !== oldPlaying || texturesChanged) {
+        if (!(playing ?? (oldPlaying === undefined && wasPlaying))) animated.stop();
+        else if (!animated.playing && !animated.loop && animated.currentFrame === animated.totalFrames - 1)
+          animated.gotoAndPlay(0);
+        else animated.play();
+      }
+    },
+  }),
   BitmapText: Ctor => ({ create: p => new Ctor(defined({ style: p.style, text: p.text })) }),
   BlurFilter: Ctor => ({
     kind: "filter",

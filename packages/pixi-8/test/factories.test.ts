@@ -170,3 +170,84 @@ describe("factories", () => {
     );
   });
 });
+
+describe("AnimatedSprite applyProps", () => {
+  const frames = [texture, texture, texture];
+  const behavior = factories.AnimatedSprite(PIXI.AnimatedSprite, allClasses);
+  // Writes the changed props through the setters, the way the core does.
+  function mount(props: Record<string, unknown>) {
+    const animated = behavior.create(props) as PIXI.AnimatedSprite;
+    const applied: Record<string, unknown>[] = [];
+    const context = {
+      applyDisplayObjectProps(oldProps: Record<string, unknown> | undefined, newProps: Record<string, unknown>) {
+        applied.push(newProps);
+        for (const key of Object.keys(newProps))
+          if (oldProps?.[key] !== newProps[key]) (animated as any)[key] = newProps[key];
+      },
+    };
+    let current = props;
+    const update = (next: Record<string, unknown>) => {
+      behavior.applyProps!.call(context as never, animated, current as never, next as never);
+      current = next;
+    };
+    behavior.applyProps!.call(context as never, animated, undefined, props as never);
+    return { animated, applied, update };
+  }
+  it("plays on mount when playing is true, and keeps playing out of the props it writes", () => {
+    const { animated, applied } = mount({ playing: true, textures: frames });
+    expect(animated.playing).toBe(true);
+    expect(applied.every(props => !("playing" in props))).toBe(true);
+    expect(mount({ textures: frames }).animated.playing).toBe(false);
+  });
+  it("plays and stops when playing changes", () => {
+    const { animated, update } = mount({ playing: true, textures: frames });
+    update({ playing: false, textures: frames });
+    expect(animated.playing).toBe(false);
+    update({ playing: true, textures: frames });
+    expect(animated.playing).toBe(true);
+  });
+  it("keeps playing from frame 0 after a textures change when playing is true", () => {
+    const { animated, update } = mount({ playing: true, textures: frames });
+    animated.gotoAndPlay(2);
+    update({ playing: true, textures: [texture, texture] });
+    expect(animated.playing).toBe(true);
+    expect(animated.currentFrame).toBe(0);
+  });
+  it("keeps the playback state across a textures change when playing is not set", () => {
+    const playing = mount({ textures: frames });
+    playing.animated.play();
+    playing.update({ textures: [texture, texture] });
+    expect(playing.animated.playing).toBe(true);
+    const stopped = mount({ textures: frames });
+    stopped.update({ textures: [texture, texture] });
+    expect(stopped.animated.playing).toBe(false);
+  });
+  it("leaves a stop through a ref in place when other props change", () => {
+    const { animated, update } = mount({ playing: true, textures: frames });
+    animated.stop();
+    update({ playing: true, textures: frames, x: 1 });
+    expect(animated.playing).toBe(false);
+    expect(animated.x).toBe(1);
+  });
+  it("stops when playing is removed", () => {
+    const { animated, update } = mount({ playing: true, textures: frames });
+    update({ textures: frames });
+    expect(animated.playing).toBe(false);
+  });
+  it("plays a sprite with loop false that finished again from frame 0 when playing turns true", () => {
+    const { animated, update } = mount({ loop: false, playing: true, textures: frames });
+    animated.gotoAndPlay(2);
+    animated.update({ deltaMS: 16, deltaTime: 1 } as never);
+    expect([animated.playing, animated.currentFrame]).toEqual([false, 2]);
+    update({ loop: false, playing: false, textures: frames });
+    update({ loop: false, playing: true, textures: frames });
+    expect([animated.playing, animated.currentFrame]).toEqual([true, 0]);
+  });
+  it("resumes a sprite with loop false that stopped before its last frame", () => {
+    const { animated, update } = mount({ loop: false, playing: true, textures: frames });
+    animated.gotoAndPlay(1);
+    update({ loop: false, playing: false, textures: frames });
+    update({ loop: false, playing: true, textures: frames });
+    expect([animated.playing, animated.currentFrame]).toEqual([true, 1]);
+  });
+});
