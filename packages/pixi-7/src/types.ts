@@ -48,17 +48,17 @@ export type HTMLTextProps = Props<PIXI.HTMLText>;
 export type NineSlicePlaneProps = Props<PIXI.NineSlicePlane>;
 export type PixiTypeFallback<T, U> = T extends PIXI.DisplayObject ? T : U;
 export type SimpleMeshProps = Props<PIXI.SimpleMesh> & {
-  // Constructor arguments that are not properties on the instance
+  // Constructor arguments. A change after mount goes to the geometry.
   indices?: Uint16Array | number[];
   uvs?: Float32Array | number[];
 };
 export type SimplePlaneProps = Props<PIXI.SimplePlane> & {
-  // Constructor arguments that are not properties on the instance
+  // Constructor arguments. A change after mount rebuilds the geometry.
   verticesX?: number;
   verticesY?: number;
 };
 export type SimpleRopeProps = Props<PIXI.SimpleRope> & {
-  // Constructor arguments that are not properties on the instance
+  // Constructor arguments. A change after mount rebuilds the geometry.
   points?: PIXI.IPoint[];
   textureScale?: number;
 };

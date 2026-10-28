@@ -47,7 +47,7 @@ export type InteractiveComponent = {
 export type NineSlicePlaneProps = Props<PIXI.mesh.NineSlicePlane>;
 export type PixiTypeFallback<T, U> = T extends PIXI.DisplayObject ? T : U;
 export type PlaneProps = Props<PIXI.mesh.Plane> & {
-  // Constructor arguments that are not properties on the instance
+  // Constructor arguments. A change after mount rebuilds the geometry.
   verticesX?: number;
   verticesY?: number;
 };
