@@ -33,7 +33,7 @@ Every adapter implements the core tags. An adapter can add tags for classes that
 2. the adapter component
 3. the deprecated tag map of the core (see [0008](0008-keep-deprecated-apis-until-the-next-major.md))
 
-The core runs the tree operations on the Display Object. A parent behavior can take over the child operations of its children with the optional keys `appendChild`, `insertBefore`, and `removeChild`. The core then calls these keys instead of the Display Object methods, in the same order with `afterAdd` and `beforeRemove`. These keys are for adapters only and are not a stable public API. The core records which parent holds each child through these keys, so a reorder inside that parent is a move, not a new add.
+The core runs the tree operations on the Display Object. A parent behavior can take over the child operations of its children with the optional keys `appendChild`, `insertBefore`, and `removeChild`. The core then calls these keys instead of the Display Object methods, in the same order with `afterAdd` and `beforeRemove`. These keys are part of the adapter contract (see [0021](0021-treat-the-adapter-contract-as-a-public-api.md)). The core records which parent holds each child through these keys, so a reorder inside that parent is a move, not a new add.
 
 For types, the core declares interfaces that an adapter augments with `declare module "react-pixi-fiber"`. The interfaces hold the instance class for each tag, the PixiJS application, point, and event types, and extra props. With no adapter installed, the props fall back to loose records and still compile.
 
@@ -57,6 +57,6 @@ The core would check the PixiJS version and select the constructor. But the core
 
 - An adapter is mostly tables and short `create` functions, but the core and every adapter depend on one behavior shape. A change to that shape changes every adapter.
 - Built-in and consumer components use one registry and one code path, but a consumer registration can replace a built-in tag. The core warns once in development when this happens.
-- Some PixiJS containers keep their children outside `children`, for example the particle container of PixiJS 8. Such a container needs parent-controlled child operations. These keys are unstable, so only adapters use them for now.
+- Some PixiJS containers keep their children outside `children`, for example the particle container of PixiJS 8. Such a container needs parent-controlled child operations. These operations add three keys to the behavior shape that the core and every adapter depend on.
 - Types come from the installed adapter, but a shared library needs one adapter as a devDependency to type-check against real PixiJS classes
 - An adapter can export a class that came in a later minor of its PixiJS major. Its peer range then starts at that minor, not at the first release of the major.

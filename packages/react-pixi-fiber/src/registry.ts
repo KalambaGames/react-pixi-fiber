@@ -19,18 +19,18 @@ export interface Behavior<I = any, P = any> {
   kind?: "filter";
   /**
    * Adds `child` to the end of this parent's children, or moves it there, in place of `parent.addChild(child)`.
-   * For adapters whose container keeps children that are not Display Objects. Unstable: may change in a minor.
+   * For a container that keeps children that are not Display Objects.
    */
   appendChild?(parent: I, child: unknown): void;
   /**
    * Adds `child` before `before`, or moves it there, in place of `parent.addChildAt(child, index)`.
-   * For adapters whose container keeps children that are not Display Objects. Unstable: may change in a minor.
+   * For a container that keeps children that are not Display Objects.
    */
   insertBefore?(parent: I, child: unknown, before: unknown): void;
   /**
    * Removes `child` from this parent's children, in place of `parent.removeChild(child)`. The core destroys the child
    * afterwards when it has a `destroy` method.
-   * For adapters whose container keeps children that are not Display Objects. Unstable: may change in a minor.
+   * For a container that keeps children that are not Display Objects.
    */
   removeChild?(parent: I, child: unknown): void;
 }
