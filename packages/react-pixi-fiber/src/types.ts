@@ -320,12 +320,15 @@ export interface ReactAdapter {
 export interface StagePropsWithApp {
   app: PixiApplication;
   destroyOptions?: never;
+  onBeforeDestroy?: never;
   options?: never;
 }
 export interface StagePropsWithOptions {
   app?: never;
   /** What an unmount destroys, passed to `app.destroy`. Default `true`. A recreate always passes `false`. */
   destroyOptions?: PixiDestroyOptions;
+  /** Called with the application before `Stage` destroys it, also on a recreate. */
+  onBeforeDestroy?: (app: PixiApplication) => void;
   options?: PixiApplicationOptions;
 }
 

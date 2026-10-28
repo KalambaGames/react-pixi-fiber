@@ -81,7 +81,7 @@ function StageWithoutBridge(props: StageProps, ref: Ref<StageRef>) {
         "`options` prop of `Stage` has no effect when `app` is provided. Use `app` or `options`, never both."
       );
     }
-    if (app != null && props.destroyOptions !== undefined) {
+    if (app != null && (props.destroyOptions !== undefined || props.onBeforeDestroy !== undefined)) {
       warnOnce(
         "appDestroy",
         "`destroyOptions` and `onBeforeDestroy` props of `Stage` have no effect when `app` is provided. `Stage` never destroys an application it did not create."
@@ -204,7 +204,8 @@ function StageWithoutBridge(props: StageProps, ref: Ref<StageRef>) {
           : recreating.current
             ? STAGE_OPTIONS_RECREATE
             : (latestProps.current.destroyOptions ?? STAGE_OPTIONS_UNMOUNT);
-        previousRef.current = cleanupStage(pixi, appRef.current, stageOptions) ?? null;
+        previousRef.current =
+          cleanupStage(pixi, appRef.current, stageOptions, latestProps.current.onBeforeDestroy) ?? null;
         appRef.current = null;
         appliedProps.current = null;
       }

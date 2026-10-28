@@ -28,7 +28,8 @@ export const STAGE_OPTIONS_UNMOUNT = true;
 export function cleanupStage(
   pixi: PixiAdapter,
   app: PixiApplication,
-  stageOptions: unknown
+  stageOptions: unknown,
+  onBeforeDestroy?: (app: PixiApplication) => void
 ): Promise<void> | undefined {
   // Do not remove canvas from DOM, there are two ways canvas made it's way to PIXI.Application:
   // 1) canvas was rendered by Stage component - it will be removed by React when Stage is unmounted
@@ -43,11 +44,16 @@ export function cleanupStage(
   // Give components a chance to finish unmounting before destroying PIXI.Application
   return new Promise(resolve => {
     setTimeout(() => {
+      // A throw from `onBeforeDestroy` still destroys the application, then leaves the timeout.
       try {
-        // Destroy PIXI.Application and what it rendered if necessary
-        pixi.destroyApplication(app, removeView, stageOptions);
+        onBeforeDestroy?.(app);
       } finally {
-        resolve();
+        try {
+          // Destroy PIXI.Application and what it rendered if necessary
+          pixi.destroyApplication(app, removeView, stageOptions);
+        } finally {
+          resolve();
+        }
       }
     }, 0);
   });

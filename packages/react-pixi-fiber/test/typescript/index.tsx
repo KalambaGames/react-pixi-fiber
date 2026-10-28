@@ -457,3 +457,8 @@ const StageWithDestroyOptionsExample: React.FC = () => <Stage destroyOptions={{ 
 const StageWithAppAndDestroyOptionsExample: React.FC = () => <Stage app={app} destroyOptions={false} />;
 // @ts-expect-error `context` is a PixiJS 8 destroy option
 const StageWithPixi8DestroyOptionsExample: React.FC = () => <Stage destroyOptions={{ context: true }} options={{}} />;
+const StageWithOnBeforeDestroyExample: React.FC = () => (
+  <Stage onBeforeDestroy={app => app.stage.removeChildren()} options={{}} />
+);
+// @ts-expect-error `app` and `onBeforeDestroy` are exclusive
+const StageWithAppAndOnBeforeDestroyExample: React.FC = () => <Stage app={app} onBeforeDestroy={() => {}} />;
