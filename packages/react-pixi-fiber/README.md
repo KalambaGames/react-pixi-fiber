@@ -310,6 +310,19 @@ A change to `options.width` or `options.height` resizes the renderer. A change t
 
 `onInit(app)` is called once the application exists and the children are rendered.
 
+`destroyOptions` sets what an unmount destroys. The default `true` destroys the objects on `app.stage`, their textures and the texture sources. Children that `Stage` renders are already destroyed without their textures, so `true` reaches only the objects that the app adds to `app.stage` itself. Pass `{ children: true }` when those objects use textures that another Stage, or the `Assets` cache, still needs. A recreate never destroys textures. The type is `DestroyOptions` on PixiJS 8, and `boolean | { children, texture, baseTexture }` on PixiJS 4 to 7.
+
+`Stage` calls `onBeforeDestroy(app)` before it destroys the application, also on a recreate.
+
+| Event | `onInit` | `onBeforeDestroy` | What is destroyed |
+| --- | --- | --- | --- |
+| Mount | after the first render | – | – |
+| `options` change (other than size) | with the new application | with the old application | `false`: objects the app added to `app.stage` stay, textures stay |
+| Unmount | – | with the application | `destroyOptions`, default `true`: objects the app added to `app.stage`, with their textures |
+| `app` provided | after the first render | never | nothing |
+
+`onBeforeDestroy` runs once for each application that `Stage` created and that got `onInit`, after React unmounts the children of `Stage`. Children that `Stage` renders are always destroyed without their textures. An error thrown in `onBeforeDestroy` does not reach an error boundary: `Stage` destroys the application, then throws the error again from a timeout.
+
 `bridgeContexts` lists React contexts provided around `<Stage />` that its children can read, see [Context – Using a context provided outside `Stage`](#context--using-a-context-provided-outside-stage).
 
 #### Tags
