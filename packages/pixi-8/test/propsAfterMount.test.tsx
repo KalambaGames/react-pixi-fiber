@@ -83,6 +83,7 @@ describe("constructor options changed after mount", () => {
   it("MeshRope keeps its points when they are removed, and sets textureScale back to 0", () => {
     const points = [new PIXI.Point(0, 0), new PIXI.Point(10, 0), new PIXI.Point(20, 0)];
     const mesh = show(<MeshRope points={points} texture={texture} textureScale={2} />) as PIXI.MeshRope;
+    // @ts-expect-error the types require `points`, but JavaScript can still remove it
     show(<MeshRope texture={texture} />);
     expect((mesh.geometry as PIXI.RopeGeometry).points).toBe(points);
     expect((mesh.geometry as PIXI.RopeGeometry).textureScale).toBe(0);

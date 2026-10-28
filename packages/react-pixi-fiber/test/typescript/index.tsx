@@ -70,6 +70,13 @@ const AliasExample: React.FC<{ texture: PIXI.Texture }> = ({ texture }) => (
 );
 console.log(AliasExample);
 
+// Every PixiJS constructor needs `points`.
+// @ts-expect-error `points` is required
+const ropeWithoutPoints = <MeshRope texture={PIXI.Texture.WHITE} />;
+// @ts-expect-error `points` is required
+const simpleRopeWithoutPoints = <SimpleRope texture={PIXI.Texture.WHITE} />;
+console.log(ropeWithoutPoints, simpleRopeWithoutPoints);
+
 const anchor = new PIXI.ObservablePoint(() => {}, undefined, 0.5, 0.5);
 
 const texture = PIXI.Texture.from("https://i.imgur.com/IaUrttj.png");

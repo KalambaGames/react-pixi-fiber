@@ -210,8 +210,9 @@ export type MeshPlaneProps = Props<InstanceOf<"MeshPlane">> & {
   verticesY?: number;
 };
 export type MeshRopeProps = Props<InstanceOf<"MeshRope">> & {
-  // Constructor arguments. A change after mount rebuilds the geometry. PixiJS 4 has no `textureScale`.
-  points?: PointLikeObject[];
+  // Constructor arguments. A change after mount rebuilds the geometry. PixiJS 4 has no `textureScale`. Every PixiJS
+  // constructor needs `points`.
+  points: PointLikeObject[];
   textureScale?: number;
 };
 export type MeshSimpleProps = Props<InstanceOf<"MeshSimple">> & {

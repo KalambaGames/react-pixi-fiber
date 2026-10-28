@@ -51,7 +51,8 @@ export type PlaneProps = Props<PIXI.mesh.Plane> & {
   verticesX?: number;
   verticesY?: number;
 };
-export type RopeProps = Props<PIXI.mesh.Rope>;
+// The constructor needs `points`.
+export type RopeProps = Props<PIXI.mesh.Rope> & { points: PIXI.Point[] };
 // `Text` props with `style` narrowed to the PixiJS 4 text style types.
 export type TextProps = Omit<Props<PIXI.Text>, "style"> & {
   style?: PIXI.TextStyle | PIXI.TextStyleOptions;

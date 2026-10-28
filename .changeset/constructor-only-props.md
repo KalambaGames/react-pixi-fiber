@@ -27,3 +27,5 @@ A change after mount to these props warns:
 - Graphics: `geometry` on PixiJS 5 to 7.
 - ParticleContainer: `maxSize` and `batchSize` on PixiJS 4 to 7, `properties` on PixiJS 4, `dynamicProperties` on PixiJS 8.
 - Text: `canvas` on PixiJS 4 to 7.
+
+The MeshRope prop types require `points`. Every PixiJS constructor needs them.

@@ -58,8 +58,8 @@ export type SimplePlaneProps = Props<PIXI.SimplePlane> & {
   verticesY?: number;
 };
 export type SimpleRopeProps = Props<PIXI.SimpleRope> & {
-  // Constructor arguments. A change after mount rebuilds the geometry.
-  points?: PIXI.IPoint[];
+  // Constructor arguments. A change after mount rebuilds the geometry. The constructor needs `points`.
+  points: PIXI.IPoint[];
   textureScale?: number;
 };
 // `Text` props, with `style` widened to the setter type by `SetterTypes`.
