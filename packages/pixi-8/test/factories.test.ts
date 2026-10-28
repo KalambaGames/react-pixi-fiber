@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import * as PIXI from "pixi.js";
 import { allClasses } from "../src/allClasses";
 import { factories, type Pixi8Tag } from "../src/factories";
@@ -139,6 +139,43 @@ describe("factories", () => {
     const [options] = args[0] as [PIXI.DisplacementFilterOptions];
     expect(Object.keys(options)).toStrictEqual(["sprite"]);
     expect(options.sprite).toBe(sprite);
+  });
+  it("Graphics destroys the context it creates when the renderer destroys it", () => {
+    const graphics = factories.Graphics(PIXI.Graphics, allClasses).create({}) as PIXI.Graphics;
+    const { context } = graphics;
+    graphics.destroy({ children: true });
+    expect(context.destroyed).toBe(true);
+  });
+  it("Graphics destroys the context it creates when a destroyed parent destroys it", () => {
+    const parent = new PIXI.Container();
+    const graphics = factories.Graphics(PIXI.Graphics, allClasses).create({}) as PIXI.Graphics;
+    const { context } = graphics;
+    parent.addChild(graphics);
+    parent.destroy({ children: true });
+    expect(context.destroyed).toBe(true);
+  });
+  it("Graphics destroys the context it creates once when PixiJS destroys it too", () => {
+    for (const options of [undefined, true] as const) {
+      const graphics = factories.Graphics(PIXI.Graphics, allClasses).create({}) as PIXI.Graphics;
+      const destroy = vi.spyOn(graphics.context, "destroy");
+      graphics.destroy(options);
+      expect(destroy, String(options)).toHaveBeenCalledOnce();
+    }
+  });
+  it("Graphics keeps a context from the context prop", () => {
+    const context = new PIXI.GraphicsContext();
+    const graphics = factories.Graphics(PIXI.Graphics, allClasses).create({ context }) as PIXI.Graphics;
+    graphics.destroy({ children: true });
+    expect(context.destroyed).toBe(false);
+  });
+  it("Graphics destroys the context it creates after the context prop replaces it, and keeps the new one", () => {
+    const graphics = factories.Graphics(PIXI.Graphics, allClasses).create({}) as PIXI.Graphics;
+    const owned = graphics.context;
+    const context = new PIXI.GraphicsContext();
+    graphics.context = context;
+    graphics.destroy({ children: true });
+    expect(owned.destroyed).toBe(true);
+    expect(context.destroyed).toBe(false);
   });
   it("NoiseFilter creates the filter with the noise and seed that are set", () => {
     const args: unknown[][] = [];
