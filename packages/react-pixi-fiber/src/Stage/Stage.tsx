@@ -81,6 +81,12 @@ function StageWithoutBridge(props: StageProps, ref: Ref<StageRef>) {
         "`options` prop of `Stage` has no effect when `app` is provided. Use `app` or `options`, never both."
       );
     }
+    if (app != null && (props.destroyOptions !== undefined || props.onBeforeDestroy !== undefined)) {
+      warnOnce(
+        "appDestroy",
+        "`destroyOptions` and `onBeforeDestroy` props of `Stage` have no effect when `app` is provided. `Stage` never destroys an application it did not create."
+      );
+    }
   }
   if (app != null) {
     invariant(
@@ -140,7 +146,9 @@ function StageWithoutBridge(props: StageProps, ref: Ref<StageRef>) {
     const settled = Promise.resolve(created)
       .then((resolved: any) => {
         if (token.cancelled) {
-          if (!provided && resolved != null) pixi.destroyApplication(resolved, false, STAGE_OPTIONS_UNMOUNT);
+          if (!provided && resolved != null) {
+            pixi.destroyApplication(resolved, false, latestProps.current.destroyOptions ?? STAGE_OPTIONS_UNMOUNT);
+          }
           return;
         }
         pendingRef.current = null;
@@ -191,8 +199,13 @@ function StageWithoutBridge(props: StageProps, ref: Ref<StageRef>) {
       token.cancelled = true;
       pendingRef.current = null;
       if (appRef.current != null) {
-        const stageOptions = provided ? null : recreating.current ? STAGE_OPTIONS_RECREATE : STAGE_OPTIONS_UNMOUNT;
-        previousRef.current = cleanupStage(pixi, appRef.current, stageOptions) ?? null;
+        const stageOptions = provided
+          ? null
+          : recreating.current
+            ? STAGE_OPTIONS_RECREATE
+            : (latestProps.current.destroyOptions ?? STAGE_OPTIONS_UNMOUNT);
+        previousRef.current =
+          cleanupStage(pixi, appRef.current, stageOptions, latestProps.current.onBeforeDestroy) ?? null;
         appRef.current = null;
         appliedProps.current = null;
       }

@@ -32,6 +32,7 @@ declare module "react-pixi-fiber" {
   interface PixiTypes {
     Application: PIXI.Application;
     ApplicationOptions: Partial<PIXI.IApplicationOptions>;
+    DestroyOptions: NonNullable<Parameters<PIXI.Container["destroy"]>[0]>;
     Point: PIXI.Point | PIXI.ObservablePoint | PIXI.IPointData;
     // The setters that accept more than their getters return. `HTMLText` comes first: the first pair the instance
     // extends wins.

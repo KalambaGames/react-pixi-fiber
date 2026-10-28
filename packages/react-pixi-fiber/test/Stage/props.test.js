@@ -68,8 +68,10 @@ describe("getCanvasProps", () => {
     const props = {
       app: {},
       bridgeContexts: [],
+      destroyOptions: true,
       options: {},
       children: null,
+      onBeforeDestroy: () => {},
       onInit: () => {},
       width: 1,
       height: 2,

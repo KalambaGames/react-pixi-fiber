@@ -32,6 +32,7 @@ declare module "react-pixi-fiber" {
   interface PixiTypes {
     Application: PIXI.Application;
     ApplicationOptions: PIXI.IApplicationOptions;
+    DestroyOptions: NonNullable<Parameters<PIXI.Container["destroy"]>[0]>;
     InteractionEvent: PIXI.InteractionEvent;
     Point: PIXI.Point | PIXI.ObservablePoint | PIXI.IPointData;
   }

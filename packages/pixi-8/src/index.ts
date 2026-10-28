@@ -186,6 +186,8 @@ export function pixi8WithClasses(options: Pixi8WithClassesOptions): PixiAdapter 
       // hold the next application on the same context (StrictMode's second mount, a recreate on `options.view`).
       const context = (app.renderer as Partial<PIXI.WebGLRenderer>).context;
       if (context && (context.canvas as HTMLCanvasElement).isConnected) context.extensions.loseContext = undefined;
+      // No `releaseGlobalResources`: every application on the page shares the PixiJS 8 pools, and a release would clear
+      // them under another Stage that is still alive.
       app.destroy({ removeView }, stageOptions as PIXI.DestroyOptions);
     },
     // `instanceof Application` would keep `Application` in every bundle. A provided `app` needs a `Container` as

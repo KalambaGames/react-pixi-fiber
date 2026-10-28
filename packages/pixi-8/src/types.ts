@@ -33,6 +33,7 @@ declare module "react-pixi-fiber" {
   interface PixiTypes {
     Application: PIXI.Application;
     ApplicationOptions: Partial<PIXI.ApplicationOptions>;
+    DestroyOptions: NonNullable<Parameters<PIXI.Container["destroy"]>[0]>;
     Point: PIXI.Point | PIXI.ObservablePoint | PIXI.PointData;
     // The options type of a class declares what its setters accept, including what plugins add. The first pair the
     // instance extends wins, so a subclass comes before its parent.

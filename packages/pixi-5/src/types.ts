@@ -32,6 +32,8 @@ declare module "react-pixi-fiber" {
   interface PixiTypes {
     Application: PIXI.Application;
     ApplicationOptions: NonNullable<ConstructorParameters<typeof PIXI.Application>[0]>;
+    // The pixi.js 5 typings of `Container.destroy` omit the boolean that it accepts.
+    DestroyOptions: boolean | NonNullable<Parameters<PIXI.Container["destroy"]>[0]>;
     InteractionEvent: PIXI.InteractionEvent;
     Point: PIXI.Point | PIXI.ObservablePoint | PIXI.IPointData;
   }

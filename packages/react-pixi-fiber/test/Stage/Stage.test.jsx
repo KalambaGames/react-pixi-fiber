@@ -520,4 +520,228 @@ describe("Stage", () => {
     await flush();
     tree.unmount();
   });
+
+  it("destroys the application with `destroyOptions` on unmount", async () => {
+    const tree = renderer.create(<Stage destroyOptions={{ children: true }} />, { createNodeMock: () => ({}) });
+    act(() => resolveInit());
+    await flush();
+    tree.unmount();
+    await tick();
+    expect(adapter.destroyApplication.mock.calls).toEqual([[apps[0], false, { children: true }]]);
+  });
+
+  it("passes `destroyOptions={false}` as false", async () => {
+    const tree = renderer.create(<Stage destroyOptions={false} />, { createNodeMock: () => ({}) });
+    act(() => resolveInit());
+    await flush();
+    tree.unmount();
+    await tick();
+    expect(adapter.destroyApplication.mock.calls).toEqual([[apps[0], false, false]]);
+  });
+
+  it("uses the latest `destroyOptions` on unmount", async () => {
+    const tree = renderer.create(<Stage destroyOptions={{ children: true }} />, { createNodeMock: () => ({}) });
+    act(() => resolveInit());
+    await flush();
+    act(() => tree.update(<Stage destroyOptions={{ children: true, texture: false }} />));
+    tree.unmount();
+    await tick();
+    expect(adapter.destroyApplication.mock.calls).toEqual([[apps[0], false, { children: true, texture: false }]]);
+  });
+
+  it("keeps false on a recreate when `destroyOptions` is set", async () => {
+    const tree = renderer.create(<Stage destroyOptions={{ children: true }} options={{ antialias: false }} />, {
+      createNodeMock: () => ({}),
+    });
+    act(() => resolveInit());
+    await flush();
+    tree.update(<Stage destroyOptions={{ children: true }} options={{ antialias: true }} />);
+    await tick();
+    expect(adapter.destroyApplication.mock.calls).toEqual([[apps[0], false, false]]);
+    tree.unmount();
+  });
+
+  it("destroys a cancelled init with `destroyOptions`", async () => {
+    const tree = renderer.create(<Stage destroyOptions={{ children: true }} />, { createNodeMock: () => ({}) });
+    tree.unmount();
+    act(() => resolveInit());
+    await flush();
+    expect(adapter.destroyApplication).toHaveBeenCalledWith(apps[0], false, { children: true });
+  });
+
+  it("destroys a failed init with true when `destroyOptions` is set", async () => {
+    const error = vi.spyOn(console, "error").mockImplementation(() => {});
+    adapter.createApplication.mockImplementation(() => {
+      const app = makeApp();
+      Object.defineProperty(app.stage, "alpha", {
+        set() {
+          throw new Error("alpha failed");
+        },
+      });
+      return Promise.resolve(app);
+    });
+    class Boundary extends React.Component {
+      state = { error: null };
+      static getDerivedStateFromError(caught) {
+        return { error: caught };
+      }
+      render() {
+        return this.state.error ? null : this.props.children;
+      }
+    }
+    const tree = renderer.create(
+      <Boundary>
+        <Stage alpha={0.5} destroyOptions={{ children: true }} />
+      </Boundary>,
+      { createNodeMock: () => ({}) }
+    );
+    await flush();
+    await tick();
+    expect(adapter.destroyApplication.mock.calls).toEqual([[apps[0], false, true]]);
+    tree.unmount();
+    error.mockRestore();
+  });
+
+  it("warns once in development and does not destroy a provided app with `destroyOptions`", async () => {
+    vi.resetModules();
+    const { default: FreshStage } = await import("../../src/Stage");
+    const error = vi.spyOn(console, "error").mockImplementation(() => {});
+    const app = makeApp();
+    const tree = renderer.create(<FreshStage app={app} destroyOptions={{ children: true }} />);
+    act(() => tree.update(<FreshStage app={app} destroyOptions={false} />));
+    await flush();
+    tree.unmount();
+    await tick();
+    expect(
+      error.mock.calls.filter(c => /`destroyOptions` and `onBeforeDestroy` props of `Stage` have no effect/.test(c[0]))
+    ).toHaveLength(__DEV__ ? 1 : 0);
+    expect(adapter.destroyApplication).not.toHaveBeenCalled();
+  });
+
+  it("calls onBeforeDestroy with the application before it destroys it", async () => {
+    const onBeforeDestroy = vi.fn();
+    const tree = renderer.create(<Stage onBeforeDestroy={onBeforeDestroy} />, { createNodeMock: () => ({}) });
+    act(() => resolveInit());
+    await flush();
+    tree.unmount();
+    expect(onBeforeDestroy).not.toHaveBeenCalled();
+    await tick();
+    expect(onBeforeDestroy.mock.calls).toEqual([[apps[0]]]);
+    expect(onBeforeDestroy.mock.invocationCallOrder[0]).toBeLessThan(
+      adapter.destroyApplication.mock.invocationCallOrder[0]
+    );
+  });
+
+  it("calls onBeforeDestroy with the old application on a recreate", async () => {
+    const onBeforeDestroy = vi.fn();
+    const tree = renderer.create(<Stage onBeforeDestroy={onBeforeDestroy} options={{ antialias: false }} />, {
+      createNodeMock: () => ({}),
+    });
+    act(() => resolveInit());
+    await flush();
+    tree.update(<Stage onBeforeDestroy={onBeforeDestroy} options={{ antialias: true }} />);
+    await tick();
+    act(() => resolveInit());
+    await flush();
+    expect(onBeforeDestroy.mock.calls).toEqual([[apps[0]]]);
+    tree.unmount();
+    await tick();
+    expect(onBeforeDestroy.mock.calls).toEqual([[apps[0]], [apps[1]]]);
+  });
+
+  it("does not call onBeforeDestroy for a cancelled init", async () => {
+    const onBeforeDestroy = vi.fn();
+    const tree = renderer.create(<Stage onBeforeDestroy={onBeforeDestroy} />, { createNodeMock: () => ({}) });
+    tree.unmount();
+    act(() => resolveInit());
+    await flush();
+    await tick();
+    expect(adapter.destroyApplication).toHaveBeenCalledWith(apps[0], false, true);
+    expect(onBeforeDestroy).not.toHaveBeenCalled();
+  });
+
+  it("calls onBeforeDestroy once under a StrictMode double mount", async () => {
+    const onInit = vi.fn();
+    const onBeforeDestroy = vi.fn();
+    const pending = [];
+    adapter.createApplication.mockImplementation(() => new Promise(resolve => pending.push(() => resolve(makeApp()))));
+    const previousActEnvironment = globalThis.IS_REACT_ACT_ENVIRONMENT;
+    globalThis.IS_REACT_ACT_ENVIRONMENT = true;
+    const root = createRoot(document.createElement("div"));
+    try {
+      act(() => {
+        root.render(
+          <StrictMode>
+            <Stage onBeforeDestroy={onBeforeDestroy} onInit={onInit} />
+          </StrictMode>
+        );
+      });
+      act(() => pending[0]());
+      await flush();
+      act(() => pending[1]());
+      await flush();
+      act(() => root.unmount());
+      await tick();
+      expect(onInit).toHaveBeenCalledTimes(1);
+      expect(onBeforeDestroy.mock.calls).toEqual([[onInit.mock.calls[0][0]]]);
+    } finally {
+      globalThis.IS_REACT_ACT_ENVIRONMENT = previousActEnvironment;
+    }
+  });
+
+  it("on an unmount during a pending recreate, calls onBeforeDestroy only for the old application", async () => {
+    const onBeforeDestroy = vi.fn();
+    const tree = renderer.create(
+      <Stage destroyOptions={{ children: true }} onBeforeDestroy={onBeforeDestroy} options={{ antialias: false }} />,
+      { createNodeMock: () => ({}) }
+    );
+    act(() => resolveInit());
+    await flush();
+    tree.update(
+      <Stage destroyOptions={{ children: true }} onBeforeDestroy={onBeforeDestroy} options={{ antialias: true }} />
+    );
+    await tick();
+    tree.unmount();
+    act(() => resolveInit());
+    await flush();
+    await tick();
+    expect(onBeforeDestroy.mock.calls).toEqual([[apps[0]]]);
+    expect(adapter.destroyApplication.mock.calls).toEqual([
+      [apps[0], false, false],
+      [apps[1], false, { children: true }],
+    ]);
+  });
+
+  it("still destroys the application when onBeforeDestroy throws", async () => {
+    const onBeforeDestroy = vi.fn(() => {
+      throw new Error("before failed");
+    });
+    const tree = renderer.create(<Stage onBeforeDestroy={onBeforeDestroy} />, { createNodeMock: () => ({}) });
+    act(() => resolveInit());
+    await flush();
+    vi.useFakeTimers();
+    try {
+      tree.unmount();
+      expect(() => vi.runAllTimers()).toThrow("before failed");
+      expect(adapter.destroyApplication).toHaveBeenCalledWith(apps[0], false, true);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it("warns once in development and never calls onBeforeDestroy for a provided app", async () => {
+    vi.resetModules();
+    const { default: FreshStage } = await import("../../src/Stage");
+    const error = vi.spyOn(console, "error").mockImplementation(() => {});
+    const onBeforeDestroy = vi.fn();
+    const tree = renderer.create(<FreshStage app={makeApp()} onBeforeDestroy={onBeforeDestroy} />);
+    await flush();
+    tree.unmount();
+    await tick();
+    expect(
+      error.mock.calls.filter(c => /`destroyOptions` and `onBeforeDestroy` props of `Stage` have no effect/.test(c[0]))
+    ).toHaveLength(__DEV__ ? 1 : 0);
+    expect(onBeforeDestroy).not.toHaveBeenCalled();
+    expect(adapter.destroyApplication).not.toHaveBeenCalled();
+  });
 });
