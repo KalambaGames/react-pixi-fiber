@@ -560,10 +560,10 @@ render(
 * `enabled` – `false` removes `fn` from the ticker, `true` adds it back. Default `true`.
 * `priority` – the PixiJS `UPDATE_PRIORITY` of `fn`: `INTERACTION` (50), `HIGH` (25), `NORMAL` (0, the default), `LOW` (-25) or `UTILITY` (-50), exported from `pixi.js`. A listener with a higher priority runs first. The PixiJS render runs at `LOW`.
 
-Listeners with the same priority run in the order they were added. A change to `enabled` or `priority` removes `fn` and adds it again, so `fn` then runs after the other listeners with its priority. Give listeners different priorities when their order matters.
+Each tick calls the `fn` from the latest render. An inline `fn` needs no `useCallback`, and a new `fn` keeps its place on the ticker. Listeners with the same priority run in the order they were added. A change to `enabled` or `priority` removes `fn` and adds it again, so `fn` then runs after the other listeners with its priority. Give listeners different priorities when their order matters.
 
 ```jsx harmony
-import { useCallback, useState } from "react";
+import { useState } from "react";
 import { createRoot } from "react-dom/client";
 import { Assets } from "pixi.js";
 import { configure, Sprite, Stage, usePixiTicker } from "react-pixi-fiber";
@@ -579,9 +579,7 @@ function RotatingBunny(props) {
   const [rotation, setRotation] = useState(0);
   const [paused, setPaused] = useState(false);
   // PixiJS 8 passes the `Ticker`. PixiJS 4 to 7 pass the frame delta as a number.
-  const spin = useCallback(ticker => setRotation(rotation => rotation + 0.1 * ticker.deltaTime), []);
-
-  usePixiTicker(spin, { enabled: !paused });
+  usePixiTicker(ticker => setRotation(rotation => rotation + 0.1 * ticker.deltaTime), { enabled: !paused });
 
   return (
     <Sprite

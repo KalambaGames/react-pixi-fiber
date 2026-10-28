@@ -1,5 +1,5 @@
 import * as PIXI from "pixi.js";
-import React, { Fragment, useCallback, useContext, useEffect, useRef, useState } from "react";
+import React, { Fragment, useContext, useEffect, useRef, useState } from "react";
 import { PIXIComponent, Stage, Text, usePixiTicker } from "react-pixi-fiber";
 
 type CircleProps = {
@@ -76,10 +76,7 @@ type AnimatedValueOptions = {
 function useAnimatedValue({ direction, enabled, max, min, value }: AnimatedValueOptions) {
   const [data, setData] = useState({ direction, max, min, value });
 
-  const animate = useCallback(() => {
-    // perform all the logic inside setData so useEffect's dependency array
-    // can be empty so it will only trigger one on initial render and not
-    // add and remove from ticker constantly.
+  const animate = () => {
     setData(current => {
       const data = { ...current };
 
@@ -96,7 +93,7 @@ function useAnimatedValue({ direction, enabled, max, min, value }: AnimatedValue
 
       return data;
     });
-  }, []);
+  };
 
   // `enabled: false` removes `animate` from the ticker. `true` adds it back. The component stays mounted.
   usePixiTicker(animate, { enabled });

@@ -61,12 +61,13 @@ describe("usePixiTicker", () => {
     tree.update();
 
     expect(add).toHaveBeenCalledTimes(1);
-    expect(add).toHaveBeenCalledWith(fn, undefined, undefined);
+    expect(add).toHaveBeenCalledWith(expect.any(Function), undefined, undefined);
   });
 
   it("will remove the callback from the app.ticker as a cleanup", () => {
     const app = new PIXI.Application();
     const fn = vi.fn();
+    const add = vi.spyOn(app.ticker, "add");
     const remove = vi.spyOn(app.ticker, "remove");
 
     const TestComponent = () => {
@@ -87,7 +88,7 @@ describe("usePixiTicker", () => {
       tree.unmount();
     });
 
-    expect(remove).toHaveBeenCalledWith(fn);
+    expect(remove).toHaveBeenCalledWith(add.mock.calls[0][0]);
   });
 
   it("will not add the callback while enabled is false", () => {
@@ -143,7 +144,7 @@ describe("usePixiTicker", () => {
 
     expect(add).toHaveBeenCalledTimes(1);
     expect(remove).toHaveBeenCalledTimes(1);
-    expect(remove).toHaveBeenCalledWith(fn);
+    expect(remove).toHaveBeenCalledWith(add.mock.calls[0][0]);
 
     renderer.act(() => {
       tree.update(element(true));
@@ -172,7 +173,97 @@ describe("usePixiTicker", () => {
 
     tree.update();
 
-    expect(add).toHaveBeenCalledWith(fn, undefined, PIXI.UPDATE_PRIORITY.HIGH);
+    expect(add).toHaveBeenCalledWith(expect.any(Function), undefined, PIXI.UPDATE_PRIORITY.HIGH);
+  });
+
+  it("will not add or remove the callback again when a re-render passes a new fn", () => {
+    const app = new PIXI.Application();
+    const add = vi.spyOn(app.ticker, "add");
+    const remove = vi.spyOn(app.ticker, "remove");
+
+    const TestComponent = ({ fn }) => {
+      usePixiTicker(fn);
+
+      return <Container />;
+    };
+    const element = fn => (
+      <AppContext.Provider value={app}>
+        <TestComponent fn={fn} />
+      </AppContext.Provider>
+    );
+
+    let tree;
+    renderer.act(() => {
+      tree = renderer.create(element(vi.fn()));
+    });
+    renderer.act(() => {
+      tree.update(element(vi.fn()));
+    });
+
+    expect(add).toHaveBeenCalledTimes(1);
+    expect(remove).not.toHaveBeenCalled();
+  });
+
+  it("will call the latest fn with every argument the ticker passes", () => {
+    const app = new PIXI.Application();
+    const add = vi.spyOn(app.ticker, "add");
+    const first = vi.fn();
+    const latest = vi.fn();
+
+    const TestComponent = ({ fn }) => {
+      usePixiTicker(fn);
+
+      return <Container />;
+    };
+    const element = fn => (
+      <AppContext.Provider value={app}>
+        <TestComponent fn={fn} />
+      </AppContext.Provider>
+    );
+
+    let tree;
+    renderer.act(() => {
+      tree = renderer.create(element(first));
+    });
+    renderer.act(() => {
+      tree.update(element(latest));
+    });
+
+    const [listener] = add.mock.calls[0];
+    listener(app.ticker, 1);
+
+    expect(first).not.toHaveBeenCalled();
+    expect(latest).toHaveBeenCalledWith(app.ticker, 1);
+  });
+
+  it("will add the callback again when priority changes", () => {
+    const app = new PIXI.Application();
+    const fn = vi.fn();
+    const add = vi.spyOn(app.ticker, "add");
+    const remove = vi.spyOn(app.ticker, "remove");
+
+    const TestComponent = ({ priority }) => {
+      usePixiTicker(fn, { priority });
+
+      return <Container />;
+    };
+    const element = priority => (
+      <AppContext.Provider value={app}>
+        <TestComponent priority={priority} />
+      </AppContext.Provider>
+    );
+
+    let tree;
+    renderer.act(() => {
+      tree = renderer.create(element(PIXI.UPDATE_PRIORITY.NORMAL));
+    });
+    renderer.act(() => {
+      tree.update(element(PIXI.UPDATE_PRIORITY.HIGH));
+    });
+
+    expect(add).toHaveBeenCalledTimes(2);
+    expect(add).toHaveBeenLastCalledWith(expect.any(Function), undefined, PIXI.UPDATE_PRIORITY.HIGH);
+    expect(remove).toHaveBeenCalledTimes(1);
   });
 
   it("throws when the app has no ticker", () => {

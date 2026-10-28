@@ -1,6 +1,6 @@
 import type { PixiApplication } from "./types";
 import React from "react";
-import { useContext, useEffect } from "react";
+import { useContext, useEffect, useLayoutEffect, useRef } from "react";
 import { AppContext } from "./AppProvider";
 import invariant from "./invariant";
 
@@ -30,15 +30,24 @@ export function usePixiTicker(fn: PixiTickerCallback, options?: PixiTickerOption
 
   invariant(ticker != null, "`usePixiTicker` needs an `app` with a `ticker`.");
 
+  const latestFn = useRef(fn);
+  // Written on commit: a render React discards never reaches the ticker.
+  useLayoutEffect(() => {
+    latestFn.current = fn;
+  });
+
   useEffect(() => {
     if (!enabled) {
       return;
     }
 
-    ticker.add(fn, undefined, priority);
+    // A new `fn` does not re-add the listener, so its place among same-priority listeners stays.
+    const listener = ((...args: unknown[]) =>
+      (latestFn.current as (...args: unknown[]) => void)(...args)) as PixiTickerCallback;
+    ticker.add(listener, undefined, priority);
 
     return () => {
-      ticker.remove(fn);
+      ticker.remove(listener);
     };
-  }, [enabled, fn, priority, ticker]);
+  }, [enabled, priority, ticker]);
 }
