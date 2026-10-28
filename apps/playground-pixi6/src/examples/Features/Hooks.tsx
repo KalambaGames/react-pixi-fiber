@@ -69,16 +69,14 @@ const grayFromNum = (num: number) => {
  */
 type AnimatedValueOptions = {
   direction: number;
+  enabled: boolean;
   max: number;
   min: number;
   value: number;
 };
 
-function useAnimatedValue({ direction, max, min, value }: AnimatedValueOptions) {
-  const [data, setData] = useState<{ direction: number; max?: number; min?: number; value: number }>({
-    direction,
-    value,
-  });
+function useAnimatedValue({ direction, enabled, max, min, value }: AnimatedValueOptions) {
+  const [data, setData] = useState({ direction, max, min, value });
 
   const animate = useCallback(() => {
     // perform all the logic inside setData so useEffect's dependency array
@@ -89,8 +87,8 @@ function useAnimatedValue({ direction, max, min, value }: AnimatedValueOptions) 
 
       // flip direction once min or max has been reached.
       if (
-        (current.max !== undefined && current.value >= current.max && current.direction === 1) ||
-        (current.min !== undefined && current.value <= current.min && current.direction === -1)
+        (current.value >= current.max && current.direction === 1) ||
+        (current.value <= current.min && current.direction === -1)
       ) {
         data.direction *= -1;
       }
@@ -102,7 +100,8 @@ function useAnimatedValue({ direction, max, min, value }: AnimatedValueOptions) 
     });
   }, []);
 
-  usePixiTicker(animate);
+  // `enabled: false` removes `animate` from the ticker. `true` adds it back. The component stays mounted.
+  usePixiTicker(animate, { enabled });
 
   return data.value;
 }
@@ -128,8 +127,9 @@ const Title = () => {
 };
 
 const Animation = () => {
-  const number1 = useAnimatedValue({ direction: 1, max: 255, min: 0, value: 0 });
-  const number2 = useAnimatedValue({ direction: -1, max: 255, min: 0, value: 255 });
+  const [paused, setPaused] = useState(false);
+  const number1 = useAnimatedValue({ direction: 1, enabled: !paused, max: 255, min: 0, value: 0 });
+  const number2 = useAnimatedValue({ direction: -1, enabled: !paused, max: 255, min: 0, value: 255 });
   const [text1, setText1] = useState(`number1: ${number1}`);
   const [text2, setText2] = useState(`number2: ${number2}`);
 
@@ -143,7 +143,15 @@ const Animation = () => {
     <Fragment>
       <Title />
       <Rect fill={grayFromNum(number1)} height={124} width={124} x={138} y={88} />
-      <Circle fill={grayFromNum(number2)} radius={50} x={200} y={150} />
+      <Circle
+        cursor="pointer"
+        fill={grayFromNum(number2)}
+        interactive
+        pointerdown={() => setPaused(paused => !paused)}
+        radius={50}
+        x={200}
+        y={150}
+      />
       <Text text={text1} x={0} y={226} />
       <Text text={text2} x={0} y={262} />
     </Fragment>

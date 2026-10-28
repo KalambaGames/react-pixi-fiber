@@ -61,7 +61,7 @@ describe("usePixiTicker", () => {
     tree.update();
 
     expect(add).toHaveBeenCalledTimes(1);
-    expect(add).toHaveBeenCalledWith(fn);
+    expect(add).toHaveBeenCalledWith(fn, undefined, undefined);
   });
 
   it("will remove the callback from the app.ticker as a cleanup", () => {
@@ -88,6 +88,91 @@ describe("usePixiTicker", () => {
     });
 
     expect(remove).toHaveBeenCalledWith(fn);
+  });
+
+  it("will not add the callback while enabled is false", () => {
+    const app = new PIXI.Application();
+    const fn = vi.fn();
+    const add = vi.spyOn(app.ticker, "add");
+
+    const TestComponent = () => {
+      usePixiTicker(fn, { enabled: false });
+
+      return <Container />;
+    };
+
+    const tree = renderer.create(
+      <AppContext.Provider value={app}>
+        <TestComponent />
+      </AppContext.Provider>
+    );
+
+    tree.update();
+
+    expect(add).not.toHaveBeenCalled();
+  });
+
+  it("will remove the callback when enabled turns false and add it back when enabled turns true", () => {
+    const app = new PIXI.Application();
+    const fn = vi.fn();
+    const add = vi.spyOn(app.ticker, "add");
+    const remove = vi.spyOn(app.ticker, "remove");
+
+    const TestComponent = ({ enabled }) => {
+      usePixiTicker(fn, { enabled });
+
+      return <Container />;
+    };
+    const element = enabled => (
+      <AppContext.Provider value={app}>
+        <TestComponent enabled={enabled} />
+      </AppContext.Provider>
+    );
+
+    let tree;
+    renderer.act(() => {
+      tree = renderer.create(element(true));
+    });
+
+    expect(add).toHaveBeenCalledTimes(1);
+    expect(remove).not.toHaveBeenCalled();
+
+    renderer.act(() => {
+      tree.update(element(false));
+    });
+
+    expect(add).toHaveBeenCalledTimes(1);
+    expect(remove).toHaveBeenCalledTimes(1);
+    expect(remove).toHaveBeenCalledWith(fn);
+
+    renderer.act(() => {
+      tree.update(element(true));
+    });
+
+    expect(add).toHaveBeenCalledTimes(2);
+    expect(remove).toHaveBeenCalledTimes(1);
+  });
+
+  it("will pass priority to the app.ticker", () => {
+    const app = new PIXI.Application();
+    const fn = vi.fn();
+    const add = vi.spyOn(app.ticker, "add");
+
+    const TestComponent = () => {
+      usePixiTicker(fn, { priority: PIXI.UPDATE_PRIORITY.HIGH });
+
+      return <Container />;
+    };
+
+    const tree = renderer.create(
+      <AppContext.Provider value={app}>
+        <TestComponent />
+      </AppContext.Provider>
+    );
+
+    tree.update();
+
+    expect(add).toHaveBeenCalledWith(fn, undefined, PIXI.UPDATE_PRIORITY.HIGH);
   });
 
   it("throws when the app has no ticker", () => {
