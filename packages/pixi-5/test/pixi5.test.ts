@@ -275,4 +275,107 @@ describe("props after mount", () => {
     expect(constructorWarnings(error, "geometry")).toHaveLength(__DEV__ ? 1 : 0);
     error.mockRestore();
   });
+
+  const positions = (mesh: PIXI.Mesh) => (mesh.geometry.getBuffer("aVertexPosition").data as Float32Array).length;
+
+  it("writes the MeshSimple uvs and indices to the geometry buffers", () => {
+    const vertices = new Float32Array([0, 0, 1, 0, 1, 1]);
+    const { instance, update } = mount("MeshSimple", { texture, vertices });
+    const uvs = new Float32Array([0, 0, 1, 0, 1, 1]);
+    const indices = new Uint16Array([0, 1, 2]);
+    update({ indices, texture, uvs, vertices });
+    expect(instance.geometry.getBuffer("aTextureCoord").data).toBe(uvs);
+    expect(instance.geometry.getIndex().data).toBe(indices);
+  });
+
+  it("writes MeshSimple indices given as an array as a Uint16Array", () => {
+    const vertices = new Float32Array([0, 0, 1, 0, 1, 1]);
+    const { instance, update } = mount("MeshSimple", { texture, vertices });
+    update({ indices: [0, 1, 2], texture, vertices });
+    expect(instance.geometry.getIndex().data).toEqual(new Uint16Array([0, 1, 2]));
+  });
+
+  it("rebuilds the MeshPlane geometry when verticesX or verticesY changes", () => {
+    const { instance, update } = mount("MeshPlane", { texture, verticesX: 2, verticesY: 2 });
+    expect(positions(instance)).toBe(2 * 2 * 2);
+    update({ texture, verticesX: 3, verticesY: 4 });
+    expect(positions(instance)).toBe(3 * 4 * 2);
+  });
+
+  it("rebuilds the MeshRope geometry when points or textureScale changes", () => {
+    const two = [new PIXI.Point(0, 0), new PIXI.Point(10, 0)];
+    const { instance, update } = mount("MeshRope", { points: two, texture });
+    expect(positions(instance)).toBe(2 * 4);
+    const three = [...two, new PIXI.Point(20, 0)];
+    update({ points: three, texture, textureScale: 2 });
+    expect(positions(instance)).toBe(3 * 4);
+    expect(instance.geometry.points).toBe(three);
+    expect(instance.geometry.textureScale).toBe(2);
+  });
+
+  it("gives the MeshSimple uvs and indices the constructor default when they are removed", () => {
+    const vertices = new Float32Array([0, 0, 1, 0, 1, 1]);
+    const { instance, update } = mount("MeshSimple", {
+      indices: new Uint16Array([0, 1, 2]),
+      texture,
+      uvs: new Float32Array([0, 0, 1, 0, 1, 1]),
+      vertices,
+    });
+    update({ texture, vertices });
+    // PixiJS fills a buffer that gets no data with one float.
+    expect(instance.geometry.getBuffer("aTextureCoord").data).toEqual(new Float32Array(1));
+    expect(instance.geometry.getIndex().data).toEqual(new Float32Array(1));
+  });
+
+  it("rebuilds the MeshPlane geometry with 10 by 10 vertices when verticesX and verticesY are removed", () => {
+    const { instance, update } = mount("MeshPlane", { texture, verticesX: 2, verticesY: 2 });
+    update({ texture });
+    expect(positions(instance)).toBe(10 * 10 * 2);
+  });
+
+  it("keeps the MeshRope points when they are removed, and sets textureScale back to 0", () => {
+    const points = [new PIXI.Point(0, 0), new PIXI.Point(10, 0), new PIXI.Point(20, 0)];
+    const { instance, update } = mount("MeshRope", { points, texture, textureScale: 2 });
+    update({ texture });
+    expect(instance.geometry.points).toBe(points);
+    expect(instance.geometry.textureScale).toBe(0);
+    expect(positions(instance)).toBe(3 * 4);
+  });
+
+  it("sets the ParticleContainer properties from the defaults and drops the buffers built with the old ones", () => {
+    const { instance, update } = mount("ParticleContainer", { properties: { rotation: true, uvs: true } });
+    instance._buffers = [];
+    update({ properties: { scale: true } });
+    expect(instance._properties).toEqual([true, true, false, false, false]);
+    expect(instance._buffers).toBeNull();
+  });
+
+  it("warns once when the ParticleContainer maxSize or batchSize changes", () => {
+    const error = vi.spyOn(console, "error").mockImplementation(() => {});
+    const { update } = mount("ParticleContainer", { batchSize: 10, maxSize: 10 });
+    update({ batchSize: 20, maxSize: 20 });
+    update({ batchSize: 30, maxSize: 30 });
+    expect(constructorWarnings(error, "batchSize")).toHaveLength(__DEV__ ? 1 : 0);
+    expect(constructorWarnings(error, "maxSize")).toHaveLength(__DEV__ ? 1 : 0);
+    error.mockRestore();
+  });
+
+  it("writes a changed BitmapText style through the setters of its keys, the props winning over the style", () => {
+    const { instance, update } = mount("BitmapText", { style: { fontName: "test", fontSize: 10 }, text: "t" });
+    update({ style: { align: "right", fontName: "test", fontSize: 20 }, text: "t" });
+    expect([instance.align, instance.fontSize]).toEqual(["right", 20]);
+    update({ fontSize: 30, style: { fontName: "test", fontSize: 20 }, text: "t" });
+    expect(instance.fontSize).toBe(30);
+  });
+
+  it("warns once when the Text canvas changes", () => {
+    const error = vi.spyOn(console, "error").mockImplementation(() => {});
+    const canvas = document.createElement("canvas");
+    const { instance, update } = mount("Text", { canvas, text: "t" });
+    expect(instance.canvas).toBe(canvas);
+    update({ canvas: document.createElement("canvas"), text: "t" });
+    expect(instance.canvas).toBe(canvas);
+    expect(constructorWarnings(error, "canvas")).toHaveLength(__DEV__ ? 1 : 0);
+    error.mockRestore();
+  });
 });

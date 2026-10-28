@@ -11,3 +11,5 @@ A behavior can list in `constructorOnly` the props that its `create` gives to th
 `<Graphics geometry={geometry} />` no longer throws `Cannot set property geometry` on PixiJS 5, 6 and 7. The Graphics uses the geometry from its constructor.
 
 On PixiJS 8, a change after mount to these props now changes the Scene Object: `indices`, `topology` and `uvs` of MeshSimple, `verticesX` and `verticesY` of MeshPlane and PerspectiveMesh, `points` and `textureScale` of MeshRope, and the corners `x0` to `y3` of PerspectiveMesh. A change to `dynamicProperties` of ParticleContainer warns.
+
+On PixiJS 5, 6 and 7, a change after mount to these props now changes the Scene Object: `uvs` and `indices` of MeshSimple, `verticesX` and `verticesY` of MeshPlane, `points` and `textureScale` of MeshRope, `properties` of ParticleContainer, and the `style` of BitmapText. A change to `maxSize` or `batchSize` of ParticleContainer, or to `canvas` of Text, warns.
