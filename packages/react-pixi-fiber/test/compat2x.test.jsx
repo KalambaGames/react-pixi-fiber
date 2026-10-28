@@ -209,7 +209,9 @@ describe("2.x compatibility", () => {
       ["usePixiApp", app],
       ["AppContext", app],
     ]);
-    expect(add).toHaveBeenCalledWith(tick, undefined, undefined);
+    expect(add).toHaveBeenCalledWith(expect.any(Function), undefined, undefined);
+    add.mock.calls[0][0](1);
+    expect(tick).toHaveBeenCalledWith(1);
     act(() => unmount(app.stage));
     app.destroy();
     expect(messages(error)).toEqual([]);
