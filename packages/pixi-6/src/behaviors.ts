@@ -44,7 +44,7 @@ export const behaviors: Record<string, Behavior> = {
     create: props => new PIXI.filters.DisplacementFilter(props.sprite, props.scale),
   },
   FXAAFilter: { kind: "filter", create: () => new PIXI.filters.FXAAFilter() },
-  Graphics: { create: props => new PIXI.Graphics(props.geometry) },
+  Graphics: { constructorOnly: ["geometry"], create: props => new PIXI.Graphics(props.geometry) },
   Mesh: { create: props => new PIXI.Mesh(props.geometry, props.shader, props.state, props.drawMode) },
   MeshPlane: { create: props => new PIXI.SimplePlane(props.texture, props.verticesX, props.verticesY) },
   MeshRope: { create: props => new PIXI.SimpleRope(props.texture, props.points, props.textureScale) },

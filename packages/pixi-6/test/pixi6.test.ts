@@ -1,6 +1,13 @@
 import { describe, it, expect, vi } from "vitest";
 import * as PIXI from "pixi.js";
 import { DISPLAY_OBJECT_TAGS, FILTER_TAGS, TAGS } from "../../react-pixi-fiber/src/tags";
+import { configure } from "../../react-pixi-fiber/src/configure";
+import {
+  createInstance,
+  diffProperties,
+  setInitialProperties,
+  updateProperties,
+} from "../../react-pixi-fiber/src/ReactPixiFiberComponent";
 import pixi6, { FXAAFilter, NineSlicePlane, SimpleMesh, SimplePlane, SimpleRope } from "../src/index";
 
 const texture = PIXI.Texture.WHITE;
@@ -227,5 +234,42 @@ describe("AnimatedSprite applyProps", () => {
     update({ loop: false, playing: false, textures: frames });
     update({ loop: false, playing: true, textures: frames });
     expect([animated.playing, animated.currentFrame]).toEqual([true, 1]);
+  });
+});
+
+describe("props after mount", () => {
+  // The core needs a React adapter only for its StrictMode bit and stack addendum here, so a stub stands in for it.
+  const react18 = () => ({ createRenderer: () => ({ getStackAddendum: () => "" }), strictModeBit: 1 }) as never;
+  const strict = { mode: 1, return: null };
+  // Creates the tag and writes its props through the core, then returns an `update` that writes a prop change the
+  // way a commit does, under StrictMode.
+  function mount(tag: string, props: Record<string, unknown>) {
+    configure({ react: react18(), pixi: pixi6() });
+    const instance = createInstance(tag, props) as any;
+    setInitialProperties(tag, instance, props);
+    let current = props;
+    const update = (next: Record<string, unknown>) => {
+      updateProperties(tag, instance, diffProperties(tag, instance, current, next) ?? [], current, next, strict);
+      current = next;
+    };
+    return { instance, update };
+  }
+  function constructorWarnings(error: ReturnType<typeof vi.spyOn>, prop: string) {
+    return error.mock.calls.filter((c: unknown[]) =>
+      String(c[0]).includes(`reads \`${prop}\` only in its constructor`)
+    );
+  }
+
+  it("keeps the Graphics geometry from the constructor and warns once when it changes", () => {
+    const error = vi.spyOn(console, "error").mockImplementation(() => {});
+    const geometry = new PIXI.GraphicsGeometry();
+    const { instance, update } = mount("Graphics", { geometry });
+    expect(instance.geometry).toBe(geometry);
+    expect(constructorWarnings(error, "geometry")).toHaveLength(0);
+    update({ geometry: new PIXI.GraphicsGeometry() });
+    update({ geometry: new PIXI.GraphicsGeometry() });
+    expect(instance.geometry).toBe(geometry);
+    expect(constructorWarnings(error, "geometry")).toHaveLength(__DEV__ ? 1 : 0);
+    error.mockRestore();
   });
 });
