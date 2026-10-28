@@ -13,6 +13,7 @@ type Fallback = Record<string, unknown>;
 export type InstanceOf<K extends string> = K extends keyof PixiInstances ? PixiInstances[K] : Fallback;
 export type PixiApplication = PixiTypes extends { Application: infer T } ? T : Record<string, any>;
 export type PixiApplicationOptions = PixiTypes extends { ApplicationOptions: infer T } ? T : Record<string, unknown>;
+export type PixiDestroyOptions = PixiTypes extends { DestroyOptions: infer T } ? T : boolean | Record<string, unknown>;
 export type PixiPoint = PixiTypes extends { Point: infer T } ? T : PointLikeObject;
 // `never` when the adapter declares no interaction event.
 export type InteractionEvent = PixiTypes extends { InteractionEvent: infer T } ? T : never;
@@ -318,10 +319,13 @@ export interface ReactAdapter {
 
 export interface StagePropsWithApp {
   app: PixiApplication;
+  destroyOptions?: never;
   options?: never;
 }
 export interface StagePropsWithOptions {
   app?: never;
+  /** What an unmount destroys, passed to `app.destroy`. Default `true`. A recreate always passes `false`. */
+  destroyOptions?: PixiDestroyOptions;
   options?: PixiApplicationOptions;
 }
 

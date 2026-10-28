@@ -520,4 +520,101 @@ describe("Stage", () => {
     await flush();
     tree.unmount();
   });
+
+  it("destroys the application with `destroyOptions` on unmount", async () => {
+    const tree = renderer.create(<Stage destroyOptions={{ children: true }} />, { createNodeMock: () => ({}) });
+    act(() => resolveInit());
+    await flush();
+    tree.unmount();
+    await tick();
+    expect(adapter.destroyApplication.mock.calls).toEqual([[apps[0], false, { children: true }]]);
+  });
+
+  it("passes `destroyOptions={false}` as false", async () => {
+    const tree = renderer.create(<Stage destroyOptions={false} />, { createNodeMock: () => ({}) });
+    act(() => resolveInit());
+    await flush();
+    tree.unmount();
+    await tick();
+    expect(adapter.destroyApplication.mock.calls).toEqual([[apps[0], false, false]]);
+  });
+
+  it("uses the latest `destroyOptions` on unmount", async () => {
+    const tree = renderer.create(<Stage destroyOptions={{ children: true }} />, { createNodeMock: () => ({}) });
+    act(() => resolveInit());
+    await flush();
+    act(() => tree.update(<Stage destroyOptions={{ children: true, texture: false }} />));
+    tree.unmount();
+    await tick();
+    expect(adapter.destroyApplication.mock.calls).toEqual([[apps[0], false, { children: true, texture: false }]]);
+  });
+
+  it("keeps false on a recreate when `destroyOptions` is set", async () => {
+    const tree = renderer.create(<Stage destroyOptions={{ children: true }} options={{ antialias: false }} />, {
+      createNodeMock: () => ({}),
+    });
+    act(() => resolveInit());
+    await flush();
+    tree.update(<Stage destroyOptions={{ children: true }} options={{ antialias: true }} />);
+    await tick();
+    expect(adapter.destroyApplication.mock.calls).toEqual([[apps[0], false, false]]);
+    tree.unmount();
+  });
+
+  it("destroys a cancelled init with `destroyOptions`", async () => {
+    const tree = renderer.create(<Stage destroyOptions={{ children: true }} />, { createNodeMock: () => ({}) });
+    tree.unmount();
+    act(() => resolveInit());
+    await flush();
+    expect(adapter.destroyApplication).toHaveBeenCalledWith(apps[0], false, { children: true });
+  });
+
+  it("destroys a failed init with true when `destroyOptions` is set", async () => {
+    const error = vi.spyOn(console, "error").mockImplementation(() => {});
+    adapter.createApplication.mockImplementation(() => {
+      const app = makeApp();
+      Object.defineProperty(app.stage, "alpha", {
+        set() {
+          throw new Error("alpha failed");
+        },
+      });
+      return Promise.resolve(app);
+    });
+    class Boundary extends React.Component {
+      state = { error: null };
+      static getDerivedStateFromError(caught) {
+        return { error: caught };
+      }
+      render() {
+        return this.state.error ? null : this.props.children;
+      }
+    }
+    const tree = renderer.create(
+      <Boundary>
+        <Stage alpha={0.5} destroyOptions={{ children: true }} />
+      </Boundary>,
+      { createNodeMock: () => ({}) }
+    );
+    await flush();
+    await tick();
+    expect(adapter.destroyApplication.mock.calls).toEqual([[apps[0], false, true]]);
+    tree.unmount();
+    error.mockRestore();
+  });
+
+  it("warns once in development and does not destroy a provided app with `destroyOptions`", async () => {
+    vi.resetModules();
+    const { default: FreshStage } = await import("../../src/Stage");
+    const error = vi.spyOn(console, "error").mockImplementation(() => {});
+    const app = makeApp();
+    const tree = renderer.create(<FreshStage app={app} destroyOptions={{ children: true }} />);
+    act(() => tree.update(<FreshStage app={app} destroyOptions={false} />));
+    await flush();
+    tree.unmount();
+    await tick();
+    expect(
+      error.mock.calls.filter(c => /`destroyOptions` and `onBeforeDestroy` props of `Stage` have no effect/.test(c[0]))
+    ).toHaveLength(__DEV__ ? 1 : 0);
+    expect(adapter.destroyApplication).not.toHaveBeenCalled();
+  });
 });

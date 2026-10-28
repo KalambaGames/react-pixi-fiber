@@ -18,6 +18,8 @@ export function unmount(container: any): void {
 // Stage props as the helpers read them; the public shape is `StageProps` in `types.ts`.
 export type Props = Record<string, any>;
 
+// What `Stage` passes to `destroyApplication`. A recreate keeps the objects and textures on `app.stage` for the new
+// application. The `destroyOptions` prop replaces the unmount value. A failed init always passes `true`.
 export const STAGE_OPTIONS_RECREATE = false;
 export const STAGE_OPTIONS_UNMOUNT = true;
 
@@ -26,7 +28,7 @@ export const STAGE_OPTIONS_UNMOUNT = true;
 export function cleanupStage(
   pixi: PixiAdapter,
   app: PixiApplication,
-  stageOptions: boolean | null
+  stageOptions: unknown
 ): Promise<void> | undefined {
   // Do not remove canvas from DOM, there are two ways canvas made it's way to PIXI.Application:
   // 1) canvas was rendered by Stage component - it will be removed by React when Stage is unmounted

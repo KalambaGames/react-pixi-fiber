@@ -5,7 +5,17 @@ import { TAGS } from "../tags";
 import { filterByKey, including } from "../utils";
 
 // Stage's own props. `width` and `height` are deprecated, pass them in `options`.
-export const STAGE_PROP_NAMES = ["app", "bridgeContexts", "options", "children", "onInit", "width", "height"] as const;
+export const STAGE_PROP_NAMES = [
+  "app",
+  "bridgeContexts",
+  "destroyOptions",
+  "options",
+  "children",
+  "onBeforeDestroy",
+  "onInit",
+  "width",
+  "height",
+] as const;
 // The own props that also reach `app.stage`: the deprecated `width` and `height` size it.
 const SHARED_STAGE_PROP_NAMES = ["width", "height"] as const;
 const includingStageProps = including(STAGE_PROP_NAMES as readonly string[]);
