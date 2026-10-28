@@ -51,6 +51,8 @@ Import the tags of this adapter from this package. `<NineSlicePlane />` is not a
 
 The blur prop of `BlurFilter` is `strength`. `blur` works, but PixiJS 8 logs its own deprecation for it. `strengthX` and `strengthY` each override `strength` for one axis. A filter tag accepts `resolution="inherit"`. `kernelSize` of `BlurFilter` and `sprite` of `DisplacementFilter` are constructor-only. PixiJS 8 has no `FXAAFilter`, so this adapter has no `FXAAFilter` tag.
 
+An unmounted `Graphics` destroys the `GraphicsContext` that it created. It does not destroy a `GraphicsContext` from the `context` prop. Destroy that context when no `Graphics` uses it.
+
 | Feature | Support |
 | --- | --- |
 | Application | `Stage` creates a `PIXI.Application` and awaits `app.init(options)`, then renders its children and calls `onInit(app)`. An existing canvas goes in `options.canvas`, or in 2.x's `options.view`, which wins when both are given; without either, the application draws on the canvas `Stage` renders |

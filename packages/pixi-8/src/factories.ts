@@ -91,7 +91,21 @@ export const factories: { [K in Pixi8Tag]: Factory<K> } = {
   // The constructor keeps a `{ x, y }` scale as is, not as the Point the props write into. So `scale` goes through the
   // props.
   DisplacementFilter: Ctor => ({ kind: "filter", create: p => new Ctor(defined({ sprite: p.sprite })) }),
-  Graphics: Ctor => ({ create: p => new Ctor(p.context) }),
+  // PixiJS 8 destroys the context that a Graphics creates only on `destroy()` with no options. The renderer passes
+  // `{ children: true }`, so this factory destroys that context. A context from the `context` prop stays the user's.
+  // PixiJS 8.9 has no `destroyed` flag, and a second `destroy()` throws. Null `instructions` shows a destroyed context.
+  Graphics: Ctor => ({
+    create: p => {
+      const graphics = new Ctor(p.context);
+      if (p.context == null) {
+        const owned = graphics.context;
+        graphics.once("destroyed", () => {
+          if (owned.instructions) owned.destroy();
+        });
+      }
+      return graphics;
+    },
+  }),
   HTMLText: Ctor => ({ create: p => new Ctor(defined({ style: p.style, text: p.text })) }),
   Mesh: Ctor => ({
     create: p => new Ctor(defined({ geometry: p.geometry, shader: p.shader, state: p.state, texture: p.texture })),
