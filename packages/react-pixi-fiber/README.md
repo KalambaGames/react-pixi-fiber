@@ -193,6 +193,91 @@ Moved from the PixiJS 7 playground to PixiJS 8 with `compat` from `@react-pixi-f
 - The Bunnymark, Bunnymark with custom components and Suspense examples still use the PixiJS 7 texture calls (`Texture.from(url)`, `Texture.fromURL`) and need the same change.
 - The Layers example depends on `@pixi/layers`, which supports PixiJS 7 only.
 
+### Writing an adapter
+
+The core knows no React version and no PixiJS version. Two adapters connect it to them. A React adapter runs the React
+reconciler of one React major. A PixiJS adapter creates the PixiJS objects of one PixiJS major. `configure` accepts any
+object of the correct shape, so you can write an adapter for a React or PixiJS version that has none.
+
+The adapter contract follows semver from 3.0.0. A minor release of `react-pixi-fiber` adds only optional members to
+what an adapter supplies. Only a major release breaks the contract.
+[ADR 0021](../../docs/adr/0021-treat-the-adapter-contract-as-a-public-api.md) lists the contract and the rules.
+
+Each adapter:
+
+- is a factory function that returns the adapter object. The app calls it in `configure`, for example
+  `configure({ react: react18(), pixi: pixi6() })`. The factory can take options.
+- imports only types from `react-pixi-fiber`. Its built JavaScript does not import the core.
+- declares `react-pixi-fiber` as a peer dependency. When the adapter uses or supplies a member that a minor release
+  added, raise the lower bound of the peer range to that minor.
+
+Start from the adapter of the nearest major, and change what is different in your version.
+
+#### React adapter
+
+A React adapter returns a `ReactAdapter` with two members:
+
+- `createRenderer(hostOps, { isPrimaryRenderer })` builds a `react-reconciler` host config and returns a `Renderer`.
+  The host config calls `hostOps` for each tree operation and each prop operation, for example `createInstance`,
+  `appendChild` and `updateProperties`. The adapter maps the reconciler API of its React version to these calls.
+  `configure` calls `createRenderer` two times. The primary renderer runs `render`. The secondary renderer runs
+  `Stage` inside another renderer, such as React DOM.
+- `strictModeBit` is the fiber mode bit that marks `<StrictMode>` in that React version. The core reads it to show
+  some warnings only under `<StrictMode>`.
+
+A `Renderer` has three members:
+
+- `render(element, container, callback, parentComponent)` renders into the container and returns the root instance.
+- `unmount(container)` unmounts the tree of the container. It returns `true` when the container had a tree.
+- `getStackAddendum()` returns the component stack of the current render for warnings, or an empty string.
+
+React DevTools keeps each renderer that an adapter injects into it, and an app can call `configure` more than one
+time. So keep one renderer for each `hostOps` and each value of `isPrimaryRenderer`.
+
+#### PixiJS adapter
+
+A PixiJS adapter returns a `PixiAdapter`:
+
+- `behaviors` maps each [tag](#tags) to a behavior. A behavior is the object that `PIXIComponent` takes, see
+  [Custom Components](#custom-components). The adapter supplies each core tag, and it can add tags for other classes
+  of its PixiJS major. For example: `Sprite: { create: props => new PIXI.Sprite(props.texture) }`.
+- `properties` is a `PixiPropertyTable`. It lists prop names by kind: `boolean`, `callback`, `numeric`,
+  `positiveNumeric`, `vector` and `untypedContainer`. The core uses the kind to convert and check a prop. The core
+  sets a prop that the table does not list on the instance as it is.
+- `isPoint(value)` tells if a value is a PixiJS point. `copyPoint(target, value)` copies a point into a point prop.
+- `createApplication(options)`, `destroyApplication(app, removeView, destroyOptions)` and `isApplication(value)`
+  are for `Stage`. `createApplication` can return a promise when the application starts asynchronously.
+
+These members are optional:
+
+- `defaults` sets default props for each tag, see [Default props per tag](#default-props-per-tag).
+- `releaseFilter(filter)` replaces `filter.destroy()`, for a PixiJS version where `destroy` breaks the renderer.
+- `translateProps(type, props)` changes the props before the core reads them, for example to rename old props.
+
+For TypeScript, the adapter augments three interfaces of the core:
+
+```ts
+declare module "react-pixi-fiber" {
+  // The application, point and event types of your PixiJS version.
+  interface PixiTypes {
+    Application: PIXI.Application;
+    ApplicationOptions: PIXI.IApplicationOptions;
+    DestroyOptions: NonNullable<Parameters<PIXI.Container["destroy"]>[0]>;
+    InteractionEvent: PIXI.InteractionEvent;
+    Point: PIXI.Point | PIXI.ObservablePoint | PIXI.IPointData;
+  }
+  // The instance class of each tag. The props of a tag come from its class.
+  interface PixiInstances {
+    Sprite: PIXI.Sprite;
+    // One entry for each tag.
+  }
+  // Props that each tag takes in addition to the props of its class, for example event props.
+  interface PixiExtraProps {
+    click?: (event: PIXI.InteractionEvent) => void;
+  }
+}
+```
+
 ## Usage
 
 <details open>
@@ -781,6 +866,18 @@ Use this to do something (usually cleanup) before `displayObject` is removed fro
 The names of the props that `create` gives to the constructor and that the Display Object cannot change later. React
 Pixi Fiber does not write these props. In development, under StrictMode, a change after mount logs a warning that tells
 the user to give the element a new `key`.
+
+#### `appendChild(parent, child)`, `insertBefore(parent, child, before)`, `removeChild(parent, child)` (optional)
+
+For a container that keeps its children outside `children`, such as the `ParticleContainer` of PixiJS 8. When the
+behavior of the parent has these keys, React Pixi Fiber calls them instead of `addChild`, `addChildAt` and
+`removeChild` of the parent. `afterAdd` and `beforeRemove` of the child still run, in the same order. After
+`removeChild`, React Pixi Fiber destroys the child when it has a `destroy` method.
+
+#### `kind` (optional)
+
+`"filter"` makes the component a filter: its parent keeps it in `filters`, not in its children. [`PIXIFilter`](#filters)
+sets it for you.
 
 #### Simple Graphics example
 
