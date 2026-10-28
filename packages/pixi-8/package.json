@@ -1,6 +1,6 @@
 {
   "name": "@react-pixi-fiber/pixi-8",
-  "version": "1.0.0-alpha.3",
+  "version": "1.0.0-beta.0",
   "description": "PixiJS 8 adapter for react-pixi-fiber",
   "main": "index.js",
   "author": "Michal Ochman",
