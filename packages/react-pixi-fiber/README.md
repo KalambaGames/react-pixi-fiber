@@ -499,6 +499,8 @@ render(
 );
 ```
 
+Outside `<Stage />` and `<AppProvider />`, the wrapped component gets `app={null}`. In development, `withApp` writes a warning one time for each wrapped component.
+
 </details>
 
 ---

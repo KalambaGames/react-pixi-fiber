@@ -68,4 +68,63 @@ describe("withApp", () => {
     expect(TestComponent).toHaveBeenCalledWith({ app, foo: "bar" }, {});
     renderer.act(() => tree.unmount());
   });
+
+  it("does not warn when an application is available", () => {
+    const error = vi.spyOn(console, "error").mockImplementation(() => {});
+    const app = new PIXI.Application();
+    const TestComponentWithApp = withApp(function Bunny() {
+      return null;
+    });
+
+    renderer.act(() => {
+      render(
+        <AppProvider app={app}>
+          <TestComponentWithApp />
+        </AppProvider>,
+        app.stage
+      );
+    });
+
+    expect(error.mock.calls.filter(c => /withApp/.test(c[0]))).toHaveLength(0);
+    error.mockRestore();
+  });
+
+  it("passes a null app and warns in development, once for each wrapped component", () => {
+    const error = vi.spyOn(console, "error").mockImplementation(() => {});
+    const container = new PIXI.Container();
+    const seen = [];
+    const BunnyWithApp = withApp(function Bunny(props) {
+      seen.push(props);
+      return null;
+    });
+    const CarrotWithApp = withApp(function Carrot() {
+      return null;
+    });
+
+    renderer.act(() => {
+      render(
+        <>
+          <BunnyWithApp foo="bar" />
+          <BunnyWithApp foo="baz" />
+          <CarrotWithApp />
+        </>,
+        container
+      );
+    });
+
+    expect(seen).toEqual([
+      { app: null, foo: "bar" },
+      { app: null, foo: "baz" },
+    ]);
+    const warnings = error.mock.calls.map(c => c[0]).filter(message => /withApp/.test(message));
+    expect(warnings).toEqual(
+      __DEV__
+        ? [
+            "Warning: `withApp(Bunny)` gets no PIXI.Application, so its `app` prop is null. Render it in a child of <Stage /> or <AppProvider />.",
+            "Warning: `withApp(Carrot)` gets no PIXI.Application, so its `app` prop is null. Render it in a child of <Stage /> or <AppProvider />.",
+          ]
+        : []
+    );
+    error.mockRestore();
+  });
 });
