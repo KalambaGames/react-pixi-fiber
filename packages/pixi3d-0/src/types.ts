@@ -1,12 +1,22 @@
 import type * as PIXI3D from "@pixi/3d";
 import type * as PIXI from "pixi.js";
 import type { Props } from "react-pixi-fiber";
+import type { CONSTRUCTOR_ONLY } from "./behaviors";
 
 // Importing this package fills the core's augmentable interfaces with the `@pixi/3d` classes.
 declare module "react-pixi-fiber" {
   interface PixiInstances {
+    AmbientLight: PIXI3D.AmbientLight;
+    BatchedMesh3D: PIXI3D.BatchedMesh3D;
+    Camera3D: PIXI3D.Camera3D;
     Container3D: PIXI3D.Container3D;
+    DirectionalLight: PIXI3D.DirectionalLight;
     Mesh3D: PIXI3D.Mesh3D;
+    Model3D: PIXI3D.Model3D;
+    ParticleContainer3D: PIXI3D.ParticleContainer3D;
+    PointLight: PIXI3D.PointLight;
+    SpotLight: PIXI3D.SpotLight;
+    Sprite3D: PIXI3D.Sprite3D;
     View3D: PIXI3D.View3D;
   }
   interface PixiTypes {
@@ -20,10 +30,39 @@ declare module "react-pixi-fiber" {
       [PIXI.ObservablePoint, PIXI.PointData | [number, number] | number | string],
     ];
     // As `SetterTypes`, for the 3D classes. A subclass comes before its parent.
-    SetterTypes3D: [[PIXI3D.Mesh3D, PIXI3D.Mesh3DOptions], [PIXI3D.Container3D, PIXI3D.Container3DOptions]];
+    SetterTypes3D: [
+      [PIXI3D.AmbientLight, PIXI3D.AmbientLightOptions],
+      [PIXI3D.DirectionalLight, PIXI3D.DirectionalLightOptions],
+      [PIXI3D.Model3D, PIXI3D.Model3DOptions],
+      [PIXI3D.PointLight, PIXI3D.PointLightOptions],
+      [PIXI3D.SpotLight, PIXI3D.SpotLightOptions],
+      [PIXI3D.Sprite3D, PIXI3D.Sprite3DOptions],
+      [PIXI3D.Mesh3D, PIXI3D.Mesh3DOptions],
+      [PIXI3D.Container3D, PIXI3D.Container3DOptions],
+    ];
   }
 }
 
+// The constructor-only props take the option types, which can differ from a read-only member of the same name. A
+// change after mount warns. Give the element a new `key` to change one.
+type ConstructorOnly<Tag extends keyof typeof CONSTRUCTOR_ONLY> = (typeof CONSTRUCTOR_ONLY)[Tag][number];
+type WithOptions<I, O, Tag extends keyof typeof CONSTRUCTOR_ONLY> = Omit<Props<I>, ConstructorOnly<Tag>> &
+  Pick<O, ConstructorOnly<Tag> & keyof O>;
+
+export type AmbientLightProps = Props<PIXI3D.AmbientLight>;
+export type BatchedMesh3DProps = WithOptions<PIXI3D.BatchedMesh3D, PIXI3D.BatchedMesh3DOptions, "BatchedMesh3D">;
+export type Camera3DProps = Props<PIXI3D.Camera3D>;
 export type Container3DProps = Props<PIXI3D.Container3D>;
-export type Mesh3DProps = Props<PIXI3D.Mesh3D>;
-export type View3DProps = Props<PIXI3D.View3D>;
+export type DirectionalLightProps = Props<PIXI3D.DirectionalLight>;
+export type Mesh3DProps = WithOptions<PIXI3D.Mesh3D, PIXI3D.Mesh3DOptions, "Mesh3D">;
+export type Model3DProps = WithOptions<PIXI3D.Model3D, PIXI3D.Model3DOptions, "Model3D">;
+export type ParticleContainer3DProps = WithOptions<
+  PIXI3D.ParticleContainer3D,
+  PIXI3D.ParticleContainer3DOptions,
+  "ParticleContainer3D"
+>;
+export type PointLightProps = Props<PIXI3D.PointLight>;
+export type SpotLightProps = Props<PIXI3D.SpotLight>;
+export type Sprite3DProps = Props<PIXI3D.Sprite3D>;
+// `camera` and `root` are not props: the children of the element are the scene.
+export type View3DProps = Omit<WithOptions<PIXI3D.View3D, PIXI3D.View3DOptions, "View3D">, "camera" | "root">;

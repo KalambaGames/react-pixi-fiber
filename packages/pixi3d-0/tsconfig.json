@@ -9,10 +9,10 @@
     "module": "esnext",
     "moduleResolution": "bundler",
     "paths": {
-      "react-pixi-fiber": ["../react-pixi-fiber/src/index.ts"],
       "@react-pixi-fiber/pixi-8": ["../pixi-8/src/index.ts"],
       "@react-pixi-fiber/react-18": ["../react-18/src/index.ts"],
-      "pixi.js": ["./node_modules/pixi.js"]
+      "pixi.js": ["./node_modules/pixi.js"],
+      "react-pixi-fiber": ["../react-pixi-fiber/src/index.ts"]
     },
     "types": []
   },

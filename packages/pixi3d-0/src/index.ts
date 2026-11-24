@@ -5,12 +5,40 @@ import type { Pixi3dAdapter, PixiComponent } from "react-pixi-fiber";
 import { behaviors } from "./behaviors";
 import { clonePoint, isPoint, setPoint } from "./points";
 import { properties } from "./properties";
-import type { Container3DProps, Mesh3DProps, View3DProps } from "./types";
+import type {
+  AmbientLightProps,
+  BatchedMesh3DProps,
+  Camera3DProps,
+  Container3DProps,
+  DirectionalLightProps,
+  Mesh3DProps,
+  Model3DProps,
+  ParticleContainer3DProps,
+  PointLightProps,
+  SpotLightProps,
+  Sprite3DProps,
+  View3DProps,
+} from "./types";
 export * from "./types";
 
 // A tag is a string at runtime and a component in the type system, like the core tags.
+export const AmbientLight = "AmbientLight" as unknown as PixiComponent<AmbientLightProps, PIXI3D.AmbientLight>;
+export const BatchedMesh3D = "BatchedMesh3D" as unknown as PixiComponent<BatchedMesh3DProps, PIXI3D.BatchedMesh3D>;
+export const Camera3D = "Camera3D" as unknown as PixiComponent<Camera3DProps, PIXI3D.Camera3D>;
 export const Container3D = "Container3D" as unknown as PixiComponent<Container3DProps, PIXI3D.Container3D>;
+export const DirectionalLight = "DirectionalLight" as unknown as PixiComponent<
+  DirectionalLightProps,
+  PIXI3D.DirectionalLight
+>;
 export const Mesh3D = "Mesh3D" as unknown as PixiComponent<Mesh3DProps, PIXI3D.Mesh3D>;
+export const Model3D = "Model3D" as unknown as PixiComponent<Model3DProps, PIXI3D.Model3D>;
+export const ParticleContainer3D = "ParticleContainer3D" as unknown as PixiComponent<
+  ParticleContainer3DProps,
+  PIXI3D.ParticleContainer3D
+>;
+export const PointLight = "PointLight" as unknown as PixiComponent<PointLightProps, PIXI3D.PointLight>;
+export const SpotLight = "SpotLight" as unknown as PixiComponent<SpotLightProps, PIXI3D.SpotLight>;
+export const Sprite3D = "Sprite3D" as unknown as PixiComponent<Sprite3DProps, PIXI3D.Sprite3D>;
 export const View3D = "View3D" as unknown as PixiComponent<View3DProps, PIXI3D.View3D>;
 
 export interface Pixi3d0Options {
