@@ -12,7 +12,7 @@ import {
   Sprite3D,
 } from "@pixi/3d";
 import type { Behavior } from "react-pixi-fiber";
-import { guardCamera, viewBehavior } from "./view";
+import { constructorOptions, guardCamera, viewBehavior } from "./view";
 
 // The options of each class that the instance cannot take after construction: it has no member of that name, or only
 // a read-only one. A type test checks each list against the typings of `@pixi/3d`.
@@ -61,11 +61,7 @@ export function nodeBehavior(
     beforeRemove: node => guardCamera(node, true),
     constructorOnly,
     create: props => {
-      const options: Record<string, unknown> = {};
-      for (const name of constructorOnly) {
-        if (props[name] !== undefined) options[name] = props[name];
-      }
-      const node = new Class(options);
+      const node = new Class(constructorOptions(props, constructorOnly));
       node.on("visibleChanged", () => guardCamera(node, false));
       return node;
     },

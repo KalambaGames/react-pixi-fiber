@@ -80,6 +80,15 @@ function withoutScene(props: Record<string, unknown>): Record<string, unknown> {
   return rest;
 }
 
+// The props that `create` passes to a constructor.
+export function constructorOptions(props: Record<string, unknown>, names: readonly string[]): Record<string, unknown> {
+  const options: Record<string, unknown> = {};
+  for (const name of names) {
+    if (props[name] !== undefined) options[name] = props[name];
+  }
+  return options;
+}
+
 export function viewBehavior(constructorOnly: readonly string[]): Behavior<View3D, Record<string, unknown>> {
   return {
     appendChild: (view, child) => {
@@ -94,11 +103,7 @@ export function viewBehavior(constructorOnly: readonly string[]): Behavior<View3
     },
     constructorOnly,
     create: props => {
-      const options: Record<string, unknown> = {};
-      for (const name of constructorOnly) {
-        if (props[name] !== undefined) options[name] = props[name];
-      }
-      const view = new View3D(options);
+      const view = new View3D(constructorOptions(props, constructorOnly));
       views.set(view.root, view);
       ownCameras.set(view, view.camera);
       return view;
