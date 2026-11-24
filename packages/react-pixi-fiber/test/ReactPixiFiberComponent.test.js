@@ -20,6 +20,7 @@ vi.mock("../src/configure", () => ({
     copyPoint() {},
     defaults: { Defaulted: { alpha: 0.5 } },
   }),
+  getTagDefaults: tag => (tag === "Defaulted" ? { alpha: 0.5 } : undefined),
 }));
 
 describe("createInstance", () => {

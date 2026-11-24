@@ -9,6 +9,7 @@ const adapter = vi.hoisted(() => ({ current: null }));
 vi.mock("../src/configure", () => ({
   getPixiAdapter: () => adapter.current,
   getStackAddendum: () => "",
+  getTagDefaults: () => undefined,
   getStrictModeBit: () => 8,
 }));
 

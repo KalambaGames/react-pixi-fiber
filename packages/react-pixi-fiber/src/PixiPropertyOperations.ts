@@ -1,6 +1,6 @@
 // Based on: https://github.com/facebook/react/blob/27535e7bfcb63e8a4d65f273311e380b4ca12eff/packages/react-dom/src/client/DOMPropertyOperations.js
 import warning from "./warning";
-import { getPixiAdapter, getStackAddendum, getStrictModeBit } from "./configure";
+import { getPixiAdapter, getStackAddendum, getStrictModeBit, getTagDefaults } from "./configure";
 import { getRecordedDefault, recordDefault } from "./defaults";
 import { filtersPropWritten } from "./filters";
 import { getOwn, getPropertyInfo, shouldIgnoreAttribute, shouldRemoveAttribute } from "./PixiProperty";
@@ -21,7 +21,7 @@ const warnedConstructorOnly = new WeakMap<object, Set<string>>();
 export function getDefaultValue(instance: Record<string, any>, propName: string, type?: string): unknown {
   // A deprecated tag records the tag it maps to, a user tag records itself.
   const tag = getInstanceTag(instance) ?? type;
-  const override = tag === undefined ? undefined : getOwn(getOwn(getPixiAdapter().defaults, tag), propName);
+  const override = tag === undefined ? undefined : getOwn(getTagDefaults(tag), propName);
   return typeof override !== "undefined" ? override : getRecordedDefault(instance, propName);
 }
 

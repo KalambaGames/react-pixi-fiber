@@ -28,6 +28,7 @@ vi.mock("../../src/configure", () => ({
   markRendered() {},
   getPixiAdapter: () => configuredAdapter,
   getStackAddendum: () => "",
+  getTagDefaults: () => undefined,
   getStrictModeBit: () => strictModeBit,
 }));
 
