@@ -829,6 +829,42 @@ importers:
         specifier: 18.3.1
         version: 18.3.1(react@18.3.1)
 
+  packages/pixi3d-0:
+    devDependencies:
+      '@pixi/3d':
+        specifier: 0.1.0
+        version: 0.1.0(pixi.js@8.23.0)
+      '@react-pixi-fiber/pixi-8':
+        specifier: workspace:*
+        version: link:../pixi-8
+      '@react-pixi-fiber/react-18':
+        specifier: workspace:*
+        version: link:../react-18
+      '@types/react':
+        specifier: 18.3.31
+        version: 18.3.31
+      '@types/react-dom':
+        specifier: 18.3.7
+        version: 18.3.7(@types/react@18.3.31)
+      '@types/react-test-renderer':
+        specifier: 18.3.1
+        version: 18.3.1
+      pixi.js:
+        specifier: 8.23.0
+        version: 8.23.0
+      react:
+        specifier: 18.3.1
+        version: 18.3.1
+      react-dom:
+        specifier: 18.3.1
+        version: 18.3.1(react@18.3.1)
+      react-pixi-fiber:
+        specifier: workspace:*
+        version: link:../react-pixi-fiber
+      react-test-renderer:
+        specifier: 18.3.1
+        version: 18.3.1(react@18.3.1)
+
   packages/react-17:
     devDependencies:
       '@types/react':
@@ -1528,6 +1564,11 @@ packages:
     peerDependencies:
       '@pixi-spine/base': ^4.0.0
       '@pixi/core': ^7.0.0
+
+  '@pixi/3d@0.1.0':
+    resolution: {integrity: sha512-6mwC1nD4pDRix9QVl8aRDSHeMZtqb00vKiKb6U5cFeaYxZbwEnn9gXJphnk9udQKqf0jz2z8YUXaGudsACLaOQ==}
+    peerDependencies:
+      pixi.js: ^8.23.0
 
   '@pixi/accessibility@5.3.12':
     resolution: {integrity: sha512-JnfII2VsIeIpvyn1VMNDlhhq5BzHwwHn8sMRKhS3kFyxn4CdP0E4Ktn3/QK0vmL9sHCeTlto5Ybj3uuoKZwCWg==}
@@ -5181,6 +5222,9 @@ packages:
     resolution: {integrity: sha512-fJMmvat4NeKz63Uv9iHWcPDjCWcCkoiRoajRTEO8hlhUC6rwaHg0QCF9hBOTjZmm4JuglPckPSTtcuJL5kp0TQ==}
     engines: {node: '>=0.10.0'}
 
+  meshoptimizer@1.3.0:
+    resolution: {integrity: sha512-2oZqMAcEEiCtXWUjIGtZ71oPx1B0ZxYGTqIKsXB1wzWFhleNsCFxQuUJzgCV706bRcwPWtMGf1odmQvAcqKkIw==}
+
   mimic-response@3.1.0:
     resolution: {integrity: sha512-z0yWI+4FDrrweS8Zmt4Ej5HdJmky15+L2e6Wgn3+iK5fWzb6T3fhNFq2+MeTRb064c6Wr4N/wv0DzQTjNzHNGQ==}
     engines: {node: '>=10'}
@@ -6844,6 +6888,11 @@ snapshots:
     dependencies:
       '@pixi-spine/base': 4.0.6(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))(@pixi/graphics@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))(@pixi/sprite@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))))(@pixi/mesh-extras@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))(@pixi/mesh@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3))))(@pixi/mesh@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3)))(@pixi/sprite@7.4.3(@pixi/core@7.4.3)(@pixi/display@7.4.3(@pixi/core@7.4.3)))
       '@pixi/core': 7.4.3
+
+  '@pixi/3d@0.1.0(pixi.js@8.23.0)':
+    dependencies:
+      meshoptimizer: 1.3.0
+      pixi.js: 8.23.0
 
   '@pixi/accessibility@5.3.12':
     dependencies:
@@ -10176,6 +10225,8 @@ snapshots:
       is-extendable: 1.0.1
       mixin-deep: 1.3.2
       set-value: 2.0.1
+
+  meshoptimizer@1.3.0: {}
 
   mimic-response@3.1.0: {}
 

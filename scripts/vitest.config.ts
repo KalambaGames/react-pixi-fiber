@@ -8,15 +8,19 @@ const reactModules = ["react", "react-dom", "react-test-renderer", "react/jsx-de
 
 // `root` is the package directory. Shared test utilities live in the core, so React is aliased to the package's own
 // copy: a React element must be created by the React version that renders it. `dist` resolves the workspace packages
-// to their ES build instead of their source; run `pnpm build` first.
+// to their ES build instead of their source. Run `pnpm build` first. `ownModules` resolve from `root` for every
+// importer, for a workspace package whose source would load another release. They are deduped, not aliased: an alias
+// to the package directory loads its CommonJS build, next to the ES build that a dependency imports through Node.
 export function createVitestConfig({
   setupFiles = [],
   root = process.cwd(),
   dist,
+  ownModules = [],
 }: {
   setupFiles?: string[];
   root?: string;
   dist?: "es";
+  ownModules?: string[];
 } = {}) {
   // test:dev and test:prod differ only in __DEV__ (`--mode development|production`). NODE_ENV stays "test" in both:
   // with NODE_ENV=production React has no act() and its context objects differ from the public API snapshot.
@@ -34,6 +38,7 @@ export function createVitestConfig({
         __DEV__: JSON.stringify(!isProduction),
       },
       resolve: {
+        dedupe: ownModules,
         alias: [
           ...reactModules
             .filter(name => existsSync(`${root}/node_modules/${name.split("/")[0]}`))
@@ -42,7 +47,10 @@ export function createVitestConfig({
               replacement: `${root}/node_modules/${name}`,
             })),
           { find: /^react-pixi-fiber$/, replacement: `${packagesDir}react-pixi-fiber/${entry("react-pixi-fiber")}` },
-          { find: /^@react-pixi-fiber\/(react-1[789]|pixi-[4-8])$/, replacement: `${packagesDir}$1/${entry("$1")}` },
+          {
+            find: /^@react-pixi-fiber\/(react-1[789]|pixi-[4-8]|pixi3d-\d+)$/,
+            replacement: `${packagesDir}$1/${entry("$1")}`,
+          },
         ],
       },
       test: {

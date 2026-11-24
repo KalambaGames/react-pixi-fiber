@@ -67,6 +67,8 @@ try {
   for (const { dir, pkg } of packages) {
     const name = pkg.name;
     const base = name.split("/").pop();
+    // A package with `"type": "module"` has no CommonJS build, so the CommonJS checks do not apply to it.
+    const esmOnly = pkg.type === "module";
     // The builds import only peer dependencies, so nothing else has to be installed.
     const dom = pkg.peerDependencies?.["pixi.js"] ? ["--require", preload] : [];
     const peers = Object.keys(pkg.peerDependencies || {});
@@ -113,15 +115,19 @@ try {
     const tarball = run("pnpm", ["pack", "--pack-destination", pkgWork], dir).split("\n").pop();
 
     await check(`${name} publint`, () => run("pnpm", ["exec", "publint", "--strict", tarball]));
-    await check(`${name} attw`, () => run("pnpm", ["exec", "attw", tarball]));
+    await check(`${name} attw`, () =>
+      run("pnpm", ["exec", "attw", ...(esmOnly ? ["--profile", "esm-only"] : []), tarball])
+    );
 
     run("tar", ["-xzf", tarball, "-C", installed, "--strip-components=1"]);
     for (const [entry, source] of Object.entries(entries)) writeFileSync(join(pkgWork, `${entry}.js`), source);
 
     const require = createRequire(join(pkgWork, "index.js"));
-    await check(`${name} node require`, () => {
-      assert.equal(require.resolve(name), join(installed, "index.js"));
-    });
+    if (!esmOnly) {
+      await check(`${name} node require`, () => {
+        assert.equal(require.resolve(name), join(installed, "index.js"));
+      });
+    }
     await check(`${name} node import`, () => {
       const resolve = specifier =>
         run(
@@ -129,7 +135,10 @@ try {
           ["--input-type=module", "-e", `console.log(import.meta.resolve(${JSON.stringify(specifier)}))`],
           pkgWork
         );
-      assert.equal(fileURLToPath(resolve(name)), join(installed, "index.js"));
+      assert.equal(
+        fileURLToPath(resolve(name)),
+        join(installed, esmOnly ? `dist/es/${base}.production.min.js` : "index.js")
+      );
     });
     await check(`${name} deep imports are not exported`, () => {
       assert.throws(() => require.resolve(`${name}/dist/cjs/${base}.development.js`), {
@@ -197,7 +206,8 @@ try {
             ? readdirSync(join(store, entry)).map(d => `${entry}/${d}`)
             : [entry]) {
             const link = join(pkgWork, "node_modules", dep);
-            if (existsSync(link) || dep === peer) continue;
+            // Every peer is linked from the package's own install, also one that another peer depends on.
+            if (existsSync(link) || peers.includes(dep)) continue;
             mkdirSync(join(link, ".."), { recursive: true });
             symlinkSync(join(store, dep), link);
           }
@@ -214,7 +224,7 @@ try {
     let counter = 0;
     // An adapter fills the core's `PixiInstances` with the classes of its PixiJS, so it is a PixiJS type that must resolve.
     const pixiTypes = pkg.peerDependencies?.["pixi.js"]
-      ? `import type { PixiInstances } from "react-pixi-fiber";\n${notAny('null as unknown as PixiInstances["Container"]')}`
+      ? `import type { PixiInstances } from "react-pixi-fiber";\n${notAny(`null as unknown as PixiInstances["${pkg.peerDependencies["@pixi/3d"] ? "Mesh3D" : "Container"}"]`)}`
       : "";
     // A compat subpath default-exports the translator that the factory takes as `compat`. Its declarations add the
     // translated props to the core's `PixiExtraProps`, so reading one of them fails when the augmentation is lost.
@@ -231,13 +241,15 @@ try {
           ? `import factory from ${JSON.stringify(name)};\n${callable} factory;\n${notAny("factory")}${pixiTypes}${compatTypes("factory", (id, subpath) => `import ${id} from ${JSON.stringify(subpath)};\n`)}console.log(callable);\n`
           : `import * as mod from ${JSON.stringify(name)};\nconsole.log(mod);\n`)
     );
-    writeFileSync(
-      join(pkgWork, "a.cts"),
-      subpathImports +
-        (hasDefault
-          ? `import * as mod from ${JSON.stringify(name)};\n${callable} mod.default;\n${notAny("mod.default")}${pixiTypes}${compatTypes("mod.default", (id, subpath) => `import * as ${id}Mod from ${JSON.stringify(subpath)};\nconst ${id} = ${id}Mod.default;\n`)}console.log(callable);\n`
-          : `import * as mod from ${JSON.stringify(name)};\nconsole.log(mod);\n`)
-    );
+    if (!esmOnly) {
+      writeFileSync(
+        join(pkgWork, "a.cts"),
+        subpathImports +
+          (hasDefault
+            ? `import * as mod from ${JSON.stringify(name)};\n${callable} mod.default;\n${notAny("mod.default")}${pixiTypes}${compatTypes("mod.default", (id, subpath) => `import * as ${id}Mod from ${JSON.stringify(subpath)};\nconst ${id} = ${id}Mod.default;\n`)}console.log(callable);\n`
+            : `import * as mod from ${JSON.stringify(name)};\nconsole.log(mod);\n`)
+      );
+    }
     writeFileSync(
       join(pkgWork, "tsconfig.json"),
       JSON.stringify({
@@ -251,7 +263,7 @@ try {
           skipLibCheck: true,
           types: [],
         },
-        include: ["a.mts", "a.cts"],
+        include: esmOnly ? ["a.mts"] : ["a.mts", "a.cts"],
       })
     );
     await check(`${name} types resolve under node16`, () =>
@@ -272,13 +284,15 @@ try {
         );
         run("node", [...dom, "default.mjs"], pkgWork);
       });
-      await check(`${name} default export is callable from node CJS`, () => {
-        writeFileSync(
-          join(pkgWork, "default.cjs"),
-          `const mod = require(${JSON.stringify(name)});\nconst factory = mod.default ?? mod;\n${compat.map((subpath, i) => `const compat${i} = require(${JSON.stringify(subpath)}).default;\n`).join("")}if (typeof factory !== "function") throw new Error(typeof factory);\n${compatCalls}`
-        );
-        run("node", [...dom, "default.cjs"], pkgWork);
-      });
+      if (!esmOnly) {
+        await check(`${name} default export is callable from node CJS`, () => {
+          writeFileSync(
+            join(pkgWork, "default.cjs"),
+            `const mod = require(${JSON.stringify(name)});\nconst factory = mod.default ?? mod;\n${compat.map((subpath, i) => `const compat${i} = require(${JSON.stringify(subpath)}).default;\n`).join("")}if (typeof factory !== "function") throw new Error(typeof factory);\n${compatCalls}`
+          );
+          run("node", [...dom, "default.cjs"], pkgWork);
+        });
+      }
     }
     if (name !== "react-pixi-fiber") {
       await check(`${name} build does not import the core at run time`, () => {
@@ -294,7 +308,7 @@ try {
     // Node ESM reads the named exports of the CommonJS entry by static analysis, so one that the entry does not spell
     // out is missing there although the ES build has it.
     for (const [key, conditions] of Object.entries(pkg.exports || {})) {
-      if (key === "./package.json") continue;
+      if (key === "./package.json" || esmOnly) continue;
       const specifier = `${name}${key.slice(1)}`;
       await check(`${specifier} named exports from node ESM match the ES build`, () => {
         writeFileSync(
@@ -324,6 +338,7 @@ try {
         files.esDevelopment
       )
     );
+    if (esmOnly) continue;
     await check(`${name} esbuild require, production`, async () =>
       assert.deepEqual(await bundleWithEsbuild("cjs", { nodeEnv: "production" }), files.cjsProduction)
     );
