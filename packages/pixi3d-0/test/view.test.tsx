@@ -134,14 +134,19 @@ describe("View3D", () => {
     core.unmount(root);
   });
 
-  it("warns when composite changes", () => {
+  it("warns when composite changes", async () => {
+    vi.resetModules();
+    const core = await import("react-pixi-fiber");
+    const adapter = await import("../src/index");
+    core.configure({ react: react18(), pixi: pixi8(), pixi3d: adapter.default() });
     const error = vi.spyOn(console, "error").mockImplementation(() => {});
     const warnings = () => error.mock.calls.filter(c => /reads `composite` only in its constructor/.test(String(c[0])));
     const ref = createRef<PIXI3D.View3D>();
+    const Scene = adapter.View3D;
     const show = (composite: boolean) =>
-      render(
+      core.render(
         <StrictMode>
-          <View3D ref={ref} composite={composite} />
+          <Scene ref={ref} composite={composite} />
         </StrictMode>,
         root
       );
@@ -149,5 +154,6 @@ describe("View3D", () => {
     expect(warnings()).toHaveLength(0);
     show(true);
     expect(warnings()).toHaveLength(__DEV__ ? 1 : 0);
+    core.unmount(root);
   });
 });

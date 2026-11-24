@@ -19,9 +19,12 @@ describe("cameras", () => {
     unmount(root);
   });
 
+  // In the view, and the camera and each of its ancestors visible: what `@pixi/3d` checks on each frame.
   const usable = (view: PIXI3D.View3D) => {
     expect(viewOf(view.camera)).toBe(view);
-    expect(view.camera.visible).toBe(true);
+    for (let node: PIXI3D.Container3D | null = view.camera; node !== null; node = node.parent) {
+      expect(node.visible).toBe(true);
+    }
   };
 
   it("takes a direct camera", () => {
@@ -156,12 +159,15 @@ describe("cameras", () => {
       suspended = true;
       act(() => show(true));
       expect(rig.current!.visible).toBe(false);
+      expect(view.current!.camera).not.toBe(nested.current);
       usable(view.current!);
       await act(async () => {
         resolve();
         await pending;
       });
       expect(rig.current!.visible).toBe(true);
+      // The switch does not come back by itself to a camera the app assigned.
+      expect(view.current!.camera).not.toBe(nested.current);
     });
   });
 
