@@ -30,6 +30,7 @@ During the 3.0 prereleases, the contract changed often, with breaking changes. 3
 The adapter contract is a public API of the core. It follows semver from 3.0.0. The contract is these exports of the core:
 
 - `PixiAdapter` and `PixiPropertyTable`
+- `Pixi3dAdapter`, the object that a PixiJS 3D adapter gives the core (see [0022](0022-describe-each-pixijs-3d-major-as-its-own-adapter.md))
 - `Behavior` and `ApplyPropsContext`. This includes the child operation keys `appendChild`, `insertBefore`, and `removeChild`, which are no longer unstable. The function form and the 2.x keys that `PIXIComponent` accepts are not part of the contract.
 - `ReactAdapter`, `Renderer`, `HostOps`, and `PixiFragmentInstance`
 - `PixiInstances`, `PixiExtraProps`, and the keys of `PixiTypes` that the core reads

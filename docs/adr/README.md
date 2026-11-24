@@ -55,3 +55,4 @@ Write the title as an instruction that states the decision, for example "Use Con
 | 0019 | [Declare the Undeclared Imports of PixiJS Sub-Packages](0019-declare-the-undeclared-imports-of-pixijs-sub-packages.md) | accepted | 2026-10-25 |
 | 0020 | [Let Filters Be Child Elements Whose Lifecycle the Core Owns](0020-let-filters-be-child-elements-whose-lifecycle-the-core-owns.md) | accepted | 2026-10-26 |
 | 0021 | [Treat the Adapter Contract as a Public API](0021-treat-the-adapter-contract-as-a-public-api.md) | accepted | 2026-10-28 |
+| 0022 | [Describe Each PixiJS 3D Major as Its Own Adapter](0022-describe-each-pixijs-3d-major-as-its-own-adapter.md) | accepted | 2026-11-24 |

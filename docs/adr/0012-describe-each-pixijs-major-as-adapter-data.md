@@ -39,6 +39,8 @@ For types, the core declares interfaces that an adapter augments with `declare m
 
 The `pixi.js` peer range of an adapter starts at the first release of its PixiJS major that has every class that the adapter uses.
 
+An app can also configure a PixiJS 3D adapter, which returns the same kind of data (see [0022](0022-describe-each-pixijs-3d-major-as-its-own-adapter.md)). The core resolves a tag of the 3D adapter as it resolves a tag of the PixiJS adapter. For each instance, the core uses the property table, the point functions, and the prop types of one adapter. It uses those of the 3D adapter for a 3D node, and those of the PixiJS adapter for every other instance.
+
 ## Considered Alternatives
 
 ### An adapter that implements the host operations
