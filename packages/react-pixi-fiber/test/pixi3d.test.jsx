@@ -192,6 +192,8 @@ describe("tree rules", () => {
   afterEach(() => error.mockRestore());
 
   it("throws for a 3D node in a 2D parent", () => {
+    render(<Container />, stage);
+    const parent = stage.children[0];
     expect(() =>
       render(
         <Container>
@@ -200,7 +202,7 @@ describe("tree rules", () => {
         stage
       )
     ).toThrow(as3dChild + "`<Container />`. Put it in a 3D view or in another 3D node.");
-    expect(stage.children[0]?.children ?? []).toEqual([]);
+    expect(parent.children).toEqual([]);
   });
 
   it("throws for a 3D node in the root container", () => {
@@ -211,6 +213,13 @@ describe("tree rules", () => {
   });
 
   it("throws for a 2D object in a 3D node", () => {
+    render(
+      <View>
+        <Node3D />
+      </View>,
+      stage
+    );
+    const parent = stage.children[0].root.children[0];
     expect(() =>
       render(
         <View>
@@ -221,10 +230,17 @@ describe("tree rules", () => {
         stage
       )
     ).toThrow("`<Container />` is not a 3D node. It cannot be a child of the 3D node `<Node3D />`.");
-    expect(stage.children[0]?.root.children[0]?.children ?? []).toEqual([]);
+    expect(parent.children).toEqual([]);
   });
 
   it("throws for a filter in a 3D node", () => {
+    render(
+      <View>
+        <Node3D />
+      </View>,
+      stage
+    );
+    const parent = stage.children[0].root.children[0];
     expect(() =>
       render(
         <View>
@@ -237,7 +253,8 @@ describe("tree rules", () => {
     ).toThrow(
       "`<BlurFilter />` is a filter. It cannot be a child of the 3D node `<Node3D />`. Put it in the element of the 3D view."
     );
-    expect(stage.children[0]?.root.children[0]?.children ?? []).toEqual([]);
+    expect(parent.children).toEqual([]);
+    expect(parent.filters).toBeUndefined();
   });
 
   it("throws before an insertion", () => {
