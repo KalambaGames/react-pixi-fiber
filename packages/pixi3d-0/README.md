@@ -4,7 +4,7 @@
 
 PixiJS 3D adapter for [react-pixi-fiber](https://github.com/KalambaGames/react-pixi-fiber). It tells `react-pixi-fiber` how to create the classes of [`@pixi/3d`](https://www.npmjs.com/package/@pixi/3d) 0.1 for 12 tags and 2 camera controller tags. It also tells how to write the vector props of a 3D node.
 
-Install it next to `react-pixi-fiber`, `@pixi/3d` 0.1 or newer, `pixi.js` 8.23 or newer, and the React adapter and the [PixiJS 8 adapter](../pixi-8/README.md). Then configure once in the app entry, before the first render:
+Install it next to `react-pixi-fiber`, `@pixi/3d` 0.1.x, `pixi.js` 8.23 or newer, and the React adapter and the [PixiJS 8 adapter](../pixi-8/README.md). Then configure once in the app entry, before the first render:
 
 ```js
 import { configure } from "react-pixi-fiber";
@@ -121,7 +121,7 @@ configure({ react: reactN(), pixi: pixi8(), pixi3d: pixi3d0({ extras: { OrbitCam
 
 <View3D width={800} height={600}>
   <Camera3D position={[0, 2, 6]} />
-  <OrbitCamera distance={8} target={[0, 1, 0]} mouseButtons={{ left: "pan" }} />
+  <OrbitCamera maxDistance={8} target={[0, 1, 0]} mouseButtons={{ left: "pan" }} />
 </View3D>;
 ```
 
@@ -139,6 +139,7 @@ A tag that is not in `extras` throws at first render. The error names the class 
 
 ```tsx
 import { useEffect, useState } from "react";
+import { Model3D } from "@react-pixi-fiber/pixi3d-0";
 import { Assets } from "pixi.js";
 import type { Scene3DSource } from "@pixi/3d";
 
@@ -173,7 +174,7 @@ An unmounted 3D node is destroyed with `destroy({ children: true })`. This does 
 ## Limits
 
 - This package is an ES module only. It has no CommonJS build.
-- A prop name that only a 3D node has gets no casing warning. For example, `Position` is not reported.
+- A prop name that only a 3D node has gets no casing warning. For example, `castshadow` is not reported.
 - A 3D component that you register with `PIXIComponent` is not guarded by the camera fallback. A `Camera3D` subclass that you register this way, and remove directly from a view, is also not guarded.
 - A size prop, `width`, `height` or `depth`, is measured when it is written. A later change of only the texture, `pixelSize` or geometry keeps the scale, not the size.
 - A view does not draw with the canvas renderer.

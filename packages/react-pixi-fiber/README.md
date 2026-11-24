@@ -305,6 +305,10 @@ A PixiJS 3D adapter returns a `Pixi3dAdapter` for the `pixi3d` option of `config
 - `clonePoint(point)` returns a plain copy of a point. The core records it as the default of a prop.
 - `setPoint(instance, propName, value)` writes a point prop. It returns `false` and writes nothing when `value` cannot set the prop. The core then warns in development and restores the default.
 
+This member is optional:
+
+- `defaults` sets default props for each tag, read by tag as in the PixiJS adapter, see [Default props per tag](#default-props-per-tag).
+
 The core checks the tree before it changes it. A 3D node goes in a 3D node. It also goes in a parent that owns its child operations, such as a 3D view. A Display Object or a filter does not go in a 3D node. A violation throws.
 
 The adapter augments three more keys of `PixiTypes`:
