@@ -35,8 +35,8 @@ async function withDefaults(defaults) {
     const { registerAdapterBehaviors } = await import("../src/registry");
     registerAdapterBehaviors(behaviors);
     return {
-      getPixiAdapter: () => ({ ...adapter, defaults }),
       getNodeAdapter: () => undefined,
+      getPixiAdapter: () => ({ ...adapter, defaults }),
       getStrictModeBit: () => strictModeBit,
       getTagDefaults: tag =>
         defaults && Object.prototype.hasOwnProperty.call(defaults, tag) ? defaults[tag] : undefined,
@@ -124,8 +124,8 @@ describe("PixiPropertyOperations", () => {
         return {
           getNodeAdapter: () => undefined,
           getPixiAdapter: () => ({ ...adapter, defaults: { Sprite: { alpha: 0.25 } } }),
-          getTagDefaults: tag => (tag === "Sprite" ? { alpha: 0.25 } : undefined),
           getStrictModeBit: () => strictModeBit,
+          getTagDefaults: tag => (tag === "Sprite" ? { alpha: 0.25 } : undefined),
         };
       });
       const { setValueForProperty } = await import("../src/PixiPropertyOperations");

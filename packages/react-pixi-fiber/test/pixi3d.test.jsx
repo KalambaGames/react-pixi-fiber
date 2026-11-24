@@ -134,6 +134,8 @@ describe("props of a 3D node", () => {
     const seen = [...isPoint.mock.calls, ...copyPoint.mock.calls].flat();
     expect(seen).not.toContain(node().anchor);
     expect(seen).not.toContain(node().position);
+    expect(seen).not.toContainEqual([0.5, 1]);
+    expect(seen).not.toContainEqual([1, 2, 3]);
   });
 
   it("keeps the PixiJS tables for an instance that is not a 3D node", () => {
@@ -142,7 +144,9 @@ describe("props of a 3D node", () => {
     render(strict(<View rotation={{ x: 0, y: 1, z: 0 }} />), stage);
     expect(stage.children[0].rotation).toBe(0);
     expect(error).toHaveBeenCalledTimes(__DEV__ ? 1 : 0);
-    render(strict(<Container position={[1, 2]} />), createFakeNode("Stage2"));
+    const other = createFakeNode("Stage2");
+    render(strict(<Container position={[1, 2]} />), other);
+    expect(other.children[0].position).toMatchObject({ x: 1, y: 2 });
   });
 
   it("gives a 3D class registered with PIXIComponent the 3D tables", () => {
