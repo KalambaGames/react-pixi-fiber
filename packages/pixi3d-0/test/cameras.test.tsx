@@ -40,6 +40,24 @@ describe("cameras", () => {
     expect(view.current!.camera.fov).toBe(40);
   });
 
+  it("sets jitter in place and restores it", () => {
+    const ref = createRef<PIXI3D.Camera3D>();
+    const show = (jitter?: [number, number]) =>
+      render(
+        <View3D>
+          <Camera3D ref={ref} jitter={jitter} />
+        </View3D>,
+        root
+      );
+    show([0.25, -0.25]);
+    const { jitter } = ref.current!;
+    expect(jitter).toBeInstanceOf(PIXI.Point);
+    expect([jitter.x, jitter.y]).toEqual([0.25, -0.25]);
+    show();
+    expect(ref.current!.jitter).toBe(jitter);
+    expect([jitter.x, jitter.y]).toEqual([0, 0]);
+  });
+
   it("takes the last of two direct cameras", () => {
     const view = createRef<PIXI3D.View3D>();
     const refs: Record<string, PIXI3D.Camera3D | null> = {};

@@ -1,5 +1,5 @@
 import { EulerDegrees, ObservableQuaternion, ObservableVector3 } from "@pixi/3d";
-import { ObservablePoint } from "pixi.js";
+import { ObservablePoint, Point } from "pixi.js";
 
 const NAMES = ["x", "y", "z", "w"] as const;
 
@@ -31,7 +31,8 @@ export function isPoint(value: unknown): boolean {
     value instanceof ObservableVector3 ||
     value instanceof ObservableQuaternion ||
     value instanceof EulerDegrees ||
-    value instanceof ObservablePoint
+    value instanceof ObservablePoint ||
+    value instanceof Point
   );
 }
 
@@ -45,7 +46,15 @@ export function clonePoint(point: object): object {
   return copy;
 }
 
-// Assigns through the class setter, the supported way to write a point of `@pixi/3d`.
+export function hasSetter(object: object, name: string): boolean {
+  for (let current: object | null = object; current !== null; current = Object.getPrototypeOf(current)) {
+    const descriptor = Object.getOwnPropertyDescriptor(current, name);
+    if (descriptor !== undefined) return descriptor.set !== undefined;
+  }
+  return false;
+}
+
+// Assigns through the class setter, the supported way to write a point of `@pixi/3d`, when the member has one.
 export function setPoint(instance: object, propName: string, value: unknown): boolean {
   const target = instance as Record<string, unknown>;
   const size = Object.keys(clonePoint(target[propName] as object)).length as 2 | 3 | 4;
@@ -55,6 +64,8 @@ export function setPoint(instance: object, propName: string, value: unknown): bo
   coordinates.forEach((coordinate, i) => {
     point[NAMES[i]] = coordinate;
   });
-  target[propName] = point;
+  // A member without a setter, as `Camera3D.jitter`, is written in place.
+  if (hasSetter(target, propName)) target[propName] = point;
+  else Object.assign(target[propName] as object, point);
   return true;
 }

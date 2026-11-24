@@ -1,10 +1,18 @@
 import { describe, expect, it } from "vitest";
-import { Mesh3D, Sprite3D } from "@pixi/3d";
+import { Camera3D, Mesh3D, Sprite3D } from "@pixi/3d";
 import { clonePoint, isPoint, setPoint } from "../src/points";
 
 const coordinates = (point: { x: number; y: number; z: number }) => [point.x, point.y, point.z];
 
 describe("setPoint", () => {
+  it("writes a member without a setter in place", () => {
+    const camera = new Camera3D();
+    const { jitter } = camera;
+    expect(setPoint(camera, "jitter", [0.25, -0.25])).toBe(true);
+    expect(camera.jitter).toBe(jitter);
+    expect([jitter.x, jitter.y]).toEqual([0.25, -0.25]);
+  });
+
   const forms: [unknown, number[]][] = [
     [{ x: 1, y: 2, z: 3 }, [1, 2, 3]],
     [
@@ -62,6 +70,10 @@ describe("setPoint", () => {
 });
 
 describe("isPoint", () => {
+  it("knows a plain Point", () => {
+    expect(isPoint(new Camera3D().jitter)).toBe(true);
+  });
+
   it("knows the points of a 3D node", () => {
     const mesh = new Mesh3D();
     expect(isPoint(mesh.position)).toBe(true);

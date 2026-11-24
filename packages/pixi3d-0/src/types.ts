@@ -1,4 +1,5 @@
 import type * as PIXI3D from "@pixi/3d";
+import type { FPSCameraOptions, OrbitCameraOptions } from "@pixi/3d/extras";
 import type * as PIXI from "pixi.js";
 import type { Props } from "react-pixi-fiber";
 import type { CONSTRUCTOR_ONLY } from "./behaviors";
@@ -37,8 +38,6 @@ declare module "react-pixi-fiber" {
       [PIXI3D.PointLight, PIXI3D.PointLightOptions],
       [PIXI3D.SpotLight, PIXI3D.SpotLightOptions],
       [PIXI3D.Sprite3D, PIXI3D.Sprite3DOptions],
-      [PIXI3D.Mesh3D, PIXI3D.Mesh3DOptions],
-      [PIXI3D.Container3D, PIXI3D.Container3DOptions],
     ];
   }
 }
@@ -49,13 +48,22 @@ type ConstructorOnly<Tag extends keyof typeof CONSTRUCTOR_ONLY> = (typeof CONSTR
 type WithOptions<I, O, Tag extends keyof typeof CONSTRUCTOR_ONLY> = Omit<Props<I>, ConstructorOnly<Tag>> &
   Pick<O, ConstructorOnly<Tag> & keyof O>;
 
+// The options of a controller without `view`, the view that holds the element. A vector option takes every vector form.
+type ControllerProps<O> = {
+  [K in Exclude<keyof O, "view">]?: [NonNullable<O[K]>] extends [PIXI3D.PointData3D]
+    ? PIXI3D.PointData3D | [number, number, number] | number | string
+    : O[K];
+};
+
 export type AmbientLightProps = Props<PIXI3D.AmbientLight>;
 export type BatchedMesh3DProps = WithOptions<PIXI3D.BatchedMesh3D, PIXI3D.BatchedMesh3DOptions, "BatchedMesh3D">;
 export type Camera3DProps = Props<PIXI3D.Camera3D>;
 export type Container3DProps = Props<PIXI3D.Container3D>;
 export type DirectionalLightProps = Props<PIXI3D.DirectionalLight>;
+export type FPSCameraProps = ControllerProps<FPSCameraOptions>;
 export type Mesh3DProps = WithOptions<PIXI3D.Mesh3D, PIXI3D.Mesh3DOptions, "Mesh3D">;
 export type Model3DProps = WithOptions<PIXI3D.Model3D, PIXI3D.Model3DOptions, "Model3D">;
+export type OrbitCameraProps = ControllerProps<OrbitCameraOptions>;
 export type ParticleContainer3DProps = WithOptions<
   PIXI3D.ParticleContainer3D,
   PIXI3D.ParticleContainer3DOptions,
