@@ -55,6 +55,7 @@ describe("configure with a PixiJS 3D adapter", () => {
 
   it("fills the defaults of a 3D tag", () => {
     configure({ react: react18(), pixi, pixi3d: fakePixi3dAdapter({ defaults: { Node3D: { x: 5 } } }) });
+    stage = createFakeNode3d("Stage");
     render(<Node3D />, stage);
     expect(stage.children[0].x).toBe(5);
     render(<Node3D x={1} />, stage);
@@ -78,7 +79,7 @@ describe("props of a 3D node", () => {
     View = "View";
     pixi = fakePixiAdapter();
     pixi3d = fakePixi3dAdapter();
-    stage = createFakeNode("Stage");
+    stage = createFakeNode3d("Stage");
     error = vi.spyOn(console, "error").mockImplementation(() => {});
     configure({ react: react18(), pixi, pixi3d });
   });
@@ -140,6 +141,7 @@ describe("props of a 3D node", () => {
 
   it("keeps the PixiJS tables for an instance that is not a 3D node", () => {
     pixi.properties.numeric.push("rotation");
+    stage = createFakeNode("Stage");
     render(strict(<View rotation={0.5} />), stage);
     render(strict(<View rotation={{ x: 0, y: 1, z: 0 }} />), stage);
     expect(stage.children[0].rotation).toBe(0);
@@ -151,6 +153,7 @@ describe("props of a 3D node", () => {
 
   it("gives a 3D class registered with PIXIComponent the 3D tables", () => {
     const Custom3D = "Custom3D";
+    stage = createFakeNode("Stage");
     PIXIComponent("Custom3D", { create: () => createFakeNode3d("Custom3D") });
     render(
       strict(
@@ -167,5 +170,116 @@ describe("props of a 3D node", () => {
     const material = {};
     render(strict(<Node3D material={material} />), stage);
     expect(node().material).toBe(material);
+  });
+});
+
+describe("tree rules", () => {
+  let configure, render, Container, Node3D, View, BlurFilter, stage, error;
+  const strict = element => <React.StrictMode>{element}</React.StrictMode>;
+  const as3dChild = "`<Node3D />` is a 3D node. It cannot be a child of ";
+  beforeEach(async () => {
+    vi.resetModules();
+    const core = await import("../src/index");
+    ({ configure, render } = core);
+    Container = "Container";
+    Node3D = "Node3D";
+    View = "View";
+    BlurFilter = "BlurFilter";
+    stage = createFakeNode("Stage");
+    error = vi.spyOn(console, "error").mockImplementation(() => {});
+    configure({ react: react18(), pixi: fakePixiAdapter(), pixi3d: fakePixi3dAdapter() });
+  });
+  afterEach(() => error.mockRestore());
+
+  it("throws for a 3D node in a 2D parent", () => {
+    expect(() =>
+      render(
+        <Container>
+          <Node3D />
+        </Container>,
+        stage
+      )
+    ).toThrow(as3dChild + "`<Container />`. Put it in a 3D view or in another 3D node.");
+    expect(stage.children[0]?.children ?? []).toEqual([]);
+  });
+
+  it("throws for a 3D node in the root container", () => {
+    expect(() => render(<Node3D />, stage)).toThrow(
+      as3dChild + "the root container. Put it in a 3D view or in another 3D node."
+    );
+    expect(stage.children).toEqual([]);
+  });
+
+  it("throws for a 2D object in a 3D node", () => {
+    expect(() =>
+      render(
+        <View>
+          <Node3D>
+            <Container />
+          </Node3D>
+        </View>,
+        stage
+      )
+    ).toThrow("`<Container />` is not a 3D node. It cannot be a child of the 3D node `<Node3D />`.");
+    expect(stage.children[0]?.root.children[0]?.children ?? []).toEqual([]);
+  });
+
+  it("throws for a filter in a 3D node", () => {
+    expect(() =>
+      render(
+        <View>
+          <Node3D>
+            <BlurFilter />
+          </Node3D>
+        </View>,
+        stage
+      )
+    ).toThrow(
+      "`<BlurFilter />` is a filter. It cannot be a child of the 3D node `<Node3D />`. Put it in the element of the 3D view."
+    );
+    expect(stage.children[0]?.root.children[0]?.children ?? []).toEqual([]);
+  });
+
+  it("throws before an insertion", () => {
+    render(
+      <Container>
+        <Container key="a" />
+      </Container>,
+      stage
+    );
+    const parent = stage.children[0];
+    expect(() =>
+      render(
+        <Container>
+          <Node3D key="b" />
+          <Container key="a" />
+        </Container>,
+        stage
+      )
+    ).toThrow(as3dChild + "`<Container />`. Put it in a 3D view or in another 3D node.");
+    expect(parent.children).toHaveLength(1);
+  });
+
+  it("accepts a 3D node in a 3D node, a filter in a view and a tree with no 3D adapter", () => {
+    render(
+      <View>
+        <Node3D>
+          <Node3D />
+        </Node3D>
+        <BlurFilter />
+      </View>,
+      stage
+    );
+    expect(stage.children[0].root.children[0].children).toHaveLength(1);
+    expect(stage.children[0].filters).toHaveLength(1);
+    configure({ react: react18(), pixi: fakePixiAdapter() });
+    const other = createFakeNode("Stage2");
+    render(
+      <Container>
+        <Container />
+      </Container>,
+      other
+    );
+    expect(other.children[0].children).toHaveLength(1);
   });
 });

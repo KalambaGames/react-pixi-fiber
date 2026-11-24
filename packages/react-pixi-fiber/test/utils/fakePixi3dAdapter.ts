@@ -25,7 +25,7 @@ export type FakeNode3d = Omit<FakeNode, "position" | "rotation" | "scale"> & {
   scale: FakeVector;
 };
 
-export type FakeView = FakeNode & { root: FakeNode3d };
+export type FakeView = FakeNode & { filters: object[] | null; root: FakeNode3d };
 
 export function createFakeNode3d(type: string): FakeNode3d {
   const { position, rotation, scale, ...node } = createFakeNode(type);
@@ -45,6 +45,7 @@ export function fakePixi3dAdapter({ defaults }: { defaults?: Pixi3dAdapter["defa
       View: {
         create: () => {
           const view = createFakeNode("View") as FakeView;
+          view.filters = null;
           view.root = createFakeNode3d("Root");
           return view;
         },

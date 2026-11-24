@@ -22,7 +22,7 @@ import {
 } from "./filters";
 import { heldChildren, holdChild, isHeldBy, releaseChild } from "./heldChildren";
 import { getBoundBehavior, getInstanceTag, isFilterInstance } from "./registry";
-import { getStrictModeBit } from "./configure";
+import { getNodeAdapter, getStrictModeBit } from "./configure";
 import { findStrictRoot } from "./utils";
 import invariant from "./invariant";
 import warning from "./warning";
@@ -38,6 +38,36 @@ function appendDisplayChild(parentInstance: any, child: any): void {
     parentInstance.removeChild(child);
 
     parentInstance.addChild(child);
+  }
+}
+
+// A 3D node goes in a 3D node or in a parent that owns its child operations, such as a 3D view.
+// A 3D node takes only 3D nodes as children. This check runs before the tree changes.
+function checkTree(parentInstance: any, child: any): void {
+  const bound = getBoundBehavior(parentInstance);
+  if (bound && bound.appendChild) return;
+  const childTag = getInstanceTag(child);
+  const parentTag = getInstanceTag(parentInstance);
+  if (getNodeAdapter(parentInstance)) {
+    invariant(
+      !isFilterInstance(child),
+      "`<%s />` is a filter. It cannot be a child of the 3D node `<%s />`. Put it in the element of the 3D view.",
+      childTag,
+      parentTag
+    );
+    invariant(
+      getNodeAdapter(child),
+      "`<%s />` is not a 3D node. It cannot be a child of the 3D node `<%s />`.",
+      childTag,
+      parentTag
+    );
+  } else {
+    invariant(
+      !getNodeAdapter(child),
+      "`<%s />` is a 3D node. It cannot be a child of %s. Put it in a 3D view or in another 3D node.",
+      childTag,
+      parentTag === undefined ? "the root container" : `\`<${parentTag} />\``
+    );
   }
 }
 
@@ -66,6 +96,7 @@ export function appendChild(parentInstance: any, child: any): void {
   if (parentInstance == null) return;
   if (isFilterInstance(parentInstance)) invariant(false, "`<%s />` takes no children.", getInstanceTag(parentInstance));
 
+  checkTree(parentInstance, child);
   if (isFilterInstance(child)) {
     const from = placeIn(parentInstance, child);
     afterAddOrMove(parentInstance, child, placeFilter(parentInstance, child), from);
@@ -104,6 +135,7 @@ export function removeChild(parentInstance: any, child: any): void {
 
 export function insertBefore(parentInstance: any, child: any, beforeChild: any): void {
   invariant(child !== beforeChild, "ReactPixiFiber cannot insert node before itself");
+  checkTree(parentInstance, child);
 
   if (isFilterInstance(child)) {
     const from = placeIn(parentInstance, child);
