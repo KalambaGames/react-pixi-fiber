@@ -69,6 +69,39 @@ describe("camera controllers", () => {
     expect([target.x, target.y, target.z]).toEqual([1, 1, 1]);
   });
 
+  it("returns a removed vector to its value before the first write", () => {
+    const orbit = createRef<ControllerNode<PixiOrbitCamera>>();
+    const show = (withTarget: boolean) =>
+      render(
+        <View3D>
+          <OrbitCamera ref={orbit} target={withTarget ? [1, 2, 3] : undefined} />
+        </View3D>,
+        root
+      );
+    show(true);
+    const target = orbit.current!.controller!.target;
+    show(false);
+    expect(orbit.current!.controller!.target).toBe(target);
+    expect([target.x, target.y, target.z]).toEqual([0, 0, 0]);
+  });
+
+  it("writes a part of an object prop", () => {
+    const orbit = createRef<ControllerNode<PixiOrbitCamera>>();
+    const show = (withButtons: boolean) =>
+      render(
+        <View3D>
+          <OrbitCamera ref={orbit} mouseButtons={withButtons ? { left: "pan" } : undefined} />
+        </View3D>,
+        root
+      );
+    show(true);
+    const controller = orbit.current!.controller!;
+    const defaults = PixiOrbitCamera.defaultOptions.mouseButtons;
+    expect(controller.mouseButtons).toEqual({ ...defaults, left: "pan" });
+    show(false);
+    expect(controller.mouseButtons).toEqual(defaults);
+  });
+
   it("writes `up` through its setter", () => {
     const orbit = createRef<ControllerNode<PixiOrbitCamera>>();
     render(

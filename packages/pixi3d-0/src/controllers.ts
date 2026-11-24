@@ -9,7 +9,7 @@ type Controller = FPSCamera | OrbitCamera;
 type ControllerClass = typeof FPSCamera | typeof OrbitCamera;
 type Vector = { x: number; y: number; z: number; set(x: number, y: number, z: number): unknown };
 
-// The element of a controller: a node with no content in the root of a view. React destroys it with the view, so the
+// The element of a controller: a node with no content in the root of a view. It is destroyed with the view, so the
 // controller goes with it.
 export class ControllerNode<C extends { destroy(): void }> extends Container3D {
   controller: C | null = null;
@@ -29,15 +29,19 @@ const kept = new WeakMap<Node, { defaults: Record<string, unknown>; props: Recor
 const isVector = (value: any): value is Vector =>
   typeof value?.x === "number" && typeof value.y === "number" && typeof value.z === "number";
 
+const isObject = (value: unknown): value is object => typeof value === "object" && value !== null;
+
 // A vector goes through its setter when it has one, as `up` does, else in place, as the read-only `target`. A value
-// that is not a vector leaves it unchanged.
+// that is not a vector leaves it unchanged. An object, as `mouseButtons`, takes a part: the rest keeps its default.
 function write(controller: Controller, defaults: Record<string, unknown>, name: string, value: unknown): void {
   const target = controller as unknown as Record<string, unknown>;
   const current = target[name];
-  if (!(name in defaults)) defaults[name] = isVector(current) ? clonePoint(current) : current;
+  if (!(name in defaults)) {
+    defaults[name] = isVector(current) ? clonePoint(current) : isObject(current) ? { ...current } : current;
+  }
   const next = value === undefined ? defaults[name] : value;
   if (!isVector(current)) {
-    target[name] = next;
+    target[name] = isObject(current) && isObject(next) ? { ...(defaults[name] as object), ...next } : next;
     return;
   }
   const coordinates = parseCoordinates(next, 3);

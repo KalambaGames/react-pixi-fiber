@@ -14,7 +14,9 @@ export const orbit = (
   />
 );
 export const orbitForms = <OrbitCamera target={{ x: 0, y: 1, z: 0 }} up="0,1,0" />;
-export const fps = <FPSCamera position={1} yaw={0} />;
+export const fps = <FPSCamera yaw={0} pitch={0} />;
+// @ts-expect-error `position` is not a prop: the controller takes it at construction only
+export const fpsPosition = <FPSCamera position={1} />;
 // @ts-expect-error a vector takes three coordinates
 export const orbitTwo = <OrbitCamera target={[0, 1]} />;
 declare const view: PIXI3D.View3D;
