@@ -39,6 +39,27 @@ const defaults = (name: string, title: string): Example => ({
   runner: "runner-defaults.html",
 });
 
+// The runner configures the 3D adapter next to the other two, see src/runners/pixi3d.tsx.
+const scene3d = (name: string, title: string): Example => {
+  const base = setup(8);
+  return {
+    ...feature(name, title, source(`./Scene3D/${name}.tsx`)),
+    aliases: [],
+    configure: {
+      code: base.code
+        .replace(
+          '@react-pixi-fiber/pixi-8";',
+          '@react-pixi-fiber/pixi-8";\nimport pixi3d0 from "@react-pixi-fiber/pixi3d-0";'
+        )
+        .replace("pixi8()", "pixi8(), pixi3d: pixi3d0()"),
+      summary: `${base.summary} and the PixiJS 3D adapter`,
+    },
+    group: "3D Scene Objects",
+    id: `3d-${name.toLowerCase()}`,
+    runner: "runner-3d.html",
+  };
+};
+
 const filter = (name: string, title: string): Example => ({
   ...example(title, source(`./Filters/${name}.tsx`)),
   group: "Filters",
@@ -78,6 +99,7 @@ export const examples: Example[] = [
   example("Sprite"),
   example("Text"),
   example("TilingSprite"),
+  scene3d("View3D", "View3D"),
   feature("Bunnymark", "Bunnymark"),
   feature("BunnymarkCustomComponents", "Bunnymark with custom components"),
   feature("CanvasProps", "Canvas props"),
