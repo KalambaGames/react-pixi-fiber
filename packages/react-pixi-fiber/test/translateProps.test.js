@@ -7,6 +7,7 @@ import { createFakeNode, fakePixiAdapter } from "./utils/fakePixiAdapter";
 const adapter = vi.hoisted(() => ({ current: null }));
 
 vi.mock("../src/configure", () => ({
+  getNodeAdapter: () => undefined,
   getPixiAdapter: () => adapter.current,
   getStackAddendum: () => "",
   getTagDefaults: () => undefined,

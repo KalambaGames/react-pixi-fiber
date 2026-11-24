@@ -13,6 +13,7 @@ const behaviors = {
   NineSliceSprite: { create: vi.fn(() => ({ kind: "NineSliceSprite" })) },
 };
 vi.mock("../src/configure", () => ({
+  getNodeAdapter: () => undefined,
   getPixiAdapter: () => ({
     behaviors,
     properties: { boolean: [], numeric: [], positiveNumeric: [], vector: [], callback: [] },

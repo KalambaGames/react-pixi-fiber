@@ -1,6 +1,6 @@
 // Based on: https://github.com/facebook/react/blob/27535e7bfcb63e8a4d65f273311e380b4ca12eff/packages/react-dom/src/client/DOMPropertyOperations.js
 import warning from "./warning";
-import { getPixiAdapter, getStackAddendum, getStrictModeBit, getTagDefaults } from "./configure";
+import { getNodeAdapter, getPixiAdapter, getStackAddendum, getStrictModeBit, getTagDefaults } from "./configure";
 import { getRecordedDefault, recordDefault } from "./defaults";
 import { filtersPropWritten } from "./filters";
 import { getOwn, getPropertyInfo, shouldIgnoreAttribute, shouldRemoveAttribute } from "./PixiProperty";
@@ -50,7 +50,8 @@ export function setValueForProperty(
   internalHandle?: unknown
 ): void {
   const pixi = getPixiAdapter();
-  const propertyInfo = getPropertyInfo(propName, pixi);
+  const node3d = getNodeAdapter(instance);
+  const propertyInfo = getPropertyInfo(propName, node3d ?? pixi);
   let strictRoot = null;
   if (__DEV__) {
     strictRoot = findStrictRoot(internalHandle, getStrictModeBit());
@@ -100,10 +101,22 @@ export function setValueForProperty(
   }
 
   // Remember what PixiJS had before we ever touch this prop, so a removal can restore it.
-  recordDefault(instance, propName, pixi.isPoint);
+  recordDefault(instance, propName, (node3d ?? pixi).isPoint, node3d?.clonePoint);
+
+  // A 3D node takes every value of a point prop through its adapter: the PixiJS adapter never sees it.
+  const isPoint3d = node3d !== undefined && node3d.isPoint(instance[propName]);
+  let invalid: boolean;
+  if (isPoint3d && typeof value !== "undefined") {
+    if (node3d.setPoint(instance, propName, value)) return;
+    invalid = true;
+  } else {
+    invalid =
+      shouldRemoveAttribute(type, propName, value, propertyInfo) ||
+      (node3d === undefined && isInvalidPoint(instance, propName, value));
+  }
 
   let shouldIgnoreValue = false;
-  if (shouldRemoveAttribute(type, propName, value, propertyInfo) || isInvalidPoint(instance, propName, value)) {
+  if (invalid) {
     // `undefined` is also how a removed prop arrives, so only an invalid value warns, once for each prop name.
     const received = value;
     const shouldWarn = strictRoot != null && typeof received !== "undefined" && !warnedInvalid.has(propName);
@@ -139,6 +152,8 @@ export function setValueForProperty(
   }
 
   if (!shouldIgnoreValue) {
-    setPixiValue(instance, propName, value, pixi);
+    if (node3d === undefined) setPixiValue(instance, propName, value, pixi);
+    else if (isPoint3d && value != null) node3d.setPoint(instance, propName, value);
+    else instance[propName] = value;
   }
 }

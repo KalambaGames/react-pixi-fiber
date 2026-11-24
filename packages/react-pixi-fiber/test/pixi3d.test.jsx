@@ -1,8 +1,8 @@
-import { describe, it, expect, vi, beforeEach } from "vitest";
+import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import React from "react";
 import react18 from "@react-pixi-fiber/react-18";
-import { createFakeNode, fakePixiAdapter } from "./utils/fakePixiAdapter";
-import { fakePixi3dAdapter } from "./utils/fakePixi3dAdapter";
+import { createFakeNode, fakePixiAdapter, point } from "./utils/fakePixiAdapter";
+import { createFakeNode3d, fakePixi3dAdapter } from "./utils/fakePixi3dAdapter";
 
 describe("configure with a PixiJS 3D adapter", () => {
   let configure, render, Container, Node3D, View, pixi, pixi3d, stage;
@@ -61,5 +61,107 @@ describe("configure with a PixiJS 3D adapter", () => {
     expect(stage.children[0].x).toBe(1);
     render(<Node3D />, stage);
     expect(stage.children[0].x).toBe(5);
+  });
+});
+
+describe("props of a 3D node", () => {
+  let configure, render, PIXIComponent, Container, Node3D, View, pixi, pixi3d, stage, error;
+  const xyz = vector => [vector.x, vector.y, vector.z];
+  const strict = element => <React.StrictMode>{element}</React.StrictMode>;
+  const node = () => stage.children[0];
+  beforeEach(async () => {
+    vi.resetModules();
+    const core = await import("../src/index");
+    ({ configure, render, PIXIComponent } = core);
+    Container = "Container";
+    Node3D = "Node3D";
+    View = "View";
+    pixi = fakePixiAdapter();
+    pixi3d = fakePixi3dAdapter();
+    stage = createFakeNode("Stage");
+    error = vi.spyOn(console, "error").mockImplementation(() => {});
+    configure({ react: react18(), pixi, pixi3d });
+  });
+  afterEach(() => error.mockRestore());
+
+  it("writes a vector to a prop that the PixiJS table types as a number", () => {
+    pixi.properties.numeric.push("rotation");
+    render(strict(<Node3D rotation={{ x: 0, y: 1, z: 0 }} />), stage);
+    expect(node().rotation.y).toBe(1);
+    render(strict(<Node3D rotation={{ x: 0, y: 2, z: 0 }} />), stage);
+    expect(node().rotation.y).toBe(2);
+    expect(error).not.toHaveBeenCalled();
+  });
+
+  it("writes an array to a vector", () => {
+    render(strict(<Node3D position={[1, 2, 3]} />), stage);
+    expect(xyz(node().position)).toEqual([1, 2, 3]);
+  });
+
+  it("restores a copy of the default when a vector prop is removed", () => {
+    render(strict(<Node3D position={[1, 2, 3]} />), stage);
+    const position = node().position;
+    render(strict(<Node3D />), stage);
+    expect(xyz(node().position)).toEqual([0, 0, 0]);
+    expect(node().position).toBe(position);
+  });
+
+  it("restores the class default of a prop that was set at mount", () => {
+    render(strict(<Node3D x={4} />), stage);
+    expect(node().x).toBe(4);
+    render(strict(<Node3D />), stage);
+    expect(node().x).toBe(0);
+  });
+
+  it.each([null, {}, [1, 2], "a"])("warns and resets a value that no point takes: %j", value => {
+    render(strict(<Node3D position={[1, 2, 3]} />), stage);
+    render(strict(<Node3D position={value} />), stage);
+    expect(xyz(node().position)).toEqual([0, 0, 0]);
+    expect(error).toHaveBeenCalledTimes(__DEV__ ? 1 : 0);
+    if (__DEV__) {
+      expect(error.mock.calls[0].join(" ")).toContain(
+        "for prop `position` on `<Node3D />`. Resetting it to its default"
+      );
+    }
+  });
+
+  it("sets a 2D point of a 3D node with the 3D adapter", () => {
+    const isPoint = vi.spyOn(pixi, "isPoint");
+    const copyPoint = vi.spyOn(pixi, "copyPoint");
+    render(strict(<Node3D anchor={[0.5, 1]} position={[1, 2, 3]} />), stage);
+    expect(node().anchor).toMatchObject({ x: 0.5, y: 1 });
+    expect(xyz(node().position)).toEqual([1, 2, 3]);
+    const seen = [...isPoint.mock.calls, ...copyPoint.mock.calls].flat();
+    expect(seen).not.toContain(node().anchor);
+    expect(seen).not.toContain(node().position);
+  });
+
+  it("keeps the PixiJS tables for an instance that is not a 3D node", () => {
+    pixi.properties.numeric.push("rotation");
+    render(strict(<View rotation={0.5} />), stage);
+    render(strict(<View rotation={{ x: 0, y: 1, z: 0 }} />), stage);
+    expect(stage.children[0].rotation).toBe(0);
+    expect(error).toHaveBeenCalledTimes(__DEV__ ? 1 : 0);
+    render(strict(<Container position={[1, 2]} />), createFakeNode("Stage2"));
+  });
+
+  it("gives a 3D class registered with PIXIComponent the 3D tables", () => {
+    const Custom3D = "Custom3D";
+    PIXIComponent("Custom3D", { create: () => createFakeNode3d("Custom3D") });
+    render(
+      strict(
+        <View>
+          <Custom3D position={[1, 2, 3]} />
+        </View>
+      ),
+      stage
+    );
+    expect(xyz(stage.children[0].root.children[0].position)).toEqual([1, 2, 3]);
+  });
+
+  it("writes a plain prop of a 3D node as-is", () => {
+    const material = {};
+    render(strict(<Node3D material={material} />), stage);
+    expect(node().material).toBe(material);
   });
 });
