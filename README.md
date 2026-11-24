@@ -10,7 +10,7 @@
 
 # react-pixi-fiber repository
 
-This repository holds [`react-pixi-fiber`](./packages/react-pixi-fiber), a React Fiber renderer for [PixiJS](https://pixijs.com/), its React and PixiJS adapters, and the playgrounds. Package documentation lives in the [package README](./packages/react-pixi-fiber/README.md).
+This repository holds [`react-pixi-fiber`](./packages/react-pixi-fiber), a React Fiber renderer for [PixiJS](https://pixijs.com/), its React, PixiJS and PixiJS 3D adapters, and the playgrounds. Package documentation lives in the [package README](./packages/react-pixi-fiber/README.md).
 
 [![Playground](./docs/playground.png)](https://react-pixi-fiber.pages.dev)
 
@@ -36,6 +36,7 @@ To upgrade from 2.x, read [Migrating to 3.0.0](./packages/react-pixi-fiber/READM
 | [`packages/pixi-6`](./packages/pixi-6) | `@react-pixi-fiber/pixi-6`, the PixiJS 6 adapter | `pixi.js` ^6.0.0, `react-pixi-fiber` ^3.0.0 |
 | [`packages/pixi-7`](./packages/pixi-7) | `@react-pixi-fiber/pixi-7`, the PixiJS 7 adapter | `pixi.js` ^7.2.0, `react-pixi-fiber` ^3.0.0 |
 | [`packages/pixi-8`](./packages/pixi-8) | `@react-pixi-fiber/pixi-8`, the PixiJS 8 adapter | `pixi.js` ^8.9.0, `react-pixi-fiber` ^3.0.0 |
+| [`packages/pixi3d-0`](./packages/pixi3d-0) | `@react-pixi-fiber/pixi3d-0`, the PixiJS 3D adapter | `@pixi/3d` ^0.1.0, `pixi.js` ^8.23.0, `react-pixi-fiber` ^3.0.0 |
 | [`packages/react-17`](./packages/react-17) | `@react-pixi-fiber/react-17`, the React 17 adapter, bundles `react-reconciler` 0.26.2 | `react` ^17.0.2, `react-pixi-fiber` ^3.0.0 |
 | [`packages/react-18`](./packages/react-18) | `@react-pixi-fiber/react-18`, the React 18 adapter, bundles `react-reconciler` 0.29.2 | `react` ^18.3.1, `react-pixi-fiber` ^3.0.0 |
 | [`packages/react-19`](./packages/react-19) | `@react-pixi-fiber/react-19`, the React 19 adapter, bundles `react-reconciler` 0.34.0 | `react` ^19.3.0, `react-pixi-fiber` ^3.0.0 |
@@ -43,7 +44,7 @@ To upgrade from 2.x, read [Migrating to 3.0.0](./packages/react-pixi-fiber/READM
 
 [`apps/playground-pixi4`](./apps/playground-pixi4), [`apps/playground-pixi5`](./apps/playground-pixi5), [`apps/playground-pixi6`](./apps/playground-pixi6), [`apps/playground-pixi7`](./apps/playground-pixi7) and [`apps/playground-pixi8`](./apps/playground-pixi8) hold the playgrounds, built with Vite on the local packages. [`apps/playground-shell`](./apps/playground-shell) holds the code they share.
 
-An app installs the core, one React adapter and one PixiJS adapter. Every PixiJS adapter implements the 13 Display Object tags and the 5 filter tags. The [compatibility matrix](./packages/react-pixi-fiber/README.md#compatibility-matrix) and the version notes (React 17, React 19, PixiJS 4 and PixiJS 8) are in the package README. Each adapter's README lists its supported features.
+An app installs the core, one React adapter and one PixiJS adapter. An app with PixiJS 3D also installs the PixiJS 3D adapter. The [compatibility matrix](./packages/react-pixi-fiber/README.md#compatibility-matrix) and the version notes (React 17, React 19, PixiJS 4 and PixiJS 8) are in the package README. Each adapter's README lists its supported features.
 
 The repository is a [pnpm](https://pnpm.io) workspace. The pnpm version is pinned in the `packageManager` field of `package.json`, and Node comes from `.nvmrc`.
 

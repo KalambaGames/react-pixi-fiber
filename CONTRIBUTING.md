@@ -39,7 +39,7 @@ Each React adapter bundles the newest `react-reconciler` of its React major. It 
 
 ## Adding an adapter
 
-1. Copy the nearest adapter: `packages/pixi-N` for a PixiJS major, `packages/react-N` for a React major.
+1. Copy the nearest adapter: `packages/pixi-N` for a PixiJS major, `packages/pixi3d-N` for a PixiJS 3D major, `packages/react-N` for a React major.
 2. Rename the package, its directory and its build entries. For a PixiJS adapter, change the PixiJS classes of the core tags, the typed property table and the application factory. For a React adapter, change the bundled `react-reconciler` version and the host config. Set the peer dependencies to the new major and to `react-pixi-fiber` ^3.0.0. Keep `version` at `0.0.0`.
 3. Add the smoke test, `test/smoke.test.tsx`, that runs `smokeSuite` from `packages/react-pixi-fiber/test/utils/smoke.tsx` with the new adapter.
 4. Add the adapter to the package tables in the root `README.md` and in the [Setup](./packages/react-pixi-fiber/README.md#setup) section of the core README. Write the adapter `README.md`: setup, a "Supported features" section and a "Migrating from" section for the previous major. The README describes only this adapter. The migration section can name the previous adapter.

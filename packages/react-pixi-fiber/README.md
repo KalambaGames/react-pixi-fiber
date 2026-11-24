@@ -131,11 +131,25 @@ Components import only from `react-pixi-fiber`, so a shared component library do
 
 Without `configure`, the first render throws an error that prints the install line and these setup lines.
 
+`configure` takes one more optional adapter, `pixi3d`, for [PixiJS 3D](https://www.npmjs.com/package/@pixi/3d). An app without 3D does not pass it:
+
+```js
+import pixi3d0 from "@react-pixi-fiber/pixi3d-0";
+
+configure({ react: react18(), pixi: pixi8(), pixi3d: pixi3d0() });
+```
+
+| Adapter | Supports |
+| --- | --- |
+| [`@react-pixi-fiber/pixi3d-0`](https://www.npmjs.com/package/@react-pixi-fiber/pixi3d-0) | `@pixi/3d` ^0.1.0 with `pixi.js` ^8.23.0 |
+
+The PixiJS 3D adapter is an ES module only. It has no CommonJS build.
+
 Each adapter's README lists the features it supports and what changes when you move to it from the previous major.
 
 ### Which adapters do I need
 
-Read the major version of `react` in your `package.json` for the React adapter (`"react": "^18.3.1"` needs `@react-pixi-fiber/react-18`). Read the major version of `pixi.js` for the PixiJS adapter (`"pixi.js": "^7.4.3"` needs `@react-pixi-fiber/pixi-7`). Every PixiJS adapter implements the 13 Display Object [tags](#tags).
+Read the major version of `react` in your `package.json` for the React adapter (`"react": "^18.3.1"` needs `@react-pixi-fiber/react-18`). Read the major version of `pixi.js` for the PixiJS adapter (`"pixi.js": "^7.4.3"` needs `@react-pixi-fiber/pixi-7`). Read the major version of `@pixi/3d` the same way for the PixiJS 3D adapter: `"@pixi/3d": "^0.1.0"` needs `pixi3d-0`.
 
 ### Compatibility matrix
 
@@ -279,6 +293,36 @@ declare module "react-pixi-fiber" {
   }
 }
 ```
+
+#### PixiJS 3D adapter
+
+A PixiJS 3D adapter returns a `Pixi3dAdapter` for the `pixi3d` option of `configure`. A PixiJS 3D scene has a second tree of 3D nodes under a view. A 3D node is not a Display Object, and a prop name such as `rotation` has other types on it. So the core applies the props of a 3D node with this adapter, and not with the PixiJS adapter. The core holds no class of PixiJS 3D. The adapter supplies these members:
+
+- `behaviors` maps each tag of a 3D node to a behavior, as in the PixiJS adapter. A tag belongs to one adapter, so no tag is in `behaviors` of both adapters.
+- `properties` is a `PixiPropertyTable` for the props of a 3D node.
+- `isNode(value)` tells if a value is a 3D node.
+- `isPoint(value)` tells if a value is a vector or a quaternion that a prop of a 3D node holds.
+- `clonePoint(point)` returns a plain copy of a point. The core records it as the default of a prop.
+- `setPoint(instance, propName, value)` writes a point prop. It returns `false` and writes nothing when `value` cannot set the prop. The core then warns in development and restores the default.
+
+The core checks the tree before it changes it. A 3D node goes in a 3D node. It also goes in a parent that owns its child operations, such as a 3D view. A Display Object or a filter does not go in a 3D node. A violation throws.
+
+The adapter augments three more keys of `PixiTypes`:
+
+```ts
+declare module "react-pixi-fiber" {
+  interface PixiTypes {
+    // What counts as a 3D node.
+    Node3D: PIXI3D.Container3D;
+    // [type a prop holds, what the prop accepts], most specific first.
+    PointLikes3D: [[PIXI3D.ObservableVector3, PIXI3D.PointData3D | [number, number, number] | number | string]];
+    // As SetterTypes, for the 3D classes. A subclass comes before its parent.
+    SetterTypes3D: [[PIXI3D.PointLight, PIXI3D.PointLightOptions]];
+  }
+}
+```
+
+Its `PixiInstances` entries are the 3D classes. An app without a PixiJS 3D adapter sees these keys as empty. See [`@react-pixi-fiber/pixi3d-0`](../pixi3d-0/README.md) for a full adapter.
 
 ## Usage
 
