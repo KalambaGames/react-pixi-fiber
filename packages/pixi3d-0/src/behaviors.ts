@@ -12,7 +12,7 @@ import {
   Sprite3D,
 } from "@pixi/3d";
 import type { Behavior } from "react-pixi-fiber";
-import { viewBehavior } from "./view";
+import { guardCamera, viewBehavior } from "./view";
 
 // The options of each class that the instance cannot take after construction: it has no member of that name, or only
 // a read-only one. A type test checks each list against the typings of `@pixi/3d`.
@@ -47,7 +47,8 @@ function sizeLast(props: Record<string, unknown>): Record<string, unknown> {
 }
 
 // `create` passes only the constructor-only props. The core writes every other prop after construction, so the value
-// it records as the default of a prop is the class default.
+// it records as the default of a prop is the class default. A node that leaves or hides moves its view off a camera
+// that it is or contains.
 export function nodeBehavior(
   Class: new (options: any) => Container3D,
   tag: keyof typeof CONSTRUCTOR_ONLY
@@ -57,13 +58,16 @@ export function nodeBehavior(
     applyProps(node, oldProps, newProps) {
       this.applyDisplayObjectProps(oldProps && sizeLast(oldProps), sizeLast(newProps));
     },
+    beforeRemove: node => guardCamera(node, true),
     constructorOnly,
     create: props => {
       const options: Record<string, unknown> = {};
       for (const name of constructorOnly) {
         if (props[name] !== undefined) options[name] = props[name];
       }
-      return new Class(options);
+      const node = new Class(options);
+      node.on("visibleChanged", () => guardCamera(node, false));
+      return node;
     },
   };
 }
@@ -80,5 +84,5 @@ export const behaviors: Record<string, Behavior> = {
   PointLight: nodeBehavior(PointLight, "PointLight"),
   SpotLight: nodeBehavior(SpotLight, "SpotLight"),
   Sprite3D: nodeBehavior(Sprite3D, "Sprite3D"),
-  View3D: viewBehavior,
+  View3D: viewBehavior(CONSTRUCTOR_ONLY.View3D),
 };
