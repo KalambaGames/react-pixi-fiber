@@ -205,6 +205,32 @@ describe("tree rules", () => {
     expect(parent.children).toEqual([]);
   });
 
+  it("throws at mount for a 3D node in a 2D parent", () => {
+    expect(() =>
+      render(
+        <Container>
+          <Node3D />
+        </Container>,
+        stage
+      )
+    ).toThrow(as3dChild + "`<Container />`. Put it in a 3D view or in another 3D node.");
+    expect(stage.children).toEqual([]);
+  });
+
+  it("throws at mount for a 2D object in a 3D node", () => {
+    expect(() =>
+      render(
+        <View>
+          <Node3D>
+            <Container />
+          </Node3D>
+        </View>,
+        stage
+      )
+    ).toThrow("`<Container />` is not a 3D node. It cannot be a child of the 3D node `<Node3D />`.");
+    expect(stage.children).toEqual([]);
+  });
+
   it("throws for a 3D node in the root container", () => {
     expect(() => render(<Node3D />, stage)).toThrow(
       as3dChild + "the root container. Put it in a 3D view or in another 3D node."
