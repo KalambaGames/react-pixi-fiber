@@ -7,4 +7,4 @@
 "@react-pixi-fiber/pixi-8": minor
 ---
 
-`PixiAdapter.behaviors` replaces `PixiAdapter.components`. The map holds a `Behavior` for each tag, Display Objects and filters.
+`PixiAdapter.behaviors` holds a `Behavior` for each tag, Display Objects and filters.
