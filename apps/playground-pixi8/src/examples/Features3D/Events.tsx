@@ -34,7 +34,7 @@ export default function EventsExample() {
       </View3D>
       <Text
         style={{ fill: "white", fontFamily: "Arial", fontSize: 16 }}
-        text={`pointerdown: ${presses}, last hit at y ${y}`}
+        text={`pointerdown: ${presses}, last hit at y ${y.toFixed(2)}`}
         x={10}
         y={10}
       />

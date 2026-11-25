@@ -1,6 +1,8 @@
 // Fox: © 2014, Public, CC0 1.0 (https://creativecommons.org/publicdomain/zero/1.0/legalcode), PixelMannen for Model.
-// © 2014, tomkranis, CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/legalcode), tomkranis for Rigging & Animation.
-// © 2017, @AsoboStudio and @scurest, CC BY 4.0, @AsoboStudio and @scurest for Conversion to glTF.
+// © 2014, tomkranis, CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/legalcode),
+// tomkranis for Rigging & Animation.
+// © 2017, @AsoboStudio and @scurest, CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/legalcode),
+// @AsoboStudio and @scurest for Conversion to glTF.
 // The file is unchanged. See fox.glb.license.md.
 import { Camera3D, DirectionalLight, Model3D, View3D } from "@react-pixi-fiber/pixi3d-0";
 import { useControls } from "leva";

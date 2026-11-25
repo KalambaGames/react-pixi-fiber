@@ -1,16 +1,16 @@
 import { Material3D, SphereGeometry } from "@pixi/3d";
 import { Camera3D, Container3D, DirectionalLight, Mesh3D, View3D } from "@react-pixi-fiber/pixi3d-0";
 import { useControls } from "leva";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { Stage, usePixiTicker } from "react-pixi-fiber";
 
+const sphere = new SphereGeometry();
+const sun = new Material3D({ baseColor: 0xffc356 });
+const planetMaterial = new Material3D({ baseColor: 0x4f9ed9 });
+const moonMaterial = new Material3D({ baseColor: 0xdddddd });
+
 // usePixiTicker reads the application, so it runs in a child of the Stage.
-function System() {
-  const { moon, planet } = useControls({ moon: true, planet: true });
-  const sphere = useMemo(() => new SphereGeometry(), []);
-  const sun = useMemo(() => new Material3D({ baseColor: 0xffc356 }), []);
-  const planetMaterial = useMemo(() => new Material3D({ baseColor: 0x4f9ed9 }), []);
-  const moonMaterial = useMemo(() => new Material3D({ baseColor: 0xdddddd }), []);
+function System({ moon, planet }: { moon: boolean; planet: boolean }) {
   const [turn, setTurn] = useState(0);
   usePixiTicker(ticker => setTurn(turn => turn + 0.01 * ticker.deltaTime));
   return (
@@ -27,13 +27,14 @@ function System() {
 }
 
 export default function Container3DExample() {
+  const { moon, planet } = useControls({ moon: true, planet: true });
   return (
     <Stage options={{ background: 0x1099bb, height: 300, width: 400 }}>
       <View3D autoResize>
         {/* A camera and a light look along their local -z axis, so a negative x rotation tilts them down. */}
         <Camera3D position={[0, 3, 7]} rotation={[-0.4, 0, 0]} />
         <DirectionalLight intensity={3} rotation={[-0.8, 0.4, 0]} />
-        <System />
+        <System moon={moon} planet={planet} />
       </View3D>
     </Stage>
   );
