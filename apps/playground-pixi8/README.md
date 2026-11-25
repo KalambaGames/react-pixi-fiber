@@ -54,8 +54,10 @@ send CORS headers. If it does not, the preview stays blank.
    alphabetical order. Each group has its own part of the list.
 3. If the example imports a new package or asset path, add it to `src/modules.ts`. Put a large package that only some
    examples use in `lazyModules`. The runner downloads it only when the example code names it. Put all other imports in
-   `modules`. The runner resolves only the imports in these two maps. A `.glb` import needs `?url`, a new hook needs a
-   `declare module` in `src/vite-env.d.ts`, and a file in the `modules` map imports `@pixi/3d` only as types.
+   `modules`. The runner resolves only the imports in these two maps. A `.glb` import needs `?url`. A new hook or shared
+   component needs a `declare module` in `src/vite-env.d.ts`. A file in the `modules` map imports `@pixi/3d` only as
+   types. A shared component that imports `@pixi/3d` as a value, as `src/examples/components/Floor.tsx` does, goes in
+   `lazyModules`.
 
 ## Why the runner uses a sandbox
 

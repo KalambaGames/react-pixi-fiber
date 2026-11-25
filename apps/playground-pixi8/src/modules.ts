@@ -34,6 +34,8 @@ export const modules: Record<string, unknown> = {
 export const lazyModules: LazyModules = {
   "./assets/spineboy.atlas?raw": () => import("./examples/assets/spineboy.atlas?raw"),
   "./assets/spineboy.json?raw": () => import("./examples/assets/spineboy.json?raw"),
+  // It imports @pixi/3d as a value, so it is lazy: in modules it would register the 3D backend in every runner.
+  "./components/Floor": () => import("./examples/components/Floor"),
   "@esotericsoftware/spine-pixi-v8": () => import("@esotericsoftware/spine-pixi-v8"),
   "@pixi/3d": () => import("@pixi/3d"),
   "@pixi/layout": () => import("@pixi/layout"),
