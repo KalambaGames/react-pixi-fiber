@@ -67,7 +67,7 @@ Rebuild the packages after changing their source before running or typechecking 
 
 ## Hosted playgrounds
 
-[Cloudflare Pages](https://pages.cloudflare.com) builds the playgrounds from this repository with `pnpm build:site` and serves the `site` directory: the PixiJS 4 playground at `/pixi-4/`, the PixiJS 5 playground at `/pixi-5/`, the PixiJS 6 playground at `/pixi-6/`, the PixiJS 7 playground at `/pixi-7/` and the PixiJS 8 playground at `/pixi-8/`. The root redirects to `/pixi-8/`. Pushes to `develop` deploy to https://react-pixi-fiber.pages.dev, and every pull request gets a preview URL, posted as a comment on the pull request.
+[Cloudflare Pages](https://pages.cloudflare.com) builds the playgrounds from this repository with `pnpm build:site` and serves the `site` directory: the PixiJS 4 playground at `/pixi-4/`, the PixiJS 5 playground at `/pixi-5/`, the PixiJS 6 playground at `/pixi-6/`, the PixiJS 7 playground at `/pixi-7/` and the PixiJS 8 playground at `/pixi-8/`. The root redirects to `/pixi-8/`. Pushes to `master` deploy to https://react-pixi-fiber.pages.dev, and every pull request gets a preview URL, posted as a comment on the pull request.
 
 ## Contributing
 
