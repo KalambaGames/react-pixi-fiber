@@ -20,10 +20,10 @@
     "pixi-filters": "6.1.5",
     "pixi-stats": "5.1.7",
     "pixi-viewport": "6.0.3",
-    "pixi.js": "8.21.0",
+    "pixi.js": "8.23.0",
     "playground-shell": "workspace:*",
-    "react": "19.3.0",
-    "react-dom": "19.3.0",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
     "react-pixi-fiber": "workspace:*",
     "yoga-layout": "3.2.1",
     "zustand": "5.0.16"
