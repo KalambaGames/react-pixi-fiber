@@ -7,7 +7,7 @@ body:
     attributes:
       label: Versions
       description: Give the versions of react-pixi-fiber, the React adapter, the PixiJS adapter, react and pixi.js.
-      placeholder: react-pixi-fiber 3.0.0-alpha.1, react-19 1.0.0-alpha.0, pixi-8 1.0.0-alpha.1, react 19.2.0, pixi.js 8.9.2
+      placeholder: react-pixi-fiber 3.0.0, react-19 1.0.0, pixi-8 1.0.0, react 19.3.1, pixi.js 8.23.0
     validations:
       required: true
   - type: textarea

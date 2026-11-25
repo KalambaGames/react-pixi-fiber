@@ -12,10 +12,10 @@
   </p>
 
   <a href="https://npmjs.com/package/react-pixi-fiber">
-    <img alt="npm" src="https://img.shields.io/npm/v/react-pixi-fiber/alpha.svg" />
+    <img alt="npm" src="https://img.shields.io/npm/v/react-pixi-fiber.svg" />
   </a>
-  <a href="https://bundlejs.com/?q=react-pixi-fiber@alpha">
-    <img alt="Bundle size" src="https://img.shields.io/bundlejs/size/react-pixi-fiber@alpha" />
+  <a href="https://bundlejs.com/?q=react-pixi-fiber">
+    <img alt="Bundle size" src="https://img.shields.io/bundlejs/size/react-pixi-fiber" />
   </a>
 </div>
 
@@ -924,12 +924,6 @@ render(
 );
 ```
 
-## Testing
-
-
-## Caveats
-
-
 ## FAQ
 
 ### Is it production ready?
@@ -1205,6 +1199,8 @@ createRoot(element).render(<Stage options={{ width: 800, height: 600 }}>…</Sta
 ## Migrating to 3.0.0
 
 Every change is listed in the [changelog](./CHANGELOG.md). These are the ones that need a code change.
+
+This guide starts from 2.x. From 1.x, first make the changes that the `2.0.0` entry of the [changelog](./CHANGELOG.md#200---2026-10-23) lists, then follow this guide.
 
 ### Call `configure` once
 
