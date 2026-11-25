@@ -48,7 +48,8 @@ function sizeLast(props: Record<string, unknown>): Record<string, unknown> {
 
 // `create` passes only the constructor-only props. The core writes every other prop after construction, so the value
 // it records as the default of a prop is the class default. A node that leaves or hides moves its view off a camera
-// that it is or contains. A node that joins a view with an active camera in it makes the view choose again.
+// that it is or contains. A node that joins a view or moves in it, with an active camera in it, makes the view choose
+// again. A move can come before the other moves of its commit, so the view chooses from the whole tree.
 export function nodeBehavior(
   Class: new (options: any) => Container3D,
   tag: keyof typeof CONSTRUCTOR_ONLY
@@ -56,6 +57,7 @@ export function nodeBehavior(
   const constructorOnly: readonly string[] = CONSTRUCTOR_ONLY[tag];
   return {
     afterAdd: node => guardCamera(node, false),
+    afterMove: node => guardCamera(node, false),
     applyProps(node, oldProps, newProps) {
       this.applyDisplayObjectProps(oldProps && sizeLast(oldProps), sizeLast(newProps));
     },

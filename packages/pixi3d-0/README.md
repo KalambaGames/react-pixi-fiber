@@ -178,8 +178,7 @@ An unmounted 3D node is destroyed with `destroy({ children: true })`. This does 
 
 - This package is an ES module only. It has no CommonJS build. Node loads the development build. To load the production build, run Node with `--conditions=production`.
 - A prop name that only a 3D node has gets no casing warning. For example, `castshadow` is not reported.
-- A 3D component that you register with `PIXIComponent`, and that holds the camera of the view, is guarded only when it is removed directly from a view. Hiding it, or removing it from a group, is not guarded. A `Camera3D` subclass that you register this way is also guarded when it is a direct child of a view and is hidden.
+- Take a 3D component that you register with `PIXIComponent` and that holds the camera of the view. The adapter guards it only when you remove it directly from a view. When you hide it, or remove it from a group, the adapter does not guard it. When you reorder it inside a group, the view does not choose again. The adapter also guards a `Camera3D` subclass that you register this way, when it is a direct child of a view and you hide it.
 - A size prop, `width`, `height` or `depth`, is measured when it is written. A later change of only the texture, `pixelSize` or geometry keeps the scale, not the size.
 - A view does not draw with the canvas renderer.
-- A reorder inside a group does not make the view choose again. When two active cameras swap places there, the view keeps its camera until the next change that makes it choose.
 - If the app hides the own camera of a view, the view can still fall back to it.

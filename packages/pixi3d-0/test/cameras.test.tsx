@@ -271,6 +271,46 @@ describe("cameras", () => {
       });
     });
 
+    it("is the last active camera after a reorder inside a group", () => {
+      const refs: Record<string, PIXI3D.Camera3D | null> = {};
+      const showTwo = (keys: string[]) =>
+        render(
+          <View3D ref={view}>
+            <Container3D>
+              {keys.map(key => (
+                <Camera3D key={key} ref={camera => (refs[key] = camera)} active />
+              ))}
+            </Container3D>
+          </View3D>,
+          root
+        );
+      showTwo(["a", "b"]);
+      expect(view.current!.camera).toBe(refs.b);
+      showTwo(["b", "a"]);
+      expect(view.current!.camera).toBe(refs.a);
+    });
+
+    it("is the last active camera after a reorder of the groups that hold the cameras", () => {
+      const refs: Record<string, PIXI3D.Camera3D | null> = {};
+      const showTwo = (keys: string[]) =>
+        render(
+          <View3D ref={view}>
+            <Container3D>
+              {keys.map(key => (
+                <Container3D key={key}>
+                  <Camera3D ref={camera => (refs[key] = camera)} active />
+                </Container3D>
+              ))}
+            </Container3D>
+          </View3D>,
+          root
+        );
+      showTwo(["a", "b"]);
+      expect(view.current!.camera).toBe(refs.b);
+      showTwo(["b", "a"]);
+      expect(view.current!.camera).toBe(refs.a);
+    });
+
     it("falls back to the direct rule when `active` turns off", () => {
       show();
       show({ active: false });
