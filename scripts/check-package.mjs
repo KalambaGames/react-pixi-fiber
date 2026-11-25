@@ -31,7 +31,7 @@ const core = packages.find(({ pkg }) => pkg.name === "react-pixi-fiber").pkg;
 // The core minor that added each contract member that an adapter can use (see ADR 0021). The PR that adds a member adds
 // it here. A member is found by name in the adapter source.
 // ponytail: a name match, so a member must not share its name with an unrelated identifier in an adapter.
-const MEMBER_MINORS = { "hostOps.commitMount": "3.1", afterMount: "3.1", afterMove: "3.1" };
+const MEMBER_MINORS = { "hostOps.commitMount": "3.1", afterMount: "3.1", afterMove: "3.1", Pixi3dAdapter: "3.1" };
 // `^3.1.0` and `3.1.2` both give 3001, so minors compare as numbers.
 const minorOf = version => {
   const [major, minor] = version.replace(/^\^/, "").split(".").map(Number);
