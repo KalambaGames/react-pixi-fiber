@@ -30,6 +30,8 @@ Every user-visible change adds a changeset with `pnpm changeset`. The release ru
 
 Changesets versions every package on its own. The adapters peer `react-pixi-fiber` with a caret range (`^3.0.0`). `.changeset/config.json` sets `onlyUpdatePeerDependentsWhenOutOfRange`. A core release inside that range therefore does not change the adapter versions.
 
+An adapter that calls or supplies a contract member that a core minor added peers that minor or later (see [ADR 0021](docs/adr/0021-treat-the-adapter-contract-as-a-public-api.md)). The PR that adds the member adds it to `MEMBER_MINORS` in `scripts/check-package.mjs`. When `pnpm version-packages` gives the core that minor, raise the floor of each adapter that uses the member in the release commit, for example to `^3.1.0`. `pnpm check-package` fails until then. An adapter that uses none of the new members keeps its floor and is not released.
+
 ### React minor versions
 
 Each React adapter bundles the newest `react-reconciler` of its React major. It peers the `react` range that this reconciler declares. For example, `@react-pixi-fiber/react-19` bundles 0.34.0 and peers `react` ^19.3.0. When a React minor needs a newer reconciler, the adapter gets a new major version that bundles it and raises the `react` floor. Apps on older React minors stay on the previous adapter major.

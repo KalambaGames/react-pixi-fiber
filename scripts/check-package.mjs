@@ -27,6 +27,16 @@ const packages = readdirSync(packagesDir)
     pkg: JSON.parse(readFileSync(join(packagesDir, dir, "package.json"), "utf8")),
   }))
   .filter(({ pkg }) => !pkg.private);
+const core = packages.find(({ pkg }) => pkg.name === "react-pixi-fiber").pkg;
+// The core minor that added each contract member that an adapter can use (see ADR 0021). The PR that adds a member adds
+// it here. A member is found by name in the adapter source.
+// ponytail: a name match, so a member must not share its name with an unrelated identifier in an adapter.
+const MEMBER_MINORS = { "hostOps.commitMount": "3.1", afterMount: "3.1", afterMove: "3.1" };
+// `^3.1.0` and `3.1.2` both give 3001, so minors compare as numbers.
+const minorOf = version => {
+  const [major, minor] = version.replace(/^\^/, "").split(".").map(Number);
+  return major * 1000 + minor;
+};
 const work = realpathSync(mkdtempSync(join(tmpdir(), "react-pixi-fiber-")));
 // PixiJS 5 reads the DOM globals when it is imported, so the Node checks that import a PixiJS adapter define them first.
 const preload = join(work, "dom.cjs");
@@ -131,6 +141,24 @@ try {
       assert.equal(pkg.peerDependencies?.["prop-types"], undefined);
       assert.throws(() => require.resolve(`${name}/react-pixi-alias`), { code: "ERR_PACKAGE_PATH_NOT_EXPORTED" });
     });
+    // ADR 0021: an adapter that calls or supplies a contract member that a core minor added peers that minor or later.
+    // The floor rises in the release commit, once `pnpm version-packages` has given the core that minor.
+    const corePeer = pkg.peerDependencies?.["react-pixi-fiber"];
+    if (corePeer !== undefined)
+      await check(`${name} peers each core minor whose contract members it uses`, () => {
+        const source = readdirSync(join(dir, "src"), { recursive: true })
+          .filter(file => file.endsWith(".ts"))
+          .map(file => readFileSync(join(dir, "src", file), "utf8"))
+          .join("\n");
+        for (const [member, added] of Object.entries(MEMBER_MINORS)) {
+          if (minorOf(core.version) < minorOf(added)) continue;
+          if (!new RegExp(`\\b${member.replaceAll(".", "\\.")}\\b`).test(source)) continue;
+          assert.ok(
+            minorOf(corePeer) >= minorOf(added),
+            `uses \`${member}\` from react-pixi-fiber ${added}, peers ${corePeer}`
+          );
+        }
+      });
 
     // Subpaths other than the entry point, for example `@react-pixi-fiber/pixi-8/compat/pixi6`.
     const subpaths = Object.keys(pkg.exports || {})
