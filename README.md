@@ -32,13 +32,11 @@
   </a>
 </div>
 
-> **Looking for 3.x, or for the latest React and PixiJS?** The next major version is
-> developed on the [`develop`](https://github.com/michalochman/react-pixi-fiber/tree/develop)
-> branch. It splits the library into a core package and one adapter per React major and per
-> PixiJS major, including the latest releases of both, published on npm under the `alpha` tag.
-> Setup and the compatibility matrix are in the
-> [3.x README](https://github.com/michalochman/react-pixi-fiber/blob/develop/packages/react-pixi-fiber/README.md).
-> This branch (`master`) is the 2.x line and takes bug fixes only.
+> **Looking for 3.x, or for the latest React and PixiJS?** Version 3 is on the
+> [`master`](https://github.com/KalambaGames/react-pixi-fiber) branch and on npm as `react-pixi-fiber@latest`.
+> To upgrade, read
+> [Migrating to 3.0.0](https://github.com/KalambaGames/react-pixi-fiber/blob/master/packages/react-pixi-fiber/README.md#migrating-to-300).
+> This branch (`2.x`) is the 2.x line and takes bug fixes only.
 
 ## Demo
 
