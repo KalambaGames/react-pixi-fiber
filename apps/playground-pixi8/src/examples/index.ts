@@ -49,9 +49,9 @@ const scene3d = (name: string, title: string): Example => {
       code: base.code
         .replace(
           '@react-pixi-fiber/pixi-8";',
-          '@react-pixi-fiber/pixi-8";\nimport pixi3d0 from "@react-pixi-fiber/pixi3d-0";'
+          '@react-pixi-fiber/pixi-8";\nimport pixi3d0 from "@react-pixi-fiber/pixi3d-0";\nimport { OrbitCamera } from "@pixi/3d/extras";'
         )
-        .replace("pixi8()", "pixi8(), pixi3d: pixi3d0()"),
+        .replace("pixi8()", "pixi8(), pixi3d: pixi3d0({ extras: { OrbitCamera } })"),
       summary: `${base.summary} and the PixiJS 3D adapter`,
     },
     group: "3D Scene Objects",
@@ -102,6 +102,7 @@ export const examples: Example[] = [
   scene3d("Camera3D", "Camera3D"),
   scene3d("Container3D", "Container3D"),
   scene3d("Mesh3D", "Mesh3D"),
+  scene3d("OrbitCamera", "OrbitCamera"),
   scene3d("Sprite3D", "Sprite3D"),
   scene3d("View3D", "View3D"),
   feature("Bunnymark", "Bunnymark"),
