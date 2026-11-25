@@ -57,7 +57,8 @@ type ControllerProps<O> = {
 
 export type AmbientLightProps = Props<PIXI3D.AmbientLight>;
 export type BatchedMesh3DProps = WithOptions<PIXI3D.BatchedMesh3D, PIXI3D.BatchedMesh3DOptions, "BatchedMesh3D">;
-export type Camera3DProps = Props<PIXI3D.Camera3D>;
+// `active` makes the camera the camera of its view, at any depth.
+export type Camera3DProps = Props<PIXI3D.Camera3D> & { active?: boolean };
 export type Container3DProps = Props<PIXI3D.Container3D>;
 export type DirectionalLightProps = Props<PIXI3D.DirectionalLight>;
 // `position` sets the camera at construction only. Set `position` of the camera.

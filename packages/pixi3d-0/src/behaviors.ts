@@ -12,7 +12,7 @@ import {
   Sprite3D,
 } from "@pixi/3d";
 import type { Behavior } from "react-pixi-fiber";
-import { constructorOptions, guardCamera, viewBehavior } from "./view";
+import { constructorOptions, guardCamera, setActive, viewBehavior, watchVisible } from "./view";
 
 // The options of each class that the instance cannot take after construction: it has no member of that name, or only
 // a read-only one. A type test checks each list against the typings of `@pixi/3d`.
@@ -48,13 +48,14 @@ function sizeLast(props: Record<string, unknown>): Record<string, unknown> {
 
 // `create` passes only the constructor-only props. The core writes every other prop after construction, so the value
 // it records as the default of a prop is the class default. A node that leaves or hides moves its view off a camera
-// that it is or contains.
+// that it is or contains. A node that joins a view with an active camera in it makes the view choose again.
 export function nodeBehavior(
   Class: new (options: any) => Container3D,
   tag: keyof typeof CONSTRUCTOR_ONLY
 ): Behavior<Container3D, Record<string, unknown>> {
   const constructorOnly: readonly string[] = CONSTRUCTOR_ONLY[tag];
   return {
+    afterAdd: node => guardCamera(node, false),
     applyProps(node, oldProps, newProps) {
       this.applyDisplayObjectProps(oldProps && sizeLast(oldProps), sizeLast(newProps));
     },
@@ -62,7 +63,7 @@ export function nodeBehavior(
     constructorOnly,
     create: props => {
       const node = new Class(constructorOptions(props, constructorOnly));
-      node.on("visibleChanged", () => guardCamera(node, false));
+      watchVisible(node);
       return node;
     },
   };
@@ -71,7 +72,16 @@ export function nodeBehavior(
 export const behaviors: Record<string, Behavior> = {
   AmbientLight: nodeBehavior(AmbientLight, "AmbientLight"),
   BatchedMesh3D: nodeBehavior(BatchedMesh3D, "BatchedMesh3D"),
-  Camera3D: nodeBehavior(Camera3D, "Camera3D"),
+  Camera3D: {
+    ...nodeBehavior(Camera3D, "Camera3D"),
+    // `active` is not a member of `Camera3D`.
+    applyProps(camera, oldProps, newProps) {
+      const { active: _, ...oldRest } = oldProps ?? {};
+      const { active, ...rest } = newProps;
+      this.applyDisplayObjectProps(oldProps === undefined ? undefined : oldRest, rest);
+      setActive(camera as Camera3D, active === true);
+    },
+  },
   Container3D: nodeBehavior(Container3D, "Container3D"),
   DirectionalLight: nodeBehavior(DirectionalLight, "DirectionalLight"),
   Mesh3D: nodeBehavior(Mesh3D, "Mesh3D"),

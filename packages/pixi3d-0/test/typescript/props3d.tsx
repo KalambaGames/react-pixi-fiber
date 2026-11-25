@@ -70,6 +70,9 @@ export const meshNope = <Mesh3D nope={1} />;
 // @ts-expect-error `z` takes a number
 export const meshZ = <Mesh3D z="3" />;
 export const camera = <Camera3D position={[0, 1, 5]} fov={60} />;
+export const activeCamera = <Camera3D active position={[0, 1, 5]} />;
+// @ts-expect-error `active` is a boolean
+export const activeNumber = <Camera3D active={1} />;
 
 // --- the view is a Display Object: two-coordinate points
 export const view = (

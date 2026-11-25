@@ -1,11 +1,11 @@
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import React, { createRef, Suspense } from "react";
 import { act } from "react-test-renderer";
 import * as PIXI from "pixi.js";
 import * as PIXI3D from "@pixi/3d";
 import pixi8 from "@react-pixi-fiber/pixi-8";
 import react18 from "@react-pixi-fiber/react-18";
-import { configure, render, unmount } from "react-pixi-fiber";
+import { configure, PIXIComponent, render, unmount } from "react-pixi-fiber";
 import pixi3d0, { Camera3D, Container3D, Mesh3D, View3D } from "../src/index";
 import { viewOf } from "../src/view";
 
@@ -186,6 +186,173 @@ describe("cameras", () => {
       expect(rig.current!.visible).toBe(true);
       // The switch does not come back by itself to a camera the app assigned.
       expect(view.current!.camera).not.toBe(nested.current);
+    });
+  });
+
+  describe("an active camera", () => {
+    const view = createRef<PIXI3D.View3D>();
+    const direct = createRef<PIXI3D.Camera3D>();
+    const group = createRef<PIXI3D.Container3D>();
+    const nested = createRef<PIXI3D.Camera3D>();
+    const show = ({ active = true, visible = true, withGroup = true, withNested = true } = {}) =>
+      render(
+        <View3D ref={view}>
+          {withGroup && (
+            <Container3D ref={group} visible={visible}>
+              <Container3D>{withNested && <Camera3D ref={nested} active={active} />}</Container3D>
+            </Container3D>
+          )}
+          <Camera3D ref={direct} />
+        </View3D>,
+        root
+      );
+
+    it("wins over a direct camera at any depth", () => {
+      show();
+      expect(view.current!.camera).toBe(nested.current);
+      usable(view.current!);
+    });
+
+    it("is the last active camera in tree order", () => {
+      const refs: Record<string, PIXI3D.Camera3D | null> = {};
+      const showTwo = (keys: string[]) =>
+        render(
+          <View3D ref={view}>
+            {keys.map(key => (
+              <Container3D key={key}>
+                <Camera3D ref={camera => (refs[key] = camera)} active />
+              </Container3D>
+            ))}
+            <Camera3D ref={direct} />
+          </View3D>,
+          root
+        );
+      showTwo(["a", "b"]);
+      expect(view.current!.camera).toBe(refs.b);
+      showTwo(["b", "a"]);
+      expect(view.current!.camera).toBe(refs.a);
+    });
+
+    describe("warns after the commit", () => {
+      const warnings = (error: { mock: { calls: unknown[][] } }) =>
+        error.mock.calls.filter(c => /More than one `<Camera3D active \/>`/.test(String(c[0])));
+      const showChoice = (choice: string, visible = true) =>
+        render(
+          <View3D ref={view}>
+            <Camera3D active={choice === "a" || choice === "both"} />
+            <Container3D visible={visible}>
+              <Camera3D active={choice === "b" || choice === "both"} />
+            </Container3D>
+          </View3D>,
+          root
+        );
+
+      it("once for a view with two visible active cameras", async () => {
+        const error = vi.spyOn(console, "error").mockImplementation(() => {});
+        showChoice("both");
+        await Promise.resolve();
+        showChoice("both");
+        await Promise.resolve();
+        expect(warnings(error)).toHaveLength(__DEV__ ? 1 : 0);
+        error.mockRestore();
+      });
+
+      it("not for a handover in one commit, or a hidden active camera", async () => {
+        const error = vi.spyOn(console, "error").mockImplementation(() => {});
+        showChoice("b");
+        await Promise.resolve();
+        // React sets `active` on the first camera before it clears it on the second.
+        showChoice("a");
+        await Promise.resolve();
+        showChoice("both", false);
+        await Promise.resolve();
+        expect(warnings(error)).toHaveLength(0);
+        error.mockRestore();
+      });
+    });
+
+    it("falls back to the direct rule when `active` turns off", () => {
+      show();
+      show({ active: false });
+      expect(view.current!.camera).toBe(direct.current);
+      show();
+      expect(view.current!.camera).toBe(nested.current);
+    });
+
+    it("falls back while its group is hidden", () => {
+      show();
+      show({ visible: false });
+      expect(view.current!.camera).toBe(direct.current);
+      usable(view.current!);
+      show();
+      expect(view.current!.camera).toBe(nested.current);
+    });
+
+    it("falls back when its group leaves", () => {
+      show();
+      show({ withGroup: false });
+      expect(view.current!.camera).toBe(direct.current);
+      usable(view.current!);
+      show();
+      expect(view.current!.camera).toBe(nested.current);
+    });
+
+    it("becomes the camera when it is added to a group in the view", () => {
+      show({ withNested: false });
+      expect(view.current!.camera).toBe(direct.current);
+      show();
+      expect(view.current!.camera).toBe(nested.current);
+      show({ withNested: false });
+      expect(view.current!.camera).toBe(direct.current);
+    });
+
+    it("is not written to the instance", () => {
+      show();
+      expect(nested.current).not.toHaveProperty("active");
+    });
+
+    it("leaves the other props to the core", () => {
+      const reference = new PIXI3D.Camera3D();
+      const showProps = (props: object) =>
+        render(
+          <View3D>
+            <Camera3D ref={direct} active {...props} />
+          </View3D>,
+          root
+        );
+      showProps({ fov: 40, position: [1, 2, 3] });
+      expect(direct.current!.fov).toBe(40);
+      expect(direct.current!.position.x).toBe(1);
+      showProps({});
+      expect(direct.current!.fov).toBe(reference.fov);
+      expect(direct.current!.position.x).toBe(reference.position.x);
+      reference.destroy();
+    });
+  });
+
+  describe("a registered camera class", () => {
+    const Lens = PIXIComponent("Lens", { create: () => new PIXI3D.Camera3D() });
+    const view = createRef<PIXI3D.View3D>();
+    const lens = createRef<PIXI3D.Camera3D>();
+    const show = ({ visible = true, withLens = true } = {}) =>
+      render(<View3D ref={view}>{withLens && <Lens ref={lens} visible={visible} />}</View3D>, root);
+
+    it("is replaced when it is removed from the view", () => {
+      show();
+      expect(view.current!.camera).toBe(lens.current);
+      show({ withLens: false });
+      expect(view.current!.camera).not.toBe(lens.current);
+      usable(view.current!);
+    });
+
+    it("is replaced when it is hidden", () => {
+      show();
+      const camera = lens.current;
+      show({ visible: false });
+      expect(view.current!.camera).not.toBe(camera);
+      usable(view.current!);
+      show();
+      expect(view.current!.camera).toBe(camera);
     });
   });
 

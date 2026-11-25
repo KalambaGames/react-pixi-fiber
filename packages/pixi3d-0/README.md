@@ -104,9 +104,11 @@ The same rules apply to the fallback of a `<Suspense>` in a 3D tree. Use `fallba
 
 A `View3D` always has a camera. These rules choose it:
 
-1. A `<Camera3D>` that is a direct child of `<View3D>` is a camera of the view. The view draws from the last visible one.
-2. When no direct child is a visible camera, the view draws from its own camera. The adapter puts it first in the root of the view.
-3. A camera that you assign with `view.camera` through a ref stays until that camera leaves the view or is hidden. A `<Camera3D>` that is added, removed or hidden under the view makes the view choose again.
+1. A `<Camera3D active>` at any depth under `<View3D>` is the camera of the view, when it and all its ancestors are visible. With more than one, the view draws from the last in tree order, and warns in development. Use it for a camera in a group, for example a camera that follows a car.
+2. When no active camera is visible, a `<Camera3D>` that is a direct child of `<View3D>` is the camera. The view draws from the last visible one.
+3. When no direct child is a visible camera, the view draws from its own camera. The adapter puts it first in the root of the view.
+
+A camera that you assign with `view.camera` through a ref stays until that camera leaves the view or is hidden. The view chooses again when `active` changes, when a direct `<Camera3D>` is added, removed or hidden, and when a node that holds an active camera is added, removed, hidden or shown.
 
 `@pixi/3d` throws on each frame for a camera that left its view or is hidden. So the adapter moves the view to another camera in the same commit that removes or hides the camera.
 
@@ -175,7 +177,8 @@ An unmounted 3D node is destroyed with `destroy({ children: true })`. This does 
 
 - This package is an ES module only. It has no CommonJS build. Node loads the development build. To load the production build, run Node with `--conditions=production`.
 - A prop name that only a 3D node has gets no casing warning. For example, `castshadow` is not reported.
-- A 3D component that you register with `PIXIComponent` is not guarded by the camera fallback. A `Camera3D` subclass that you register this way, and remove directly from a view, is also not guarded.
+- A 3D component that you register with `PIXIComponent`, and that holds the camera of the view, is not guarded by the camera fallback. A `Camera3D` subclass that you register this way is guarded when it is a direct child of a view.
 - A size prop, `width`, `height` or `depth`, is measured when it is written. A later change of only the texture, `pixelSize` or geometry keeps the scale, not the size.
 - A view does not draw with the canvas renderer.
+- A reorder inside a group does not make the view choose again. When two active cameras swap places there, the view keeps its camera until the next change that makes it choose.
 - If the app hides the own camera of a view, the view can still fall back to it.
