@@ -122,6 +122,7 @@ export const examples: Example[] = [
   feature3d("Labels", "Labels"),
   feature3d("Suspense", "Suspense"),
   feature3d("TwoDAndThreeD", "2D and 3D"),
+  feature3d("Unmount", "Unmount"),
   feature3d("VectorProps", "Vector props"),
   feature("Bunnymark", "Bunnymark"),
   feature("BunnymarkCustomComponents", "Bunnymark with custom components"),
