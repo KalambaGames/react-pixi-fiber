@@ -9,6 +9,12 @@ export interface Behavior<I = any, P = any> {
   create(props: P): I;
   applyProps?(this: ApplyPropsContext<P>, instance: I, oldProps: P | undefined, newProps: P): void;
   afterAdd?(instance: I): void;
+  /**
+   * Runs at commit when React moves `instance` to a new place in the same parent, after the move. Only the instance
+   * that React moves gets the call, not its descendants and not its siblings. React places one child at a time, so a
+   * sibling that React moves or adds later in the same commit is not in its final place yet.
+   */
+  afterMove?(instance: I): void;
   beforeRemove?(instance: I): void;
   /**
    * Props that `create` passes to the constructor and that have no setter which works after it. The core never writes
@@ -45,6 +51,7 @@ export interface BoundBehavior {
   tag: string;
   applyProps?: (instance: any, oldProps: any, newProps: any) => void;
   afterAdd?: (instance: any) => void;
+  afterMove?: (instance: any) => void;
   appendChild?: (parent: any, child: any) => void;
   beforeRemove?: (instance: any) => void;
   constructorOnly?: readonly string[];
@@ -165,6 +172,7 @@ export function createRegisteredInstance(
     });
   }
   if (typeof behavior.afterAdd === "function") bound.afterAdd = behavior.afterAdd;
+  if (typeof behavior.afterMove === "function") bound.afterMove = behavior.afterMove;
   if (typeof behavior.beforeRemove === "function") bound.beforeRemove = behavior.beforeRemove;
   if (Array.isArray(behavior.constructorOnly)) bound.constructorOnly = behavior.constructorOnly;
   if (typeof behavior.appendChild === "function") bound.appendChild = behavior.appendChild;

@@ -101,6 +101,9 @@ const CustomAnimatedSprite = PIXIComponent<PIXI.AnimatedSprite, CustomAnimatedSp
   afterAdd: instance => {
     console.log(instance.textures);
   },
+  afterMove: instance => {
+    console.log(instance.textures);
+  },
   beforeRemove: instance => {
     console.log(instance.textures);
   },
@@ -216,6 +219,10 @@ class GlowFilter extends PIXI.Filter {
   }
 }
 const Glow = PIXIFilter("Glow", () => new GlowFilter());
+const MovingGlow = PIXIFilter("MovingGlow", {
+  afterMove: filter => console.log(filter.strength),
+  create: () => new GlowFilter(),
+});
 const glowRef = React.createRef<GlowFilter>();
 const GlowExample = <Glow enabled ref={glowRef} strength={2} />;
 // @ts-expect-error a filter has no `x`

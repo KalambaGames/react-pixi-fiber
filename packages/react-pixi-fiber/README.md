@@ -826,7 +826,7 @@ Some options go only to the constructor of the filter. To change one, give the e
 
 On every PixiJS major, `kernelSize` of `BlurFilter` and `sprite` of `DisplacementFilter` are constructor-only. In development, under StrictMode, a change to a prop that the filter did not have before its first write logs a warning.
 
-`PIXIFilter(type, behavior)` registers another filter class, for example one from `pixi-filters`. `behavior` takes the same keys as in [Custom Components](#custom-components): `create`, `applyProps`, `afterAdd` and `beforeRemove`. A function is the `create`:
+`PIXIFilter(type, behavior)` registers another filter class, for example one from `pixi-filters`. `behavior` takes the same keys as in [Custom Components](#custom-components): `create`, `applyProps`, `afterAdd`, `afterMove` and `beforeRemove`. A function is the `create`:
 
 ```ts
 import { PIXIFilter } from "react-pixi-fiber";
@@ -855,7 +855,11 @@ Note: this replaces the default method of transferring `props` to the specified 
 
 #### `afterAdd(displayObject)` (optional)
 
-Use this to do something after `displayObject` is added to its parent. It runs once per add: when React reorders a child within the same parent, neither `afterAdd` nor `beforeRemove` runs, so listeners added here and removed in `beforeRemove` are never doubled.
+Use this to do something after `displayObject` is added to its parent. It runs once per add: when React reorders a child within the same parent, neither `afterAdd` nor `beforeRemove` runs, so listeners added here and removed in `beforeRemove` are never doubled. `afterMove` runs for a reorder.
+
+#### `afterMove(displayObject)` (optional)
+
+Use this to update something that depends on the order of the children, when React moves `displayObject` to a new place in the same parent. It runs at commit, after the move. Only the `displayObject` that React moves gets the call: its children and its siblings do not. A `displayObject` that keeps its place among the children of the parent gets no call, for example when only a filter child moves past it. React places one child at a time, so a sibling that React moves or adds later in the same commit is not in its final place yet. Compute the result again from the parent on each call, and do the same in `afterAdd`.
 
 #### `beforeRemove(displayObject)` (optional)
 
