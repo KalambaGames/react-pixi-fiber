@@ -38,8 +38,8 @@
     "pixi-viewport": "4.38.0",
     "pixi.js": "6.5.10",
     "playground-shell": "workspace:*",
-    "react": "19.3.0",
-    "react-dom": "19.3.0",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
     "react-pixi-fiber": "workspace:*",
     "zustand": "5.0.16"
   },

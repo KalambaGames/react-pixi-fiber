@@ -37,6 +37,7 @@ const NOT_TAGS = [
   "AbstractText",
   "BitmapTextGraphics",
   "NineSlicePlane",
+  "SmoothGraphics",
   "SplitBitmapText",
   "SplitText",
   "ViewContainer",

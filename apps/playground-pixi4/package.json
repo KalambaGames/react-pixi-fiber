@@ -20,8 +20,8 @@
     "pixi-viewport": "3.23.2",
     "pixi.js": "4.8.9",
     "playground-shell": "workspace:*",
-    "react": "19.3.0",
-    "react-dom": "19.3.0",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
     "react-pixi-fiber": "workspace:*",
     "zustand": "5.0.16"
   },

@@ -12,10 +12,10 @@
   </p>
 
   <a href="https://npmjs.com/package/react-pixi-fiber">
-    <img alt="npm" src="https://img.shields.io/npm/v/react-pixi-fiber/alpha.svg" />
+    <img alt="npm" src="https://img.shields.io/npm/v/react-pixi-fiber.svg" />
   </a>
-  <a href="https://bundlejs.com/?q=react-pixi-fiber@alpha">
-    <img alt="Bundle size" src="https://img.shields.io/bundlejs/size/react-pixi-fiber@alpha" />
+  <a href="https://bundlejs.com/?q=react-pixi-fiber">
+    <img alt="Bundle size" src="https://img.shields.io/bundlejs/size/react-pixi-fiber" />
   </a>
 </div>
 
@@ -924,12 +924,6 @@ render(
 );
 ```
 
-## Testing
-
-
-## Caveats
-
-
 ## FAQ
 
 ### Is it production ready?
@@ -1206,6 +1200,8 @@ createRoot(element).render(<Stage options={{ width: 800, height: 600 }}>…</Sta
 
 Every change is listed in the [changelog](./CHANGELOG.md). These are the ones that need a code change.
 
+This guide starts from 2.x. From 1.x, first make the changes that the `2.0.0` entry of the [changelog](./CHANGELOG.md#200---2026-10-23) lists, then follow this guide.
+
 ### Call `configure` once
 
 ```js
@@ -1443,6 +1439,7 @@ PixiJS 7 and 8 have no `PIXI.interaction` and no `PIXI.InteractionEvent`, so `pi
 - `AppContext` is typed `Context<Application | null>` and its default value is `null`.
 - `Graphics` passes `props.geometry` to the `PIXI.Graphics` constructor.
 - The fallbacks to the PixiJS 4 `PIXI.extras`, `PIXI.mesh` and `PIXI.particles` namespaces are removed from the core; PixiJS 4 support moves to the `@react-pixi-fiber/pixi-4` adapter.
+- PixiJS 4.4, 4.5, 7.0 and 7.1 are not supported. `@react-pixi-fiber/pixi-4` needs PixiJS 4.6.0 or newer, and `@react-pixi-fiber/pixi-7` needs PixiJS 7.2.0 or newer.
 
 ---
 

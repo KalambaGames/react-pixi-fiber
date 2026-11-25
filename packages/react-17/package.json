@@ -1,6 +1,6 @@
 {
   "name": "@react-pixi-fiber/react-17",
-  "version": "1.0.0-beta.0",
+  "version": "1.0.0",
   "description": "React 17 adapter for react-pixi-fiber",
   "main": "index.js",
   "author": "Michal Ochman",
@@ -41,7 +41,7 @@
   "sideEffects": false,
   "peerDependencies": {
     "react": "^17.0.2",
-    "react-pixi-fiber": "^3.0.0-alpha.0"
+    "react-pixi-fiber": "^3.0.0"
   },
   "devDependencies": {
     "@types/react": "17.0.93",
