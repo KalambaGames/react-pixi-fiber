@@ -859,7 +859,7 @@ Use this to do something after `displayObject` is added to its parent. It runs o
 
 #### `afterMove(displayObject)` (optional)
 
-Use this to update something that depends on the order of the children, when React moves `displayObject` to a new place in the same parent. It runs at commit, after the move. Only the `displayObject` that React moves gets the call: its children and its siblings do not. A `displayObject` that keeps its place among the children of the parent gets no call, for example when only a filter child moves past it. React places one child at a time, so a sibling that React moves or adds later in the same commit is not in its final place yet. Compute the result again from the parent on each call, and do the same in `afterAdd`.
+Use this to update something that depends on the order of the children, when React moves `displayObject` to a new place in the same parent. It runs at commit, after the move. Only the `displayObject` that React moves gets the call: its children and its siblings do not. A `displayObject` that keeps its place among the children of the parent gets no call, for example when only a filter child moves past it. React places one child at a time, so a sibling that React moves or adds later in the same commit is not in its final place yet. The order of the calls in one commit is not specified. Compute the result again from the parent on each call, and do the same in `afterAdd`.
 
 This example puts the children of a parent in a stack. Each call sets the position of every child again, so the positions are correct after the last call of the commit. `beforeRemove` runs before the removal, so it skips the child that leaves. The example needs every child of the parent to have this behavior.
 
