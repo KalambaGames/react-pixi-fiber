@@ -99,6 +99,7 @@ export const examples: Example[] = [
   example("Sprite"),
   example("Text"),
   example("TilingSprite"),
+  scene3d("Container3D", "Container3D"),
   scene3d("View3D", "View3D"),
   feature("Bunnymark", "Bunnymark"),
   feature("BunnymarkCustomComponents", "Bunnymark with custom components"),
