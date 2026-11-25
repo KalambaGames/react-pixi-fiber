@@ -75,13 +75,19 @@ export function controllerBehavior(
       if (view === undefined || node.parent !== view.root) {
         throw new Error(`\`<${tag} />\` must be a direct child of \`<View3D />\`.`);
       }
+    },
+    // At commit the view has its camera for the commit. A node that React removes before it shows it gets no
+    // controller.
+    afterMount: node => {
+      const view = viewOf(node)!;
       node.controller = new Class!({ view });
       update(node, undefined, kept.get(node)!.props);
       node.on("visibleChanged", () => enable(node));
     },
     applyProps: (node, oldProps, newProps) => {
       kept.get(node)!.props = newProps;
-      if (node.controller !== null) update(node, oldProps, newProps);
+      if (node.controller === null) return;
+      update(node, oldProps, newProps);
     },
     create: () => {
       if (Class === undefined) {

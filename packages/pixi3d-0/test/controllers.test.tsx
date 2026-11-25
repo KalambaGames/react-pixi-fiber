@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import React, { createRef, Suspense } from "react";
+import React, { createRef, Suspense, useLayoutEffect } from "react";
 import { act } from "react-test-renderer";
 import * as PIXI from "pixi.js";
 import * as PIXI3D from "@pixi/3d";
@@ -9,6 +9,7 @@ import react18 from "@react-pixi-fiber/react-18";
 import { configure, Container, render, unmount } from "react-pixi-fiber";
 import pixi3d0, { Camera3D, Container3D, FPSCamera, OrbitCamera, View3D } from "../src/index";
 import type { ControllerNode } from "../src/index";
+import { controllerBehavior } from "../src/controllers";
 
 describe("camera controllers", () => {
   let root: PIXI.Container;
@@ -113,6 +114,77 @@ describe("camera controllers", () => {
     // The setter normalizes the vector.
     const up = orbit.current!.controller!.up;
     expect([up.x, up.y, up.z]).toEqual([0, 0, 1]);
+  });
+
+  it("starts from the camera of the view, and walks from where a change of its `position` moved it", () => {
+    const view = createRef<PIXI3D.View3D>();
+    const camera = createRef<PIXI3D.Camera3D>();
+    const fps = createRef<ControllerNode<PixiFPSCamera>>();
+    const show = (position: [number, number, number]) =>
+      render(
+        <View3D ref={view}>
+          <Camera3D ref={camera} position={position} />
+          <FPSCamera ref={fps} />
+        </View3D>,
+        root
+      );
+    const coordinates = () => {
+      const { x, y, z } = view.current!.camera.position;
+      return [x, y, z];
+    };
+    const first: [number, number, number] = [1, 2, 3];
+    const second: [number, number, number] = [4, 5, 6];
+    show(first);
+    expect(view.current!.camera).toBe(camera.current);
+    expect(coordinates()).toEqual(first);
+    show(second);
+    expect(coordinates()).toEqual(second);
+    // The controller walks from the moved camera.
+    fps.current!.controller!.update();
+    expect(coordinates()).toEqual(second);
+    expect(fps.current!.controller).not.toHaveProperty("position");
+  });
+
+  it("builds the controller one time, at commit", () => {
+    let built = 0;
+    class Counted extends PixiOrbitCamera {
+      constructor(options: ConstructorParameters<typeof PixiOrbitCamera>[0]) {
+        super(options);
+        built += 1;
+      }
+    }
+    configure({ react: react18(), pixi: pixi8(), pixi3d: pixi3d0({ extras: { OrbitCamera: Counted } }) });
+    const seen: number[] = [];
+    // React renders this sibling after it added the controller element to the view, and before the commit.
+    const Probe = () => {
+      seen.push(built);
+      useLayoutEffect(() => {
+        seen.push(built);
+      });
+      return null;
+    };
+    const show = (keys: string[]) =>
+      render(
+        <Container>
+          <View3D>{keys.map(key => (key === "orbit" ? <OrbitCamera key={key} /> : <Container3D key={key} />))}</View3D>
+          <Probe />
+        </Container>,
+        root
+      );
+    show(["orbit", "group"]);
+    expect(seen).toEqual([0, 1]);
+    show(["group", "orbit"]);
+    show(["group", "orbit"]);
+    expect(built).toBe(1);
+  });
+
+  it("destroys a node that was never mounted", () => {
+    const behavior = controllerBehavior("OrbitCamera", PixiOrbitCamera);
+    const node = behavior.create({}) as ControllerNode<PixiOrbitCamera>;
+    behavior.applyProps!.call({} as never, node, undefined, { enabled: false });
+    node.visible = false;
+    expect(() => node.destroy()).not.toThrow();
+    expect(node.controller).toBe(null);
   });
 
   it("follows the camera of the view", () => {

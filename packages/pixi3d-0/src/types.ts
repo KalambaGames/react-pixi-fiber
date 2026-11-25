@@ -61,8 +61,8 @@ export type BatchedMesh3DProps = WithOptions<PIXI3D.BatchedMesh3D, PIXI3D.Batche
 export type Camera3DProps = Props<PIXI3D.Camera3D> & { active?: boolean };
 export type Container3DProps = Props<PIXI3D.Container3D>;
 export type DirectionalLightProps = Props<PIXI3D.DirectionalLight>;
-// `position` sets the camera at construction only. Set `position` of the camera.
-export type FPSCameraProps = ControllerProps<Omit<FPSCameraOptions, "position">>;
+// The controller starts from the camera of the view, so `position` is a prop of `<Camera3D>`.
+export type FPSCameraProps = Omit<ControllerProps<FPSCameraOptions>, "position">;
 export type Mesh3DProps = WithOptions<PIXI3D.Mesh3D, PIXI3D.Mesh3DOptions, "Mesh3D">;
 export type Model3DProps = WithOptions<PIXI3D.Model3D, PIXI3D.Model3DOptions, "Model3D">;
 export type OrbitCameraProps = ControllerProps<OrbitCameraOptions>;

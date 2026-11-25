@@ -131,8 +131,8 @@ A tag that is not in `extras` throws at first render. The error names the class 
 
 - The props are the options of the controller, without `view`.
 - `target` and `up` take the vector forms. `mouseButtons` and `touches` of `<OrbitCamera>` take a part of the object. The other buttons keep their defaults.
-- `<FPSCamera>` has no `position` prop. Place the camera with a `<Camera3D position>`.
-- The core compares props by identity. So an inline array, as in `<Camera3D position={[0, 1, 5]}>`, is written again each time the parent renders, and moves the camera back from where the controller moved it. With a controller, give `position` of `<Camera3D>` a stable value: a constant or a `useMemo` value.
+- `<FPSCamera>` has no `position` prop. `yaw` and `pitch` set the facing, and the controller ignores the `angle` of the camera.
+- After mount the controller moves the camera. The core compares props by identity. So the core writes an inline array, as in `<Camera3D position={[0, 1, 5]}>`, again each time the parent renders, and the camera moves back. Give `position` a constant or a `useMemo` value.
 - `enabled` turns the controller on and off. A hidden element turns it off.
 - The adapter destroys the controller one time, when its element unmounts or when the view unmounts.
 
