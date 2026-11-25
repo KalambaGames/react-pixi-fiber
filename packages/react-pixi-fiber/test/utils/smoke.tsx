@@ -3,7 +3,7 @@ import type { MockInstance } from "vitest";
 import React, { StrictMode } from "react";
 import renderer, { act } from "react-test-renderer";
 import type { ReactTestRenderer } from "react-test-renderer";
-import { configure, Container, Sprite, Stage } from "react-pixi-fiber";
+import { configure, Container, PIXIComponent, Sprite, Stage } from "react-pixi-fiber";
 import type { PixiAdapter, ReactAdapter } from "react-pixi-fiber";
 
 const settle = () =>
@@ -17,6 +17,27 @@ const create = (element: React.ReactElement) => {
     tree = renderer.create(element, { createNodeMock: () => document.createElement("canvas") });
   });
   return tree;
+};
+
+// What each hook call of a commit sees, as `hook child:order of the children`. Each commit goes from one order to
+// another, and mixes moves, adds and removes. React 17, 18 and 19 give this order of calls today: the removes, then
+// each child that React places. The README says that the order is not specified, so a behavior must not depend on it.
+// If a React release changes the order, change these values. The positions that the test checks must stay correct.
+const MIXED_COMMITS: Record<string, string[]> = {
+  "abc > cba": ["move b:acb", "move a:cba"],
+  "abcd > xdyca": ["remove b:abcd", "add x:acxd", "add y:acxdy", "move c:axdyc", "move a:xdyca"],
+  "abcde > ecxa": ["remove b:abcde", "remove d:acde", "move c:aec", "add x:aecx", "move a:ecxa"],
+  "abcd > dxbya": ["remove c:abcd", "add x:abdx", "move b:adxb", "add y:adxby", "move a:dxbya"],
+  "abcdef > fzaycx": [
+    "remove b:abcdef",
+    "remove d:acdef",
+    "remove e:acef",
+    "add z:acfz",
+    "move a:cfza",
+    "add y:cfzay",
+    "move c:fzayc",
+    "add x:fzaycx",
+  ],
 };
 
 export function smokeSuite(name: string, pair: () => { react: ReactAdapter; pixi: PixiAdapter }) {
@@ -150,6 +171,80 @@ export function smokeSuite(name: string, pair: () => { react: ReactAdapter; pixi
         tree.update(<Scene alpha={null} />);
       });
       expect(sprite.alpha).toBeNull();
+
+      act(() => {
+        tree.unmount();
+      });
+      await settle();
+    });
+
+    it("calls afterAdd, afterMove and beforeRemove in commits that mix moves, adds and removes", async () => {
+      const adapters = pair();
+      configure(adapters);
+      // The id stays off the Display Object: the property for it is `name` or `label`, by PixiJS major.
+      const ids = new WeakMap<object, string>();
+      const order = (parent: any) => parent.children.map((child: any) => ids.get(child)).join("");
+      let calls: string[] = [];
+      // Puts the children of the parent in a stack, as the `afterMove` example in the README does.
+      const stack = (hook: string, row: any, removed?: any) => {
+        calls.push(`${hook} ${ids.get(row)}:${order(row.parent)}`);
+        let y = 0;
+        for (const child of row.parent.children) {
+          if (child === removed) continue;
+          child.y = y;
+          y += 40;
+        }
+      };
+      const Row = PIXIComponent<any, { id: string }>("SmokeRow", {
+        afterAdd: row => stack("add", row),
+        afterMove: row => stack("move", row),
+        applyProps: () => {},
+        beforeRemove: row => stack("remove", row, row),
+        create: ({ id }) => {
+          const row = adapters.pixi.behaviors.Container.create({});
+          ids.set(row, id);
+          return row;
+        },
+      });
+      let app: any = null;
+      const Scene = ({ rows }: { rows: string }) => (
+        <Stage
+          options={{ width: 8, height: 8 }}
+          onInit={a => {
+            app = a;
+          }}
+        >
+          <Container>
+            {[...rows].map(id => (
+              <Row key={id} id={id} />
+            ))}
+          </Container>
+        </Stage>
+      );
+      const tree = create(<Scene rows="" />);
+      await settle();
+      const container = app.stage.children[0];
+      const recorded: Record<string, string[]> = {};
+
+      for (const commit of Object.keys(MIXED_COMMITS)) {
+        const [from, to] = commit.split(" > ");
+        act(() => {
+          tree.update(<Scene rows={from} />);
+        });
+        calls = [];
+        act(() => {
+          tree.update(<Scene rows={to} />);
+        });
+        recorded[commit] = calls;
+        calls = [];
+        expect(container.children.map((row: any) => `${ids.get(row)}:${row.y}`)).toEqual(
+          [...to].map((id, index) => `${id}:${index * 40}`)
+        );
+        act(() => {
+          tree.update(<Scene rows="" />);
+        });
+      }
+      expect(recorded).toEqual(MIXED_COMMITS);
 
       act(() => {
         tree.unmount();
