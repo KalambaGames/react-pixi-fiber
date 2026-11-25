@@ -116,6 +116,7 @@ export const examples: Example[] = [
   scene3d("ParticleContainer3D", "ParticleContainer3D"),
   scene3d("Sprite3D", "Sprite3D"),
   scene3d("View3D", "View3D"),
+  feature3d("CameraSwitch", "Camera switch"),
   feature3d("Events", "Events"),
   feature3d("TwoDAndThreeD", "2D and 3D"),
   feature3d("VectorProps", "Vector props"),
