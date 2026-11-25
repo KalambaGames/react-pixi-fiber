@@ -458,6 +458,35 @@ describe("hostOps", () => {
     });
   });
 
+  describe("commitMount", () => {
+    afterEach(() => {
+      delete getPixiAdapter().defaults;
+      findStrictRoot.mockReset();
+      validateUnknownProperties.mockClear();
+    });
+
+    it("calls afterMount with the props that applyProps got at mount, defaults included", () => {
+      getPixiAdapter().defaults = { T: { alpha: 0.5 } };
+      const afterMount = vi.fn();
+      const behavior = normalizeBehavior("T", { create: () => ({}), afterMount });
+      const instance = createRegisteredInstance("T", behavior, {}, () => {});
+      hostOps.commitMount("T", instance, { x: 1 }, {});
+      expect(afterMount).toHaveBeenCalledTimes(1);
+      expect(afterMount).toHaveBeenCalledWith(instance, { alpha: 0.5, x: 1 });
+    });
+
+    it("skips an instance whose behavior has no afterMount", () => {
+      expect(() => hostOps.commitMount(TAGS.Container, new PIXI.Container(), {}, {})).not.toThrow();
+    });
+
+    it("validates properties under a strict root in development", () => {
+      const props = { text: "42" };
+      findStrictRoot.mockImplementation(() => ({}));
+      hostOps.commitMount(TAGS.Text, new PIXI.Text("42"), props, {});
+      expect(validateUnknownProperties).toHaveBeenCalledTimes(__DEV__ ? 1 : 0);
+    });
+  });
+
   describe("fragment instance", () => {
     const node = name => ({ getBounds: vi.fn(() => ({ name })), name, off: vi.fn(), on: vi.fn() });
 

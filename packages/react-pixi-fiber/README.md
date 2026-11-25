@@ -220,6 +220,8 @@ A React adapter returns a `ReactAdapter` with two members:
 - `createRenderer(hostOps, { isPrimaryRenderer })` builds a `react-reconciler` host config and returns a `Renderer`.
   The host config calls `hostOps` for each tree operation and each prop operation, for example `createInstance`,
   `appendChild` and `updateProperties`. The adapter maps the reconciler API of its React version to these calls.
+  `finalizeInitialChildren` returns `true`, and the `commitMount` of the host config calls `hostOps.commitMount`.
+  Without this call, the `afterMount` of a behavior never runs.
   `configure` calls `createRenderer` two times. The primary renderer runs `render`. The secondary renderer runs
   `Stage` inside another renderer, such as React DOM.
 - `strictModeBit` is the fiber mode bit that marks `<StrictMode>` in that React version. The core reads it to show
@@ -826,7 +828,7 @@ Some options go only to the constructor of the filter. To change one, give the e
 
 On every PixiJS major, `kernelSize` of `BlurFilter` and `sprite` of `DisplacementFilter` are constructor-only. In development, under StrictMode, a change to a prop that the filter did not have before its first write logs a warning.
 
-`PIXIFilter(type, behavior)` registers another filter class, for example one from `pixi-filters`. `behavior` takes the same keys as in [Custom Components](#custom-components): `create`, `applyProps`, `afterAdd`, `afterMove` and `beforeRemove`. A function is the `create`:
+`PIXIFilter(type, behavior)` registers another filter class, for example one from `pixi-filters`. `behavior` takes the same keys as in [Custom Components](#custom-components): `create`, `applyProps`, `afterAdd`, `afterMount`, `afterMove` and `beforeRemove`. A function is the `create`:
 
 ```ts
 import { PIXIFilter } from "react-pixi-fiber";
@@ -855,7 +857,11 @@ Note: this replaces the default method of transferring `props` to the specified 
 
 #### `afterAdd(displayObject)` (optional)
 
-Use this to do something after `displayObject` is added to its parent. It runs once per add: when React reorders a child within the same parent, neither `afterAdd` nor `beforeRemove` runs, so listeners added here and removed in `beforeRemove` are never doubled. `afterMove` runs for a reorder.
+Use this to do something after `displayObject` is added to its parent. It runs once per add: when React reorders a child within the same parent, neither `afterAdd` nor `beforeRemove` runs, so listeners added here and removed in `beforeRemove` are never doubled. `afterMove` runs for a reorder. `afterAdd` also runs for a `displayObject` of a render that React drops, so start a ticker callback or a timer in [`afterMount`](#aftermountdisplayobject-props-optional) instead.
+
+#### `afterMount(displayObject, props)` (optional)
+
+Use this to start something that must stop again, such as a ticker callback or a timer. React can create and drop a `displayObject` without a commit, for example when a sibling throws or suspends. Then `create`, `applyProps` and `afterAdd` ran, but `beforeRemove` never runs. `afterMount` runs only when React commits the new `displayObject`, after `afterAdd`, and once for each Display Object. `props` are the props that `applyProps` got on the first render.
 
 #### `afterMove(displayObject)` (optional)
 

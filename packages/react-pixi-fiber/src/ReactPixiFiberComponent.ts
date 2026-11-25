@@ -124,6 +124,12 @@ export function setInitialProperties(
   setInitialPixiProperties(type, instance, withDefaults(tag, translate(type, rawProps)), rootContainer, hostContext);
 }
 
+// Commit phase, once per new instance: the behavior's `afterMount` gets the props that `applyProps` got at mount.
+export function afterMount(instance: Instance, rawProps: Props): void {
+  const bound = getBoundBehavior(instance);
+  if (bound && bound.afterMount) bound.afterMount(instance, withDefaults(bound.tag, rawProps));
+}
+
 // Calculate the diff between the two objects.
 // See: https://github.com/facebook/react/blob/97e2911/packages/react-dom/src/client/ReactDOMFiberComponent.js#L546
 export function diffProperties(

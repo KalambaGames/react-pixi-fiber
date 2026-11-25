@@ -1,4 +1,5 @@
 import {
+  afterMount,
   createInstance,
   diffProperties,
   setInitialProperties,
@@ -165,6 +166,17 @@ export function validateProperties(type: string, props: Record<string, unknown>,
     validateUnknownProperties(type, translate(type, props));
 }
 
+// Commit phase, once per new instance, after `afterAdd`. React runs it only for an instance it commits.
+export function commitMount(
+  type: string,
+  instance: any,
+  props: Record<string, unknown>,
+  internalHandle?: unknown
+): void {
+  afterMount(instance, props);
+  validateProperties(type, props, internalHandle);
+}
+
 type Listener = (...args: any[]) => void;
 
 // The children are read on each access, so their order stays current; the reconciler reports added and removed
@@ -229,6 +241,7 @@ export const hostOps: HostOps = {
   hideInstance,
   unhideInstance,
   setInitialProperties,
+  commitMount,
   diffProperties,
   updateProperties,
   validateProperties,

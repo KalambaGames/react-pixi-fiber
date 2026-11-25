@@ -10,6 +10,12 @@ export interface Behavior<I = any, P = any> {
   applyProps?(this: ApplyPropsContext<P>, instance: I, oldProps: P | undefined, newProps: P): void;
   afterAdd?(instance: I): void;
   /**
+   * Runs at commit, once for each new instance, after `afterAdd`. Not for a move or an update. `props` are the props
+   * that `applyProps` got at mount. React does not commit every render, so start side effects here, not in `create`
+   * or `applyProps`.
+   */
+  afterMount?(instance: I, props: P): void;
+  /**
    * Runs at commit when React moves `instance` to a new place in the same parent, after the move. Only the instance
    * that React moves gets the call, not its descendants and not its siblings. React places one child at a time, so a
    * sibling that React moves or adds later in the same commit is not in its final place yet.
@@ -51,6 +57,7 @@ export interface BoundBehavior {
   tag: string;
   applyProps?: (instance: any, oldProps: any, newProps: any) => void;
   afterAdd?: (instance: any) => void;
+  afterMount?: (instance: any, props: any) => void;
   afterMove?: (instance: any) => void;
   appendChild?: (parent: any, child: any) => void;
   beforeRemove?: (instance: any) => void;
@@ -172,6 +179,7 @@ export function createRegisteredInstance(
     });
   }
   if (typeof behavior.afterAdd === "function") bound.afterAdd = behavior.afterAdd;
+  if (typeof behavior.afterMount === "function") bound.afterMount = behavior.afterMount;
   if (typeof behavior.afterMove === "function") bound.afterMove = behavior.afterMove;
   if (typeof behavior.beforeRemove === "function") bound.beforeRemove = behavior.beforeRemove;
   if (Array.isArray(behavior.constructorOnly)) bound.constructorOnly = behavior.constructorOnly;

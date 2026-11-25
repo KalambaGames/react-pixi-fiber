@@ -291,6 +291,9 @@ export interface HostOps {
   hideInstance(instance: any): void;
   unhideInstance(instance: any, props: Record<string, unknown>): void;
   setInitialProperties(type: string, instance: any, props: Record<string, unknown>): void;
+  // Commit phase, once for each instance that React commits new. Runs `afterMount` of the behavior, and in
+  // development validates like `validateProperties`.
+  commitMount(type: string, instance: any, props: Record<string, unknown>, internalHandle?: unknown): void;
   diffProperties(
     type: string,
     instance: any,
@@ -406,6 +409,9 @@ export type DisplayObjectPropSetter<T extends object, P> = (
 // Used to do something after `displayObject` is added to its parent, which happens before `componentDidMount`.
 export type DisplayObjectAttachHandler<T extends object> = (displayObject: T) => void;
 
+// Used to start something (a ticker, a listener) when React commits the new `displayObject`. Runs after `afterAdd`.
+export type DisplayObjectMountHandler<T extends object, P> = (displayObject: T, props: P) => void;
+
 // Used to react when React moves `displayObject` to a new place in the same parent. Runs after the move, for the
 // moved `displayObject` only.
 export type DisplayObjectMoveHandler<T extends object> = (displayObject: T) => void;
@@ -418,6 +424,7 @@ export interface PIXIComponentBehaviorDefinition<T extends object, P> {
   create: DisplayObjectCreator<T, P>;
   applyProps?: DisplayObjectPropSetter<T, P>;
   afterAdd?: DisplayObjectAttachHandler<T>;
+  afterMount?: DisplayObjectMountHandler<T, P>;
   afterMove?: DisplayObjectMoveHandler<T>;
   beforeRemove?: DisplayObjectDetachHandler<T>;
   // The props that `create` gives to the constructor and that the core does not write. A change after mount warns.
@@ -447,6 +454,7 @@ export interface PIXIFilterBehaviorDefinition<T extends object, P> {
   create: (props: P) => T;
   applyProps?: DisplayObjectPropSetter<T, P>;
   afterAdd?: (filter: T) => void;
+  afterMount?: (filter: T, props: P) => void;
   afterMove?: (filter: T) => void;
   beforeRemove?: (filter: T) => void;
 }

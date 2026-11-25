@@ -63,8 +63,9 @@ export function createHostConfig(hostOps: HostOps): Record<string, unknown> {
       hostOps.setInitialProperties(type, instance, props);
       return true;
     },
+    // Commit phase, once per new instance: `finalizeInitialChildren` returns `true` for every instance.
     commitMount(instance: unknown, type: string, props: Record<string, unknown>, internalHandle: unknown) {
-      if (__DEV__) hostOps.validateProperties(type, props, internalHandle);
+      hostOps.commitMount(type, instance, props, internalHandle);
     },
     prepareUpdate(
       instance: unknown,

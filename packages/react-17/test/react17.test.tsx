@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import React, { StrictMode } from "react";
+import React, { Component, StrictMode, Suspense } from "react";
 import react17, { strictModeBit } from "../src/index";
 import type { HostOps } from "react-pixi-fiber";
 
@@ -20,6 +20,7 @@ vi.mock("react-reconciler", async importOriginal => {
 // A host tree of plain objects; enough to prove the reconciler is wired to hostOps.
 function createFakeHostOps() {
   const validate = vi.fn();
+  const mount = vi.fn();
   const ops: HostOps = {
     createInstance: (type, props) => ({ type, props, children: [] as any[], visible: true }),
     appendChild: (parent, child) => {
@@ -48,11 +49,12 @@ function createFakeHostOps() {
       instance.props = next;
     },
     validateProperties: validate,
+    commitMount: mount,
     commitNewChildToFragmentInstance: () => {},
     createFragmentInstance: () => ({ children: [], getBounds: () => [], off: () => {}, on: () => {} }),
     deleteChildFromFragmentInstance: () => {},
   };
-  return { ops, validate };
+  return { ops, mount, validate };
 }
 
 // JSX host tags the fake host tree understands.
@@ -140,15 +142,11 @@ describe("react17", () => {
   });
 
   it("puts the whole tree in strict mode on a concurrent root, as React 17 does", () => {
-    const { ops, validate } = createFakeHostOps();
+    const { ops, mount } = createFakeHostOps();
     const renderer = react17({ root: "concurrent" }).createRenderer(ops, { isPrimaryRenderer: true });
     const container = { children: [] as any[] };
     renderer.render(<node />, container);
-    if (__DEV__) {
-      expect((validate.mock.calls[0][2] as any).mode & strictModeBit).toBeTruthy();
-    } else {
-      expect(validate).not.toHaveBeenCalled();
-    }
+    expect((mount.mock.calls[0][3] as any).mode & strictModeBit).toBeTruthy();
     renderer.unmount(container);
   });
 
@@ -212,21 +210,113 @@ describe("react17", () => {
     });
   });
 
-  it("validates props with the fiber so the core can find <StrictMode>", () => {
-    const { ops, validate } = createFakeHostOps();
+  it("commits each new instance through commitMount with the fiber, so the core can find <StrictMode>", () => {
+    const { ops, mount } = createFakeHostOps();
     const renderer = react17().createRenderer(ops, { isPrimaryRenderer: true });
+    const container = { children: [] as any[] };
     renderer.render(
       <StrictMode>
         <node x={1} />
       </StrictMode>,
-      { children: [] }
+      container
     );
-    if (__DEV__) {
-      expect(validate).toHaveBeenCalledWith("node", { x: 1 }, expect.objectContaining({ mode: expect.any(Number) }));
-      expect(validate.mock.calls[0][2].mode & strictModeBit).toBe(strictModeBit);
-    } else {
-      expect(validate).not.toHaveBeenCalled();
-    }
+    expect(mount).toHaveBeenCalledWith(
+      "node",
+      container.children[0],
+      { x: 1 },
+      expect.objectContaining({ mode: expect.any(Number) })
+    );
+    expect(mount.mock.calls[0][3].mode & strictModeBit).toBe(strictModeBit);
+  });
+
+  describe.each(["legacy", "concurrent"] as const)("commitMount on a %s root", root => {
+    const names = (mount: ReturnType<typeof vi.fn>) => mount.mock.calls.map(call => call[2].name);
+
+    it("runs once per new instance, not for a move or an update", () => {
+      const { ops, mount } = createFakeHostOps();
+      const renderer = react17({ root }).createRenderer(ops, { isPrimaryRenderer: true });
+      const container = { children: [] as any[] };
+      renderer.render(
+        <node name="parent">
+          <leaf key="a" name="a" x={1} />
+          <leaf key="b" name="b" x={1} />
+        </node>,
+        container
+      );
+      expect(names(mount)).toEqual(["a", "b", "parent"]);
+      renderer.render(
+        <node name="parent">
+          <leaf key="b" name="b" x={2} />
+          <leaf key="a" name="a" x={2} />
+        </node>,
+        container
+      );
+      expect(names(mount)).toEqual(["a", "b", "parent"]);
+      renderer.unmount(container);
+    });
+
+    it("does not run for an instance of a render that React drops", () => {
+      const { ops, mount } = createFakeHostOps();
+      const renderer = react17({ root }).createRenderer(ops, { isPrimaryRenderer: true });
+      const error = vi.spyOn(console, "error").mockImplementation(() => {});
+      class Boundary extends Component<{ children: React.ReactNode }, { failed: boolean }> {
+        state = { failed: false };
+        static getDerivedStateFromError() {
+          return { failed: true };
+        }
+        render() {
+          return this.state.failed ? <leaf name="fallback" /> : <>{this.props.children}</>;
+        }
+      }
+      function Throw(): null {
+        throw new Error("drop this render");
+      }
+      renderer.render(
+        <Boundary>
+          <leaf name="dropped" />
+          <Throw />
+        </Boundary>,
+        { children: [] }
+      );
+      expect(names(mount)).toEqual(["fallback"]);
+      error.mockRestore();
+    });
+
+    it("runs once for an instance that mounts while a Suspense boundary waits", async () => {
+      const { ops, mount } = createFakeHostOps();
+      const renderer = react17({ root }).createRenderer(ops, { isPrimaryRenderer: true });
+      const container = { children: [] as any[] };
+      let resolve = () => {};
+      let done = false;
+      const promise = new Promise<void>(r => {
+        resolve = () => {
+          done = true;
+          r();
+        };
+      });
+      function Wait(): null {
+        if (!done) throw promise;
+        return null;
+      }
+      renderer.render(
+        <Suspense fallback={<leaf name="fallback" />}>
+          <leaf name="content" />
+          <Wait />
+        </Suspense>,
+        container
+      );
+      resolve();
+      // React throttles the reveal of a boundary that showed its fallback.
+      const content = await vi.waitFor(() => {
+        const found = container.children.find((child: any) => child.props.name === "content");
+        if (!found || !found.visible) throw new Error("content is not revealed yet");
+        return found;
+      });
+      const calls = mount.mock.calls.filter(call => call[2].name === "content");
+      expect(calls).toHaveLength(1);
+      expect(calls[0][1]).toBe(content);
+      renderer.unmount(container);
+    });
   });
 
   it("throws on text children", () => {
