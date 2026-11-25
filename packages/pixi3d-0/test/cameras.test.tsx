@@ -339,9 +339,10 @@ describe("cameras", () => {
 
     it("is replaced when it is removed from the view", () => {
       show();
-      expect(view.current!.camera).toBe(lens.current);
+      const camera = lens.current;
+      expect(view.current!.camera).toBe(camera);
       show({ withLens: false });
-      expect(view.current!.camera).not.toBe(lens.current);
+      expect(view.current!.camera).not.toBe(camera);
       usable(view.current!);
     });
 

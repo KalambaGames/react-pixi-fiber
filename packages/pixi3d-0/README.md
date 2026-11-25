@@ -132,6 +132,7 @@ A tag that is not in `extras` throws at first render. The error names the class 
 - The props are the options of the controller, without `view`.
 - `target` and `up` take the vector forms. `mouseButtons` and `touches` of `<OrbitCamera>` take a part of the object. The other buttons keep their defaults.
 - `<FPSCamera>` has no `position` prop. Place the camera with a `<Camera3D position>`.
+- The core compares props by identity. So an inline array, as in `<Camera3D position={[0, 1, 5]}>`, is written again each time the parent renders, and moves the camera back from where the controller moved it. With a controller, give `position` of `<Camera3D>` a stable value: a constant or a `useMemo` value.
 - `enabled` turns the controller on and off. A hidden element turns it off.
 - The adapter destroys the controller one time, when its element unmounts or when the view unmounts.
 
@@ -177,7 +178,7 @@ An unmounted 3D node is destroyed with `destroy({ children: true })`. This does 
 
 - This package is an ES module only. It has no CommonJS build. Node loads the development build. To load the production build, run Node with `--conditions=production`.
 - A prop name that only a 3D node has gets no casing warning. For example, `castshadow` is not reported.
-- A 3D component that you register with `PIXIComponent`, and that holds the camera of the view, is not guarded by the camera fallback. A `Camera3D` subclass that you register this way is guarded when it is a direct child of a view.
+- A 3D component that you register with `PIXIComponent`, and that holds the camera of the view, is guarded only when it is removed directly from a view. Hiding it, or removing it from a group, is not guarded. A `Camera3D` subclass that you register this way is also guarded when it is a direct child of a view and is hidden.
 - A size prop, `width`, `height` or `depth`, is measured when it is written. A later change of only the texture, `pixelSize` or geometry keeps the scale, not the size.
 - A view does not draw with the canvas renderer.
 - A reorder inside a group does not make the view choose again. When two active cameras swap places there, the view keeps its camera until the next change that makes it choose.
