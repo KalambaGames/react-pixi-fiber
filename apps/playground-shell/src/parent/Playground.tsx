@@ -23,6 +23,7 @@ import { useSidebarOpen } from "./useSidebarOpen";
 import { useTheme, type Theme } from "./useTheme";
 
 export type ExampleGroup =
+  | "3D Features"
   | "3D Scene Objects"
   | "Display Objects"
   | "Features"

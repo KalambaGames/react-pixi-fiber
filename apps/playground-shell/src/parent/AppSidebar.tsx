@@ -7,6 +7,7 @@ import {
   type LucideIcon,
   Package,
   Puzzle,
+  Rotate3d,
   Sparkles,
 } from "lucide-react";
 import { useState } from "react";
@@ -38,6 +39,7 @@ const groups: { icon: LucideIcon; name: ExampleGroup }[] = [
   { icon: Blocks, name: "Scene Objects" },
   { icon: Blocks, name: "Display Objects" },
   { icon: Box, name: "3D Scene Objects" },
+  { icon: Rotate3d, name: "3D Features" },
   { icon: Atom, name: "Features" },
   { icon: Sparkles, name: "Filters" },
   { icon: Puzzle, name: "Integrations" },

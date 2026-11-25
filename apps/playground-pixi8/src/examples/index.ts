@@ -40,10 +40,10 @@ const defaults = (name: string, title: string): Example => ({
 });
 
 // The runner configures the 3D adapter next to the other two, see src/runners/pixi3d.tsx.
-const scene3d = (name: string, title: string): Example => {
+const scene3d = (name: string, title: string, load = source(`./Scene3D/${name}.tsx`)): Example => {
   const base = setup(8);
   return {
-    ...feature(name, title, source(`./Scene3D/${name}.tsx`)),
+    ...feature(name, title, load),
     aliases: [],
     configure: {
       code: base.code
@@ -59,6 +59,12 @@ const scene3d = (name: string, title: string): Example => {
     runner: "runner-3d.html",
   };
 };
+
+const feature3d = (name: string, title: string): Example => ({
+  ...scene3d(name, title, source(`./Features3D/${name}.tsx`)),
+  group: "3D Features",
+  id: `3d-features-${name.toLowerCase()}`,
+});
 
 const filter = (name: string, title: string): Example => ({
   ...example(title, source(`./Filters/${name}.tsx`)),
@@ -105,6 +111,7 @@ export const examples: Example[] = [
   scene3d("OrbitCamera", "OrbitCamera"),
   scene3d("Sprite3D", "Sprite3D"),
   scene3d("View3D", "View3D"),
+  feature3d("VectorProps", "Vector props"),
   feature("Bunnymark", "Bunnymark"),
   feature("BunnymarkCustomComponents", "Bunnymark with custom components"),
   feature("CanvasProps", "Canvas props"),
