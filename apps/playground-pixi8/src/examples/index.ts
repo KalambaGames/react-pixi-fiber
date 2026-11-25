@@ -111,6 +111,7 @@ export const examples: Example[] = [
   scene3d("OrbitCamera", "OrbitCamera"),
   scene3d("Sprite3D", "Sprite3D"),
   scene3d("View3D", "View3D"),
+  feature3d("Events", "Events"),
   feature3d("VectorProps", "Vector props"),
   feature("Bunnymark", "Bunnymark"),
   feature("BunnymarkCustomComponents", "Bunnymark with custom components"),
