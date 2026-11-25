@@ -292,7 +292,8 @@ export interface HostOps {
   unhideInstance(instance: any, props: Record<string, unknown>): void;
   setInitialProperties(type: string, instance: any, props: Record<string, unknown>): void;
   // Commit phase, once for each instance that React commits new. Runs `afterMount` of the behavior, and in
-  // development validates like `validateProperties`.
+  // development validates like `validateProperties`. For an instance that React commits hidden without this call,
+  // `unhideInstance` runs `afterMount`.
   commitMount(type: string, instance: any, props: Record<string, unknown>, internalHandle?: unknown): void;
   diffProperties(
     type: string,
@@ -409,7 +410,8 @@ export type DisplayObjectPropSetter<T extends object, P> = (
 // Used to do something after `displayObject` is added to its parent, which happens before `componentDidMount`.
 export type DisplayObjectAttachHandler<T extends object> = (displayObject: T) => void;
 
-// Used to start something (a ticker, a listener) when React commits the new `displayObject`. Runs after `afterAdd`.
+// Used to start something (a ticker, a listener) when React commits the new `displayObject`, or shows it when React
+// committed it hidden. Runs after `afterAdd`.
 export type DisplayObjectMountHandler<T extends object, P> = (displayObject: T, props: P) => void;
 
 // Used to react when React moves `displayObject` to a new place in the same parent. Runs after the move, for the

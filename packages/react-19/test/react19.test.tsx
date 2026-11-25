@@ -449,7 +449,8 @@ describe("react19", () => {
       error.mockRestore();
     });
 
-    it("runs once for an instance that mounts inside a hidden <Activity>, also after it shows and hides again", () => {
+    // The core runs the pending `afterMount` from `unhideInstance` for this case.
+    it("skips an instance that React first commits inside a hidden <Activity>, and unhides it when it shows", async () => {
       const { ops, mount } = createFakeHostOps();
       const renderer = react19().createRenderer(ops, { isPrimaryRenderer: true });
       const container = { children: [] as any[] };
@@ -459,12 +460,16 @@ describe("react19", () => {
         </Activity>
       );
       renderer.render(tree("hidden"), container);
+      // React renders a hidden <Activity> in a later pass at low priority.
+      const content = await vi.waitFor(() => {
+        if (container.children.length === 0) throw new Error("the hidden pass has not committed yet");
+        return container.children[0];
+      });
+      expect(content.visible).toBe(false);
       renderer.render(tree("visible"), container);
-      renderer.render(tree("hidden"), container);
-      renderer.render(tree("visible"), container);
-      const calls = mount.mock.calls.filter(call => call[2].name === "content");
-      expect(calls).toHaveLength(1);
-      expect(calls[0][1]).toBe(container.children[0]);
+      expect(content.visible).toBe(true);
+      expect(container.children[0]).toBe(content);
+      expect(mount).not.toHaveBeenCalled();
       renderer.unmount(container);
     });
 

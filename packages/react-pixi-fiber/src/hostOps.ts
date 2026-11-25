@@ -1,6 +1,8 @@
 import {
   afterMount,
+  afterMountRevealed,
   createInstance,
+  isAfterMountPending,
   diffProperties,
   setInitialProperties,
   translate,
@@ -23,6 +25,7 @@ import { getBoundBehavior, getInstanceTag, isFilterInstance } from "./registry";
 import { getStrictModeBit } from "./configure";
 import { findStrictRoot } from "./utils";
 import invariant from "./invariant";
+import warning from "./warning";
 import type { HostOps, PixiFragmentInstance } from "./types";
 
 function appendDisplayChild(parentInstance: any, child: any): void {
@@ -153,20 +156,39 @@ export function unhideInstance(instance: any, props: Record<string, unknown>): v
   const prop = hideProp(instance);
   if (typeof props[prop] !== "undefined") {
     instance[prop] = props[prop];
-    return;
+  } else {
+    const defaultValue = getDefaultValue(instance, prop);
+    instance[prop] = typeof defaultValue !== "undefined" ? defaultValue : true;
   }
-  const defaultValue = getDefaultValue(instance, prop);
-  instance[prop] = typeof defaultValue !== "undefined" ? defaultValue : true;
+  afterMountRevealed(instance);
+}
+
+let warnedMissingCommitMount = false;
+
+// A React adapter older than `HostOps.commitMount` validates from its `commitMount` and never calls the core's. A first
+// mount (a fiber without `alternate`) whose instance still waits for `afterMount` shows that.
+function warnIfCommitMountMissing(type: string, fiber: any): void {
+  if (warnedMissingCommitMount || fiber == null || fiber.alternate != null) return;
+  if (!isAfterMountPending(fiber.stateNode)) return;
+  warnedMissingCommitMount = true;
+  warning(
+    false,
+    "The React adapter did not call `hostOps.commitMount` for `<%s />`, so `afterMount` did not run. Update the React " +
+      "adapter to a version that calls it.",
+    type
+  );
 }
 
 // Development only: validates under a <StrictMode> ancestor, found on the fiber with the React adapter's mode bit.
 export function validateProperties(type: string, props: Record<string, unknown>, internalHandle?: unknown): void {
   if (!__DEV__) return;
+  warnIfCommitMountMissing(type, internalHandle);
   if (findStrictRoot(internalHandle, getStrictModeBit()) != null)
     validateUnknownProperties(type, translate(type, props));
 }
 
-// Commit phase, once per new instance, after `afterAdd`. React runs it only for an instance it commits.
+// Commit phase, once per new instance, after `afterAdd`. React runs it only for an instance it commits, and not for
+// one that it commits inside a hidden <Activity>: `unhideInstance` runs that one.
 export function commitMount(
   type: string,
   instance: any,

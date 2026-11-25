@@ -5,6 +5,7 @@ import { getPixiAdapter } from "../src/configure";
 import { recordDefault } from "../src/defaults";
 import { hasFilterChildren } from "../src/filters";
 import * as hostOps from "../src/hostOps";
+import { setInitialProperties, updateProperties } from "../src/ReactPixiFiberComponent";
 import { validateProperties as validateUnknownProperties } from "../src/ReactPixiFiberUnknownPropertyHook";
 import { createRegisteredInstance, normalizeBehavior } from "../src/registry";
 import { TAGS } from "../src/tags";
@@ -473,6 +474,70 @@ describe("hostOps", () => {
       hostOps.commitMount("T", instance, { x: 1 }, {});
       expect(afterMount).toHaveBeenCalledTimes(1);
       expect(afterMount).toHaveBeenCalledWith(instance, { alpha: 0.5, x: 1 });
+    });
+
+    it("runs a pending afterMount from unhideInstance, children first, with the latest props, and only once", () => {
+      const calls = [];
+      const behavior = normalizeBehavior("T", {
+        create: () => new PIXI.Container(),
+        afterMount: (instance, props) => calls.push([instance.name, props.x]),
+      });
+      const parent = createRegisteredInstance("T", behavior, {}, () => {});
+      const child = createRegisteredInstance("T", behavior, {}, () => {});
+      parent.name = "parent";
+      child.name = "child";
+      setInitialProperties("T", parent, { x: 1 });
+      setInitialProperties("T", child, { x: 1 });
+      parent.addChild(child);
+      updateProperties("T", child, [], { x: 1 }, { x: 2 });
+      hostOps.unhideInstance(parent, {});
+      expect(calls).toEqual([
+        ["child", 2],
+        ["parent", 1],
+      ]);
+      hostOps.unhideInstance(parent, {});
+      hostOps.commitMount("T", child, { x: 2 }, {});
+      expect(calls).toHaveLength(3);
+    });
+
+    // Order matters: the core warns once.
+    it("does not warn when the React adapter calls commitMount", () => {
+      const error = vi.spyOn(console, "error").mockImplementation(() => {});
+      const behavior = normalizeBehavior("T", { create: () => new PIXI.Container(), afterMount: () => {} });
+      const instance = createRegisteredInstance("T", behavior, {}, () => {});
+      setInitialProperties("T", instance, {});
+      hostOps.commitMount("T", instance, {}, { alternate: null, stateNode: instance });
+      expect(error).not.toHaveBeenCalled();
+      error.mockRestore();
+    });
+
+    it("warns once in development when an older React adapter validates a first mount without commitMount", () => {
+      const error = vi.spyOn(console, "error").mockImplementation(() => {});
+      const behavior = normalizeBehavior("T", { create: () => new PIXI.Container(), afterMount: () => {} });
+      const instance = createRegisteredInstance("T", behavior, {}, () => {});
+      setInitialProperties("T", instance, {});
+      // An update has an `alternate`.
+      hostOps.validateProperties("T", {}, { alternate: {}, stateNode: instance });
+      expect(error).not.toHaveBeenCalled();
+      hostOps.validateProperties("T", {}, { alternate: null, stateNode: instance });
+      hostOps.validateProperties("T", {}, { alternate: null, stateNode: instance });
+      if (__DEV__) {
+        expect(error).toHaveBeenCalledTimes(1);
+        expect(error.mock.calls[0][0]).toContain("did not call `hostOps.commitMount` for `<T />`");
+      } else {
+        expect(error).not.toHaveBeenCalled();
+      }
+      error.mockRestore();
+    });
+
+    it("does not run afterMount again from unhideInstance after commitMount ran it", () => {
+      const afterMount = vi.fn();
+      const behavior = normalizeBehavior("T", { create: () => new PIXI.Container(), afterMount });
+      const instance = createRegisteredInstance("T", behavior, {}, () => {});
+      setInitialProperties("T", instance, {});
+      hostOps.commitMount("T", instance, {}, {});
+      hostOps.unhideInstance(instance, {});
+      expect(afterMount).toHaveBeenCalledTimes(1);
     });
 
     it("skips an instance whose behavior has no afterMount", () => {

@@ -10,9 +10,9 @@ export interface Behavior<I = any, P = any> {
   applyProps?(this: ApplyPropsContext<P>, instance: I, oldProps: P | undefined, newProps: P): void;
   afterAdd?(instance: I): void;
   /**
-   * Runs at commit, once for each new instance, after `afterAdd`. Not for a move or an update. `props` are the props
-   * that `applyProps` got at mount. React does not commit every render, so start side effects here, not in `create`
-   * or `applyProps`.
+   * Runs once for each new instance, after `afterAdd`: at commit, or for an instance that React commits hidden, when
+   * React shows it. Not for a move or an update. `props` are the props that `applyProps` got last. React does not
+   * commit every render, so start side effects here, not in `create` or `applyProps`.
    */
   afterMount?(instance: I, props: P): void;
   /**

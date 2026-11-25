@@ -861,7 +861,32 @@ Use this to do something after `displayObject` is added to its parent. It runs o
 
 #### `afterMount(displayObject, props)` (optional)
 
-Use this to start something that must stop again, such as a ticker callback or a timer. React can create and drop a `displayObject` without a commit, for example when a sibling throws or suspends. Then `create`, `applyProps` and `afterAdd` ran, but `beforeRemove` never runs. `afterMount` runs only when React commits the new `displayObject`, after `afterAdd`, and once for each Display Object. `props` are the props that `applyProps` got on the first render.
+Use this to start something that must stop again, such as a ticker callback or a timer. React can create and drop a `displayObject` without a commit, for example when a sibling throws or suspends. Then `create`, `applyProps` and `afterAdd` ran, but `beforeRemove` never runs. `afterMount` runs only when React commits the new `displayObject`, after `afterAdd`, and once for each Display Object. Inside a hidden `<Activity>`, it runs when React shows the `displayObject`, and `beforeRemove` can run without `afterMount` before it. On a legacy root, a Suspense boundary that shows its fallback commits its content hidden, so `afterMount` runs at once, before React shows the content. `props` are the props that `applyProps` got last.
+
+So clean up in `beforeRemove` only what `afterMount` started:
+
+```ts
+import * as PIXI from "pixi.js";
+import { PIXIComponent } from "react-pixi-fiber";
+
+const spins = new WeakMap<PIXI.Graphics, () => void>();
+
+export const Spinner = PIXIComponent("Spinner", {
+  create: () => new PIXI.Graphics(),
+  afterMount: graphics => {
+    const spin = () => {
+      graphics.rotation += 0.1;
+    };
+    spins.set(graphics, spin);
+    PIXI.Ticker.shared.add(spin);
+  },
+  beforeRemove: graphics => {
+    // No entry when React removed `graphics` before `afterMount` ran.
+    const spin = spins.get(graphics);
+    if (spin) PIXI.Ticker.shared.remove(spin);
+  },
+});
+```
 
 #### `afterMove(displayObject)` (optional)
 

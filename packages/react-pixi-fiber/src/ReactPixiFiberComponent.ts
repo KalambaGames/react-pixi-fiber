@@ -2,6 +2,7 @@
 import invariant from "./invariant";
 import warning from "./warning";
 import { getPixiAdapter } from "./configure";
+import { heldChildren } from "./heldChildren";
 import {
   createRegisteredInstance,
   getAdapterComponent,
@@ -116,6 +117,7 @@ export function setInitialProperties(
   // components with their own applyProps need to have full control over passed props
   const bound = getBoundBehavior(instance);
   const tag = getInstanceTag(instance) ?? type;
+  if (bound && bound.afterMount) pendingMount.set(instance, rawProps);
   if (bound && bound.applyProps) {
     bound.applyProps(instance, undefined, withDefaults(tag, rawProps));
     return;
@@ -124,10 +126,32 @@ export function setInitialProperties(
   setInitialPixiProperties(type, instance, withDefaults(tag, translate(type, rawProps)), rootContainer, hostContext);
 }
 
-// Commit phase, once per new instance: the behavior's `afterMount` gets the props that `applyProps` got at mount.
+// An instance whose behavior has `afterMount`, from creation until `afterMount` runs, with its latest props. React 19
+// never calls `commitMount` for an instance that it first commits inside a hidden <Activity>, also not when it shows
+// it, so `afterMountRevealed` runs these when React unhides the subtree. An instance of a dropped render stays here
+// until it is garbage.
+const pendingMount = new WeakMap<object, Props>();
+
+// Commit phase, once per new instance: the behavior's `afterMount` gets the props that `applyProps` got last.
 export function afterMount(instance: Instance, rawProps: Props): void {
+  pendingMount.delete(instance);
   const bound = getBoundBehavior(instance);
   if (bound && bound.afterMount) bound.afterMount(instance, withDefaults(bound.tag, rawProps));
+}
+
+export function isAfterMountPending(instance: unknown): boolean {
+  return instance != null && typeof instance === "object" && pendingMount.has(instance);
+}
+
+// Runs the pending `afterMount` of `root` and of each instance below it, children first like React's commit.
+// ponytail: walks the whole revealed subtree on each unhide; keep a pending count per root if a reveal shows up in
+// a profile.
+export function afterMountRevealed(root: any): void {
+  if (Array.isArray(root.children)) for (const child of root.children) afterMountRevealed(child);
+  if (Array.isArray(root.filters)) for (const filter of root.filters) afterMountRevealed(filter);
+  for (const child of heldChildren(root)) afterMountRevealed(child);
+  const props = pendingMount.get(root);
+  if (props !== undefined) afterMount(root, props);
 }
 
 // Calculate the diff between the two objects.
@@ -215,6 +239,7 @@ export function updateProperties(
 ): void {
   // components with their own applyProps need to have full control over passed props
   const bound = getBoundBehavior(instance);
+  if (pendingMount.has(instance)) pendingMount.set(instance, nextProps as Props);
   if (bound && bound.applyProps) {
     const tag = getInstanceTag(instance) ?? type;
     applyPropsHandle = internalHandle;
