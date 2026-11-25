@@ -1439,6 +1439,7 @@ PixiJS 7 and 8 have no `PIXI.interaction` and no `PIXI.InteractionEvent`, so `pi
 - `AppContext` is typed `Context<Application | null>` and its default value is `null`.
 - `Graphics` passes `props.geometry` to the `PIXI.Graphics` constructor.
 - The fallbacks to the PixiJS 4 `PIXI.extras`, `PIXI.mesh` and `PIXI.particles` namespaces are removed from the core; PixiJS 4 support moves to the `@react-pixi-fiber/pixi-4` adapter.
+- PixiJS 4.4, 4.5, 7.0 and 7.1 are not supported. `@react-pixi-fiber/pixi-4` needs PixiJS 4.6.0 or newer, and `@react-pixi-fiber/pixi-7` needs PixiJS 7.2.0 or newer.
 
 ---
 
