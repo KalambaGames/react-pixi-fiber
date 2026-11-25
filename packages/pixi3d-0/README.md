@@ -108,7 +108,11 @@ A `View3D` always has a camera. These rules choose it:
 2. When no active camera is visible, a `<Camera3D>` that is a direct child of `<View3D>` is the camera. The view draws from the last visible one.
 3. When no direct child is a visible camera, the view draws from its own camera. The adapter puts it first in the root of the view.
 
-A camera that you assign with `view.camera` through a ref stays until that camera leaves the view or is hidden. The view chooses again when `active` changes, when a direct `<Camera3D>` is added, removed or hidden, and when a node that holds an active camera is added, removed, hidden or shown.
+A camera that you assign with `view.camera` through a ref stays until that camera leaves the view or is hidden. The view chooses again in these cases:
+
+- `active` changes.
+- The app adds, moves, removes or hides a direct `<Camera3D>`.
+- The app adds, moves, removes or hides a node that holds an active camera, or makes it visible.
 
 `@pixi/3d` throws on each frame for a camera that left its view or is hidden. So the adapter moves the view to another camera in the same commit that removes or hides the camera.
 

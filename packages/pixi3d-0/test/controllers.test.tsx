@@ -178,6 +178,36 @@ describe("camera controllers", () => {
     expect(built).toBe(1);
   });
 
+  it("builds no controller in a render that React discards", () => {
+    let built = 0;
+    class Counted extends PixiOrbitCamera {
+      constructor(options: ConstructorParameters<typeof PixiOrbitCamera>[0]) {
+        super(options);
+        built += 1;
+      }
+    }
+    configure({ react: react18(), pixi: pixi8(), pixi3d: pixi3d0({ extras: { OrbitCamera: Counted } }) });
+    vi.spyOn(console, "error").mockImplementation(() => {});
+    // React renders this sibling after it added the controller element to the view.
+    const Throwing = () => {
+      throw new Error("discarded");
+    };
+    expect(() =>
+      render(
+        <Container>
+          <View3D>
+            <OrbitCamera />
+          </View3D>
+          <Throwing />
+        </Container>,
+        root
+      )
+    ).toThrow("discarded");
+    expect(built).toBe(0);
+  });
+
+  // React 18 commits no instance hidden, so this test cannot reach a hidden `<Activity>` that removes a node before it
+  // shows. The test calls the behavior directly.
   it("destroys a node that was never mounted", () => {
     const behavior = controllerBehavior("OrbitCamera", PixiOrbitCamera);
     const node = behavior.create({}) as ControllerNode<PixiOrbitCamera>;
