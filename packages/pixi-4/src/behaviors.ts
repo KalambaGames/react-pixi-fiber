@@ -42,12 +42,20 @@ const mesh: Behavior = {
   },
 };
 
+function setPlayback(animated: PIXI.extras.AnimatedSprite, playing: boolean): void {
+  if (!playing) animated.stop();
+  else if (!animated.playing && !animated.loop && animated.currentFrame === animated.totalFrames - 1)
+    animated.gotoAndPlay(0);
+  else animated.play();
+}
+
 export const behaviors: Record<string, Behavior> = {
   AlphaFilter: { kind: "filter", create: props => new PIXI.filters.AlphaFilter(props.alpha) },
   // `playing` calls `play()` or `stop()` and does not write a property. The `textures` setter stops the sprite, so
   // `applyProps` sets the playback after the other props. Without `playing`, a sprite that played before a `textures`
   // change plays again after it. A removed `playing` stops the sprite, as before the first `play()`. A finished sprite
-  // with `loop` false plays again from frame 0, like a media element that ended.
+  // with `loop` false plays again from frame 0, like a media element that ended. The first `play()` waits for
+  // `afterMount`: it adds the sprite to the shared ticker, and React does not commit every render.
   // PixiJS 4 keeps `autoUpdate` in a private field that only the constructor sets.
   AnimatedSprite: {
     constructorOnly: ["autoUpdate"],
@@ -57,13 +65,12 @@ export const behaviors: Record<string, Behavior> = {
       const { playing, ...props } = newProps;
       const wasPlaying = animated.playing;
       this.applyDisplayObjectProps(oldProps && oldRest, props);
-      const texturesChanged = oldProps !== undefined && oldRest.textures !== props.textures;
-      if (playing !== oldPlaying || texturesChanged) {
-        if (!(playing ?? (oldPlaying === undefined && wasPlaying))) animated.stop();
-        else if (!animated.playing && !animated.loop && animated.currentFrame === animated.totalFrames - 1)
-          animated.gotoAndPlay(0);
-        else animated.play();
-      }
+      if (oldProps === undefined) return;
+      if (playing !== oldPlaying || oldRest.textures !== props.textures)
+        setPlayback(animated, playing ?? (oldPlaying === undefined && wasPlaying));
+    },
+    afterMount(animated: PIXI.extras.AnimatedSprite, props) {
+      if (props.playing) setPlayback(animated, true);
     },
   },
   BitmapText: {

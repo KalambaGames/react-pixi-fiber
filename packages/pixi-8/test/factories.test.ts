@@ -228,8 +228,17 @@ describe("AnimatedSprite applyProps", () => {
       current = next;
     };
     behavior.applyProps!.call(context as never, animated, undefined, props as never);
+    behavior.afterMount!(animated, props as never);
     return { animated, applied, update };
   }
+  it("waits for afterMount, at commit, to play", () => {
+    const props = { playing: true, textures: frames };
+    const animated: any = behavior.create(props as never);
+    behavior.applyProps!.call({ applyDisplayObjectProps() {} } as never, animated, undefined, props as never);
+    expect(animated.playing).toBe(false);
+    behavior.afterMount!(animated, props as never);
+    expect(animated.playing).toBe(true);
+  });
   it("plays on mount when playing is true, and keeps playing out of the props it writes", () => {
     const { animated, applied } = mount({ playing: true, textures: frames });
     expect(animated.playing).toBe(true);
