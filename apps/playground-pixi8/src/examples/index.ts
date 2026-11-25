@@ -108,6 +108,7 @@ export const examples: Example[] = [
   scene3d("Camera3D", "Camera3D"),
   scene3d("Container3D", "Container3D"),
   scene3d("Mesh3D", "Mesh3D"),
+  scene3d("Model3D", "Model3D"),
   scene3d("OrbitCamera", "OrbitCamera"),
   scene3d("Sprite3D", "Sprite3D"),
   scene3d("View3D", "View3D"),
