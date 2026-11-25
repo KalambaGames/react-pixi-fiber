@@ -173,7 +173,7 @@ An unmounted 3D node is destroyed with `destroy({ children: true })`. This does 
 
 ## Limits
 
-- This package is an ES module only. It has no CommonJS build.
+- This package is an ES module only. It has no CommonJS build. Node loads the development build. To load the production build, run Node with `--conditions=production`.
 - A prop name that only a 3D node has gets no casing warning. For example, `castshadow` is not reported.
 - A 3D component that you register with `PIXIComponent` is not guarded by the camera fallback. A `Camera3D` subclass that you register this way, and remove directly from a view, is also not guarded.
 - A size prop, `width`, `height` or `depth`, is measured when it is written. A later change of only the texture, `pixelSize` or geometry keeps the scale, not the size.

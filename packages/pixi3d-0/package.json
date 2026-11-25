@@ -17,6 +17,10 @@
     ".": {
       "types": "./dist/es/pixi3d-0.d.mts",
       "development": "./dist/es/pixi3d-0.development.js",
+      "node": {
+        "production": "./dist/es/pixi3d-0.production.min.js",
+        "default": "./dist/es/pixi3d-0.development.js"
+      },
       "default": "./dist/es/pixi3d-0.production.min.js"
     },
     "./package.json": "./package.json"

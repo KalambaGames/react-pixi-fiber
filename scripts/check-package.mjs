@@ -128,18 +128,26 @@ try {
         assert.equal(require.resolve(name), join(installed, "index.js"));
       });
     }
-    await check(`${name} node import`, () => {
-      const resolve = specifier =>
+    const resolveInNode = (specifier, args = []) =>
+      fileURLToPath(
         run(
           "node",
-          ["--input-type=module", "-e", `console.log(import.meta.resolve(${JSON.stringify(specifier)}))`],
+          [...args, "--input-type=module", "-e", `console.log(import.meta.resolve(${JSON.stringify(specifier)}))`],
           pkgWork
-        );
-      assert.equal(
-        fileURLToPath(resolve(name)),
-        join(installed, esmOnly ? `dist/es/${base}.production.min.js` : "index.js")
+        )
       );
+    await check(`${name} node import`, () => {
+      assert.equal(resolveInNode(name), join(installed, esmOnly ? `dist/es/${base}.development.js` : "index.js"));
     });
+    // An ES-only package has no `index.js` that reads NODE_ENV, so Node picks the production build by a condition.
+    if (esmOnly) {
+      await check(`${name} node import, production condition`, () => {
+        assert.equal(
+          resolveInNode(name, ["--conditions=production"]),
+          join(installed, `dist/es/${base}.production.min.js`)
+        );
+      });
+    }
     await check(`${name} deep imports are not exported`, () => {
       assert.throws(() => require.resolve(`${name}/dist/cjs/${base}.development.js`), {
         code: "ERR_PACKAGE_PATH_NOT_EXPORTED",
