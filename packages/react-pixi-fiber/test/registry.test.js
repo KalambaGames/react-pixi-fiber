@@ -46,6 +46,7 @@ describe("registry", () => {
         return this;
       },
       afterAdd: vi.fn(),
+      afterMount: vi.fn(),
       beforeRemove: vi.fn(),
     };
     const instance = registry.createRegisteredInstance("T", registry.normalizeBehavior("T", behavior), { a: 1 }, apply);
@@ -54,6 +55,7 @@ describe("registry", () => {
     context.applyDisplayObjectProps({ a: 1 }, { a: 2 });
     expect(apply).toHaveBeenCalledWith("T", instance, { a: 1 }, { a: 2 });
     expect(bound.afterAdd).toBe(behavior.afterAdd);
+    expect(bound.afterMount).toBe(behavior.afterMount);
     expect(bound.beforeRemove).toBe(behavior.beforeRemove);
     expect(bound.tag).toBe("T");
     expect(registry.getInstanceTag(instance)).toBe("T");

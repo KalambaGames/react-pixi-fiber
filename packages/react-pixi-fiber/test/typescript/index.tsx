@@ -101,6 +101,10 @@ const CustomAnimatedSprite = PIXIComponent<PIXI.AnimatedSprite, CustomAnimatedSp
   afterAdd: instance => {
     console.log(instance.textures);
   },
+  afterMount: (instance, props) => {
+    console.log(instance.textures);
+    console.log(props.textures);
+  },
   afterMove: instance => {
     console.log(instance.textures);
   },

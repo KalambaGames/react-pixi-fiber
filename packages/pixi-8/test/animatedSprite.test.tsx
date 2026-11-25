@@ -1,4 +1,4 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import React from "react";
 import renderer, { act } from "react-test-renderer";
 import * as PIXI from "pixi.js";
@@ -48,5 +48,32 @@ describe("pixi8() AnimatedSprite", () => {
     update(<AnimatedSprite textures={[texture, texture]} />);
     expect(sprite().playing).toBe(true);
     act(() => tree.unmount());
+  });
+  it("does not play a sprite from a render that React drops", async () => {
+    const play = vi.spyOn(PIXI.AnimatedSprite.prototype, "play");
+    const error = vi.spyOn(console, "error").mockImplementation(() => {});
+    class Boundary extends React.Component<{ children: React.ReactNode }, { failed: boolean }> {
+      state = { failed: false };
+      static getDerivedStateFromError() {
+        return { failed: true };
+      }
+      render() {
+        return this.state.failed ? null : this.props.children;
+      }
+    }
+    function Throw(): null {
+      throw new Error("drop this render");
+    }
+    // React completes the sprite before it reaches `Throw`, then drops both.
+    const { tree } = await mount(
+      <Boundary>
+        <AnimatedSprite playing textures={[texture, texture]} />
+        <Throw />
+      </Boundary>
+    );
+    expect(play).not.toHaveBeenCalled();
+    act(() => tree.unmount());
+    play.mockRestore();
+    error.mockRestore();
   });
 });
