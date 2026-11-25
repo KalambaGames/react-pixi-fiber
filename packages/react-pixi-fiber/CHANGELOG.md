@@ -4,6 +4,154 @@ All notable changes to this project will be documented in this file.
 
 This project adheres to [Semantic Versioning](http://semver.org/). From 3.0.0 on, [Changesets](https://github.com/changesets/changesets) writes the entries from `.changeset/` at release; the entries up to 2.x follow [Keep a Changelog](http://keepachangelog.com/).
 
+## 3.0.0
+
+### Major Changes
+
+- [#377](https://github.com/KalambaGames/react-pixi-fiber/pull/377) [`446f761`](https://github.com/KalambaGames/react-pixi-fiber/commit/446f7619b852df4ffdf432d5c032e837f21968ee) Thanks [@michalochman](https://github.com/michalochman)! - Split into a core package and per-version adapters. Call `configure({ react, pixi })` once at the app entry with a React adapter (`@react-pixi-fiber/react-17`, `react-18`, `react-19`) and a PixiJS adapter (`@react-pixi-fiber/pixi-4` to `pixi-8`). See the migration guide in the README.
+  
+  ### Added
+  - `configure({ react, pixi })`, called once in the app entry before the first render, wires a React adapter and a PixiJS adapter into the core. Without it the first render throws an error that prints the install line and the setup lines
+  - React adapters: `@react-pixi-fiber/react-17` for React 17.0.2 or a later 17.x, `@react-pixi-fiber/react-18` for React 18.3.1 or a later 18.x and `@react-pixi-fiber/react-19` for React 19.3 or a later 19.x
+  - PixiJS adapters: `@react-pixi-fiber/pixi-4` for PixiJS 4.6 or a later 4.x, `@react-pixi-fiber/pixi-5`, `@react-pixi-fiber/pixi-6`, `@react-pixi-fiber/pixi-7` for PixiJS 7.2 or a later 7.x and `@react-pixi-fiber/pixi-8` for PixiJS 8.9 or a later 8.x. The `pixi-7` and `pixi-8` adapters have a `compat/pixi6` module that translates the 2.x props their PixiJS version renamed or ignores. Each adapter's changelog lists its tags and peers
+  - Fragment refs on React 19: a `<Fragment ref>` inside `Stage` receives a `PixiFragmentInstance` with `children`, `getBounds()`, `off(event, fn)` and `on(event, fn)` over the fragment's top-level Display Objects
+  - The PixiJS adapter's `defaults` option sets default props per tag, like React's `defaultProps`: `pixi6({ defaults: { Sprite: { alpha: 0.5 } } })`. A prop that is missing or `undefined` when the instance is created gets its default before `create` runs, and a prop removed later, or set to `undefined`, returns to it. An explicit `null` is kept. Entries are keyed by the tag name; the deprecated `NineSlicePlane` on PixiJS 8 is keyed as `NineSliceSprite`
+  - A PixiJS adapter can rename props with `translateProps` before they are validated, set or diffed; a `PIXIComponent` with its own `applyProps` receives the props as written, with the `defaults` applied
+  - `PIXIComponent(type, behavior)` and `PIXIProperty` replace `CustomPIXIComponent(behavior, type)` and `CustomPIXIProperty`. Behavior keys are `create`, `applyProps`, `afterAdd`, `beforeRemove`, and the optional `appendChild`, `insertBefore` and `removeChild`, which let a container own the order of children that are not Display Objects. The `Behavior`, `BehaviorInput` and `ApplyPropsContext` types describe a behavior
+  - `getInstanceTag(instance)` returns the tag an instance was created with, after a deprecated tag is mapped
+  - A tag registered with `PIXIComponent` under the name of an adapter tag replaces the adapter tag and warns once in development. 2.x always created the built-in tag
+  - `PIXIProperty` accepts tags registered with `PIXIComponent`; 2.x reported them as not a valid component type
+  - `PixiTickerCallback` type export, the callback type `usePixiTicker` takes
+  - Tags `AnimatedSprite`, `Mesh`, `MeshSimple`, `MeshPlane`, `MeshRope` and `NineSliceSprite`. Every PixiJS adapter implements all 13 tags
+  - `Stage` `onInit(app)` prop, called once the PixiJS application exists and the children are rendered
+  - `Stage` `bridgeContexts` prop, a list of React contexts provided around `Stage` that its children can read. React does not pass context between renderers; `Stage` reads each context where it renders and provides it again inside, and renders the children again when a value changes
+  
+  ### Changed
+  - `react-reconciler` moved from the core into the React adapters; `@react-pixi-fiber/react-17` bundles `react-reconciler` 0.26.2, `@react-pixi-fiber/react-18` 0.29.2 and `@react-pixi-fiber/react-19` 0.34.0
+  - `pixi.js` is no longer a peer dependency of the core, the PixiJS adapter has it. The core's `react` peer is `>=17.0.0 <20.0.0`
+  - PixiJS 4.4–4.5, 7.0–7.1 and 8.0–8.8 are not supported: `@react-pixi-fiber/pixi-4` peers `pixi.js` ^4.6.0 (the first PixiJS 4 with `AlphaFilter`), `@react-pixi-fiber/pixi-7` peers `pixi.js` ^7.2.0 (`eventMode` first ships in 7.2) and `@react-pixi-fiber/pixi-8` peers `pixi.js` ^8.9.0 (the first 8.x with every tag it exports). 2.x peered `pixi.js` >=4.4.0 <8
+  - A second `configure` call after a render warns once in development. Trees already rendered keep their React renderer; new PixiJS instances and prop writes use the new adapter
+  - The types `InteractionCompatibility`, `InteractionEventCompatibility` and `PixiTypeFallback` import from the PixiJS adapter: `@react-pixi-fiber/pixi-4`, `pixi-5` and `pixi-6` export all three, `@react-pixi-fiber/pixi-7` exports `PixiTypeFallback`
+  - Build output moved from `cjs/` and `es/` to `dist/cjs/` and `dist/es/`. Imports of `react-pixi-fiber` are unaffected; direct paths to the built files need the `dist/` prefix
+  - The `usePixiTicker` callback has the type `app.ticker.add` takes on the configured PixiJS version
+  - `package.json` has an `exports` map. Bundlers that understand it (webpack 5, Vite) get the ES build directly, the development or production file picked by the `development` condition; Node and `require` still get the CommonJS entry points. Only `react-pixi-fiber` and `react-pixi-fiber/package.json` can be imported, deep imports into `dist/` or `src/` no longer resolve
+  - The `module` and `jsnext:main` fields and `index.es.js` are removed. `index.es.js` was a CommonJS wrapper around the ES build; bundlers that ignore `exports` now use `main`
+  - The type declarations are regular modules for the CommonJS and the ES build instead of a `declare module "react-pixi-fiber"` block. `tsconfig.json` `paths` pointing `react-pixi-fiber` at `index.d.ts` are no longer needed
+  - Code is formatted and linted with Biome instead of Prettier and ESLint
+  - The library is built with [tsdown](https://tsdown.dev) instead of Rollup 2 and Babel. The code targets ES2018 instead of ES5 and is minified with Oxc instead of terser; for the same source the development builds are about 20% and the production builds about 3% smaller
+  - The library tests run with [Vitest](https://vitest.dev) instead of Jest 26; `pnpm test` still runs the development and production suites. Babel and babel-plugin-rewire are gone, the tests mock modules with `vi.mock` instead
+  - `Stage` creates the PixiJS application asynchronously. Children mount after `Stage` commits; `ref._app.current` is `null` until `onInit` fires and warns in development when read before that
+  - `Stage` calls `onInit` once for every application it creates or is given in `app` and keeps, so again after an `options` change recreates the application. An `options` change while the application is being created is applied once it exists. A failed application creation (a thrown error or a rejected promise) reaches the nearest error boundary. Unmounting `Stage` before the application exists destroys the application when it is ready and never calls `onInit`
+  - Destroying the application of an unmounted or recreated `Stage` keeps the WebGL context of a canvas still in the document, such as an external `options.view`, so the next application on that canvas can draw; 2.x lost it. The next application is created once the previous one is destroyed. The development double mount under `<StrictMode>` no longer leaves the canvas blank
+  - `Stage` warns once in development when its `app` prop changes after mount; it keeps the application it started with
+  - `Stage` renders no `<canvas>` when `options.canvas` is set, as for `options.view`. On PixiJS 8 the application draws on the given canvas; when both are given, `view` wins. On PixiJS 4 to 7 `canvas` is not an application option, and `Stage` warns once in development
+  - `Stage` has no `defaultProps`: `ref.current.props.options` is `undefined` when `options` is omitted (it was `{}`)
+  - `Stage` passes typed prop names and Container prop names (for example `buttonMode`, `interactiveChildren`) to `app.stage`. 2.x compared the names in lowercase, so these props went to the `<canvas>` element
+  - A prop set to `undefined` is reset to the value PixiJS had before the first write, recorded per instance, instead of a value from a table. This covers every PixiJS version and custom components. For example `Text` `text` set to `undefined` goes back to the value the `PIXI.Text` was created with, not `""`
+  - Removing a prop restores the value the instance had before react-pixi-fiber first set it, which may be `undefined` on PixiJS 8 (`mask`, `filters`), instead of setting numeric and untyped props to `null`, so `<Sprite alpha={0.5} />` re-rendered as `<Sprite />` has `alpha` 1 again. An explicit `null` is set as-is on every prop, also on point and callback props, where 2.x treated it as an invalid value; on a point prop the PixiJS setter then throws its own error. A prop set to `undefined` or removed no longer warns under `<StrictMode>`; the development warning for an invalid value names the received value ("Received `-1` for prop `alpha`…") instead of "Received undefined"
+  - Development prop validation now runs on React 18 and 19 for components under a `<StrictMode>` placed inside `Stage` (or inside the tree passed to `render`). It never ran on React 18 or 19 before, because the library checked React 17's mode bit. A `<StrictMode>` around `<Stage>` does not reach the PixiJS tree, which is a separate React root, as in 2.x
+  - A boolean or function value on a prop the library does not type is set on the instance instead of being dropped (`<Container sortableChildren />` works on PixiJS 4 to 7). Unknown prop names are no longer reported in development; they are set as-is. The development warning for an event handler prop checks only `on` plus an uppercase letter, so `onclick` no longer warns
+  - `applyProps(instance, oldProps, newProps)` is exported for higher-order components; `_customApplyProps`, `_customDidAttach`, `_customWillDetach` are no longer attached to Display Objects
+  - A behavior object is read with `{ ...behavior }`, so only its own properties count. A behavior that is a class instance must set `create`, `applyProps`, `afterAdd` and `beforeRemove` as own properties, methods on its prototype are not found
+  - `Graphics` passes a prop to the `PIXI.Graphics` constructor: `nativeLines` on PixiJS 4, `geometry` on PixiJS 5 to 7 and `context` on PixiJS 8. 2.x passed nothing
+  - `unmount(container)` never throws and returns a boolean, as `unmountComponentAtNode` does: `true` when the container was rendered into (a second `unmount` of the same container is a no-op, as in 2.x), `false` plus a development warning `ReactPixiFiber did not render into container provided` when it never was. 2.x threw for a container never rendered into. Roots are held weakly by container, so an unmounted `Stage` no longer keeps its destroyed `app.stage` and React root alive; 2.x kept every root
+  - `afterAdd` (2.x `customDidAttach`) runs when a child joins a parent, also when it is inserted before a sibling, which 2.x never did. A keyed reorder within the same parent moves the child without calling `afterAdd` or `beforeRemove`; 2.x called `customDidAttach` again when `appendChild` moved a child, which added a listener subscribed there a second time
+  - `AppContext` is typed `Context<Application | null>`, its default value is `null`. `withApp` accepts any component with an `app` prop, `PixiAppProperties` is still exported for that prop. The `displayName` of a `withApp` component is `withApp(Name)` instead of the source of the wrapped function
+  - The source is TypeScript; the types ship from the build instead of a handwritten `index.d.ts`. `CustomDisplayObject*` and `CustomPIXIComponent*` types are renamed without the `Custom` prefix. The PixiJS adapter fills in the tag and prop types when it is imported; without an adapter import every tag takes loose props. Each PixiJS adapter has its own typed prop table, so a prop typed in 2.x but not by the adapter, for example `tint` on PixiJS 8, is set as-is without validation. The `PixiAdapter`, `ReactAdapter` and `HostOps` types describe an adapter
+  
+  ### Deprecated
+  Each deprecated item keeps working in 3.x and is removed in 4.0.0. The deprecated functions, behavior keys and `Stage` props warn once in development, the `NineSlicePlane` tag on PixiJS 8 only; the deprecated types, for example `InteractiveComponent` and the `Custom*` names, do not warn.
+  - `CustomPIXIComponent(behavior, type)` and `CustomPIXIProperty`, use `PIXIComponent(type, behavior)` and `PIXIProperty`
+  - Behavior keys `customDisplayObject`, `customApplyProps`, `customDidAttach` and `customWillDetach`, use `create`, `applyProps`, `afterAdd` and `beforeRemove`
+  - The `Custom*` type names (`CustomDisplayObject*`, `CustomPIXIComponent*`), use the names without the prefix
+  - `createStageClass`, it returns the function `Stage`
+  - Tag `NineSlicePlane`, use `NineSliceSprite`. On PixiJS 8 it maps to `NineSliceSprite`; the PixiJS 4 to 7 adapters keep it as a tag
+  - `Stage` `width` and `height` props (deprecated since 0.12.0, the warning no longer needs `prop-types`). As in 2.x they set `app.stage.width` and `app.stage.height` and never size the renderer or reach the `<canvas>`; the renderer size comes from `options.width` and `options.height`
+  - The `InteractiveComponent` type in `react-pixi-fiber`, import it from `@react-pixi-fiber/pixi-4`, `pixi-5` or `pixi-6`
+  
+  ### Removed
+  - The `react-pixi-fiber/react-pixi-alias` subpath and the `react-dom` peer dependency
+  - UMD builds, the `prop-types` peer dependency and runtime prop-types validation, `fbjs`
+  - `Stage` as a class component
+  - The PixiJS 4 fallbacks to the `PIXI.extras`, `PIXI.mesh` and `PIXI.particles` namespaces are removed from the core; PixiJS 4 support moves to the `@react-pixi-fiber/pixi-4` adapter
+  
+  ### Fixed
+  - `cancelTimeout` cancels the timeout: `scheduleTimeout` returns its handle
+  - `useId` returns ids without the `undefined` prefix (`:r0:` instead of `:undefinedr0:`), the root's `identifierPrefix` is `""`
+  - Errors React recovers from are logged with `console.error` on React 18 and 19; 2.x passed no `onRecoverableError` handler, so the reconciler called `undefined`
+  - `StageProps` rejects `app` and `options` passed together; 2.x typed both as optional in one object
+
+### Minor Changes
+
+- [#402](https://github.com/KalambaGames/react-pixi-fiber/pull/402) [`f662611`](https://github.com/KalambaGames/react-pixi-fiber/commit/f6626110ecfe4fb94f985474d24206104d8fdb38) Thanks [@michalochman](https://github.com/michalochman)! - `PixiAdapter.behaviors` holds a `Behavior` for each tag, Display Objects and filters.
+
+- [#415](https://github.com/KalambaGames/react-pixi-fiber/pull/415) [`b178428`](https://github.com/KalambaGames/react-pixi-fiber/commit/b1784281f03924325ba21a3324794d6ce542a369) Thanks [@michalochman](https://github.com/michalochman)! - `<AnimatedSprite playing />` plays the sprite, and `playing={false}` stops it. A sprite that plays continues when `textures` changes, from frame 0 of the new textures. A finished sprite with `loop={false}` plays again from frame 0 when `playing` changes to `true`. When you remove `playing`, the sprite stops. Without `playing`, you start the sprite through a ref.
+
+- [#417](https://github.com/KalambaGames/react-pixi-fiber/pull/417) [`d452441`](https://github.com/KalambaGames/react-pixi-fiber/commit/d4524411d47813afb741c1d339b6880fe521b116) Thanks [@michalochman](https://github.com/michalochman)! - A behavior can list in `constructorOnly` the props that its `create` gives to the constructor and that PixiJS cannot change later. The core does not write these props. In development, under `StrictMode`, a change to one of them after mount warns one time. Give the element a new `key` to change such a prop.
+  
+  `<Graphics geometry={geometry} />` no longer throws `Cannot set property geometry` on PixiJS 5, 6 and 7. The Graphics uses the geometry from its constructor.
+  
+  A change after mount to these props now changes the Scene Object:
+  
+  - BitmapText: `style` on PixiJS 4 to 7.
+  - Mesh: `uvs` and `indices` on PixiJS 4.
+  - MeshPlane: `verticesX` and `verticesY`.
+  - MeshRope: `points`, and `textureScale` on PixiJS 5 to 8.
+  - MeshSimple: `uvs` and `indices`, and `topology` on PixiJS 8.
+  - ParticleContainer: `properties` on PixiJS 5 to 7.
+  - PerspectiveMesh: `verticesX`, `verticesY` and the corners `x0` to `y3`.
+  
+  A change after mount to these props warns:
+  
+  - AnimatedSprite: `autoUpdate` on PixiJS 4.
+  - Graphics: `geometry` on PixiJS 5 to 7.
+  - ParticleContainer: `maxSize` and `batchSize` on PixiJS 4 to 7, `properties` on PixiJS 4, `dynamicProperties` on PixiJS 8.
+  - Text: `canvas` on PixiJS 4 to 7.
+  
+  The MeshRope prop types require `points`. Every PixiJS constructor needs them.
+
+- [#402](https://github.com/KalambaGames/react-pixi-fiber/pull/402) [`659aa2d`](https://github.com/KalambaGames/react-pixi-fiber/commit/659aa2dd2097a757e191e884fea6f194c13e8a58) Thanks [@michalochman](https://github.com/michalochman)! - A filter is a child element of the Display Object it filters, a `Sprite`, a `Container` or any other object with a `filters` property: `<Sprite><BlurFilter blur={2} /></Sprite>`. A filter element is not a Display Object. The core writes it into the parent's `filters` array in JSX order, not into `children`. `enabled` disables a filter. A Suspense fallback disables it until the content shows.
+  
+  `AlphaFilter`, `BlurFilter`, `ColorMatrixFilter`, `DisplacementFilter` and `NoiseFilter` are tags, imported from `react-pixi-fiber` like `Sprite`. `PIXIFilter(type, behavior)` registers another filter class, for example one from `pixi-filters`.
+  
+  The core destroys the filters it created, when the filter element or an ancestor unmounts. PixiJS never destroys a filter with its object, so a filter from the `filters` prop is yours to destroy. An adapter can provide the optional `PixiAdapter.releaseFilter(filter)` to release a filter instead of `filter.destroy()`.
+  
+  A `filters` value on an element with filter children throws. Use one of the two. In development, under StrictMode, a change to a prop that the filter did not have before its first write logs a warning. The constructor reads that option, so a new `key` is the way to change it.
+
+- [#416](https://github.com/KalambaGames/react-pixi-fiber/pull/416) [`5eaa506`](https://github.com/KalambaGames/react-pixi-fiber/commit/5eaa5060f123da5e64626b5bd5d4ac3340a1e8c6) Thanks [@michalochman](https://github.com/michalochman)! - `Stage` takes two new props. `destroyOptions` sets what an unmount destroys. `Stage` passes it to `app.destroy`. The default stays `true`, and a recreate still passes `false`. `Stage` calls `onBeforeDestroy(app)` before it destroys an application that it created, also on a recreate. The adapters add only the `DestroyOptions` type of their PixiJS version.
+
+- [#412](https://github.com/KalambaGames/react-pixi-fiber/pull/412) [`36ebd20`](https://github.com/KalambaGames/react-pixi-fiber/commit/36ebd209251c140662c6537cffaaca6bb68a5d11) Thanks [@michalochman](https://github.com/michalochman)! - `usePixiTicker(fn, options)` takes an optional second argument. `enabled: false` removes the callback from the ticker without an unmount, and `enabled: true` adds it back. `priority` is the PixiJS `UPDATE_PRIORITY` that `ticker.add` receives. The one-argument call works as before.
+
+### Patch Changes
+
+- [#393](https://github.com/KalambaGames/react-pixi-fiber/pull/393) [`a366d91`](https://github.com/KalambaGames/react-pixi-fiber/commit/a366d912861cb7717fddfc40520afd1c0b387080) Thanks [@michalochman](https://github.com/michalochman)! - An explicit `null` on a callback prop, for example `onclick={null}`, is written as `null`. Before, the core reset it to its default and warned under `StrictMode`.
+  
+  An explicit `null` on a point prop is written as `null`, so the PixiJS setter throws its own error, as it does without react-pixi-fiber. Before, the core reset it to its default and warned.
+  
+  An invalid value for a point prop that the PixiJS adapter does not list as a point, for example a point prop of a custom component, resets the prop to its default with a warning. Before, `"a,b"` wrote `NaN` coordinates and three coordinates threw.
+  
+  The warning for an invalid prop value prints once for each prop name, not on every write.
+  
+  A suspended instance that becomes visible again gets the `visible` default of the PixiJS adapter, or the value PixiJS had, when the element has no `visible` prop. Before, it always became visible.
+  
+  `usePixiApp` and `usePixiTicker` throw an `Invariant Violation`, like the other core errors.
+  
+  The warning for the deprecated `width` and `height` props of `Stage` names 4.0.0 as the major that removes them, and `createStageClass` is marked `@deprecated` for editors.
+
+- [#394](https://github.com/KalambaGames/react-pixi-fiber/pull/394) [`83e5958`](https://github.com/KalambaGames/react-pixi-fiber/commit/83e595872fac688902a2779e589feb8b4dcbdb0d) Thanks [@michalochman](https://github.com/michalochman)! - With the PixiJS 8 adapter, a prop accepts what the PixiJS setter accepts, not only what the getter returns. `<Text style={{ fill: "white" }} />`, the same `style` on `BitmapText` and `HTMLText`, the same props of a `PIXIComponent`, and properties that plugins add, for example the `layout` prop of `@pixi/layout` as a style object or as `true`, type-check. With the PixiJS 7 adapter, the same applies to the `style` prop of `Text` and `HTMLText` and to the `text` prop of `Text`, which takes a number too.
+  
+  The `style` prop of `Text` has the PixiJS style types. A style object whose literal fields TypeScript widens to `string`, for example `fontWeight: "bold"` in an object without `as const`, needs `as const` or a type annotation.
+  
+  `PIXIComponent<T>` takes the instance type alone, without the props type.
+
+- [#387](https://github.com/KalambaGames/react-pixi-fiber/pull/387) [`8ab7e10`](https://github.com/KalambaGames/react-pixi-fiber/commit/8ab7e1002f794144633a4f8a6d582c8b6554171b) Thanks [@michalochman](https://github.com/michalochman)! - The `Stage` error for a rejected `app` prop names the two forms that `Stage` accepts: a `PIXI.Application`, or an object that the PixiJS adapter accepts as one. The pixi-8 adapter accepts an object with a `Container` as `stage`.
+  
+  `usePixiTicker` throws during render when the `app` has no `ticker`, and the error names the `ticker`.
+
+- [#413](https://github.com/KalambaGames/react-pixi-fiber/pull/413) [`c92fdb3`](https://github.com/KalambaGames/react-pixi-fiber/commit/c92fdb3ff0289aea4d6e48d42b373721b1018211) Thanks [@michalochman](https://github.com/michalochman)! - `usePixiTicker(fn, options)` adds one listener to the ticker and calls the `fn` from the latest render on each tick. A new `fn` no longer removes the listener and adds it again, so an inline `fn` keeps its place among listeners with the same priority. Only a change to `enabled` or `priority` adds the listener again.
+
+- [#418](https://github.com/KalambaGames/react-pixi-fiber/pull/418) [`cf941c9`](https://github.com/KalambaGames/react-pixi-fiber/commit/cf941c90c261177a9ad90dac5037db7d6030e9ce) Thanks [@michalochman](https://github.com/michalochman)! - In development, `withApp` writes a warning when it gets no `PIXI.Application`. This occurs outside `<Stage />` and `<AppProvider />`. The wrapped component still gets `app={null}`, as before. The warning occurs one time for each wrapped component.
+
 ## 3.0.0-beta.0
 
 ### Patch Changes
