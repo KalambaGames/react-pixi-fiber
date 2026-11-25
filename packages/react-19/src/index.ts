@@ -154,6 +154,8 @@ export function createHostConfig(hostOps: HostOps): Record<string, unknown> {
       nextProps: Record<string, unknown>,
       internalHandle: unknown
     ) {
+      // React 19 also calls this for a new instance, before `commitMount`, with the same props object twice.
+      if (prevProps === nextProps) return;
       const payload = hostOps.diffProperties(type, instance, prevProps, nextProps);
       if (payload !== null) hostOps.updateProperties(type, instance, payload, prevProps, nextProps, internalHandle);
       if (__DEV__) hostOps.validateProperties(type, nextProps, internalHandle);
