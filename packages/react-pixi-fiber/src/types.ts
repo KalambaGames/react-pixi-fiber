@@ -406,6 +406,10 @@ export type DisplayObjectPropSetter<T extends object, P> = (
 // Used to do something after `displayObject` is added to its parent, which happens before `componentDidMount`.
 export type DisplayObjectAttachHandler<T extends object> = (displayObject: T) => void;
 
+// Used to react when React moves `displayObject` to a new place in the same parent. Runs after the move, for the
+// moved `displayObject` only.
+export type DisplayObjectMoveHandler<T extends object> = (displayObject: T) => void;
+
 // Used to do something (usually cleanup) before removing `displayObject`, which happens after `componentWillUnmount`.
 export type DisplayObjectDetachHandler<T extends object> = (displayObject: T) => void;
 
@@ -414,6 +418,7 @@ export interface PIXIComponentBehaviorDefinition<T extends object, P> {
   create: DisplayObjectCreator<T, P>;
   applyProps?: DisplayObjectPropSetter<T, P>;
   afterAdd?: DisplayObjectAttachHandler<T>;
+  afterMove?: DisplayObjectMoveHandler<T>;
   beforeRemove?: DisplayObjectDetachHandler<T>;
   // The props that `create` gives to the constructor and that the core does not write. A change after mount warns.
   constructorOnly?: readonly string[];
@@ -442,6 +447,7 @@ export interface PIXIFilterBehaviorDefinition<T extends object, P> {
   create: (props: P) => T;
   applyProps?: DisplayObjectPropSetter<T, P>;
   afterAdd?: (filter: T) => void;
+  afterMove?: (filter: T) => void;
   beforeRemove?: (filter: T) => void;
 }
 

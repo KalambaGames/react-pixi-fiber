@@ -17,7 +17,7 @@ import {
   releaseFilter,
   removeFilter,
 } from "./filters";
-import { holdChild, isHeldBy, releaseChild } from "./heldChildren";
+import { heldChildren, holdChild, isHeldBy, releaseChild } from "./heldChildren";
 import { getBoundBehavior, getInstanceTag, isFilterInstance } from "./registry";
 import { getStrictModeBit } from "./configure";
 import { findStrictRoot } from "./utils";
@@ -37,28 +37,41 @@ function appendDisplayChild(parentInstance: any, child: any): void {
   }
 }
 
-function afterAddUnlessMove(child: any, isMove: boolean): void {
-  if (isMove) return;
+// The place of `child` in `parent`: among the filters for a filter, else among the children.
+function placeIn(parent: any, child: any): number {
+  if (isFilterInstance(child)) return parent.filters ? parent.filters.indexOf(child) : -1;
+  return (isHeldBy(child, parent) ? heldChildren(parent) : parent.children).indexOf(child);
+}
+
+// `from` is the place of a moved child before the move. A child that keeps its place did not move: React can
+// reorder a display child and a filter child, which changes neither `children` nor `filters`.
+function afterAddOrMove(parent: any, child: any, isMove: boolean, from: number): void {
   const bound = getBoundBehavior(child);
-  if (bound && bound.afterAdd) bound.afterAdd(child);
+  if (!bound) return;
+  if (!isMove) {
+    if (bound.afterAdd) bound.afterAdd(child);
+  } else if (bound.afterMove && placeIn(parent, child) !== from) bound.afterMove(child);
 }
 
 // A parent's behavior may own its child operations; otherwise the Display Object methods are used.
-// `afterAdd` runs only when the child joins the parent. A reorder within the same parent is a move, not an add,
-// and calls neither `afterAdd` nor `beforeRemove`.
+// `afterAdd` runs only when the child joins the parent. A reorder within the same parent is a move, not an add:
+// it calls `afterMove` when the place of the child changes, and neither `afterAdd` nor `beforeRemove`. React places
+// one child at a time, so `afterMove` can see siblings that React moves later in the same commit.
 // A filter child joins the parent's `filters` instead, also under a parent that owns its child operations.
 export function appendChild(parentInstance: any, child: any): void {
   if (parentInstance == null) return;
   if (isFilterInstance(parentInstance)) invariant(false, "`<%s />` takes no children.", getInstanceTag(parentInstance));
 
   if (isFilterInstance(child)) {
-    afterAddUnlessMove(child, placeFilter(parentInstance, child));
+    const from = placeIn(parentInstance, child);
+    afterAddOrMove(parentInstance, child, placeFilter(parentInstance, child), from);
     return;
   }
   const isMove = child.parent === parentInstance || isHeldBy(child, parentInstance);
+  const from = isMove ? placeIn(parentInstance, child) : -1;
   appendDisplayChild(parentInstance, child);
   placeChild(parentInstance, child);
-  afterAddUnlessMove(child, isMove);
+  afterAddOrMove(parentInstance, child, isMove, from);
 }
 
 export function removeChild(parentInstance: any, child: any): void {
@@ -89,10 +102,12 @@ export function insertBefore(parentInstance: any, child: any, beforeChild: any):
   invariant(child !== beforeChild, "ReactPixiFiber cannot insert node before itself");
 
   if (isFilterInstance(child)) {
-    afterAddUnlessMove(child, placeFilter(parentInstance, child, beforeChild));
+    const from = placeIn(parentInstance, child);
+    afterAddOrMove(parentInstance, child, placeFilter(parentInstance, child, beforeChild), from);
     return;
   }
   const isMove = child.parent === parentInstance || isHeldBy(child, parentInstance);
+  const from = isMove ? placeIn(parentInstance, child) : -1;
   // Before a filter, the child goes before the next display sibling.
   const target = displayBefore(parentInstance, beforeChild);
   const ops = getBoundBehavior(parentInstance);
@@ -114,7 +129,7 @@ export function insertBefore(parentInstance: any, child: any, beforeChild: any):
     parentInstance.addChildAt(child, index);
   }
   placeChild(parentInstance, child, beforeChild);
-  afterAddUnlessMove(child, isMove);
+  afterAddOrMove(parentInstance, child, isMove, from);
 }
 
 export function clearContainer(container: any): void {

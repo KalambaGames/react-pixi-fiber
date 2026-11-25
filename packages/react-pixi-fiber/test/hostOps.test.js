@@ -104,6 +104,52 @@ describe("hostOps", () => {
     });
   });
 
+  describe("afterMove", () => {
+    const create = () => {
+      const afterAdd = vi.fn();
+      const afterMove = vi.fn();
+      const behavior = normalizeBehavior("T", { create: () => new PIXI.Container(), afterAdd, afterMove });
+      return { afterAdd, afterMove, child: createRegisteredInstance("T", behavior, {}, () => {}) };
+    };
+
+    it("appendChild of a child already in the parent calls afterMove of that child only, and an add does not", () => {
+      const parent = new PIXI.Container();
+      const a = create();
+      const b = create();
+      hostOps.appendChild(parent, a.child);
+      hostOps.appendChild(parent, b.child);
+      expect(a.afterMove).not.toHaveBeenCalled();
+      hostOps.appendChild(parent, a.child);
+      expect(a.afterMove).toHaveBeenCalledTimes(1);
+      expect(a.afterMove).toHaveBeenCalledWith(a.child);
+      expect(b.afterMove).not.toHaveBeenCalled();
+    });
+
+    it("insertBefore of a child already in the parent calls afterMove with the child in its new place", () => {
+      const parent = new PIXI.Container();
+      const a = create();
+      const b = create();
+      hostOps.appendChild(parent, a.child);
+      hostOps.appendChild(parent, b.child);
+      const indexes = [];
+      b.afterMove.mockImplementation(child => indexes.push(parent.children.indexOf(child)));
+      hostOps.insertBefore(parent, b.child, a.child);
+      expect(indexes).toEqual([0]);
+      expect(b.afterMove).toHaveBeenCalledWith(b.child);
+    });
+
+    it("does not call afterMove when the child comes from another parent", () => {
+      const first = new PIXI.Container();
+      const second = new PIXI.Container();
+      const a = create();
+      hostOps.appendChild(first, a.child);
+      hostOps.appendChild(second, a.child);
+      hostOps.appendChild(first, a.child);
+      expect(a.afterAdd).toHaveBeenCalledTimes(3);
+      expect(a.afterMove).not.toHaveBeenCalled();
+    });
+  });
+
   describe("removeChild", () => {
     const parent = {
       removeChild: vi.fn(),
@@ -237,6 +283,7 @@ describe("hostOps", () => {
         "C",
         normalizeBehavior("C", {
           afterAdd: child => calls.push(["afterAdd", child]),
+          afterMove: child => calls.push(["afterMove", child]),
           beforeRemove: child => calls.push(["beforeRemove", child]),
           create: () => ({}),
         }),
@@ -287,6 +334,34 @@ describe("hostOps", () => {
         ["afterAdd", child],
         ["afterAdd", other],
       ]);
+    });
+
+    it("a move of a child the parent ops hold calls the op, then afterMove", () => {
+      const parent = createParent();
+      const child = createChild();
+      const other = createChild();
+      hostOps.appendChild(parent, child);
+      hostOps.appendChild(parent, other);
+      calls.length = 0;
+      hostOps.appendChild(parent, child);
+      hostOps.insertBefore(parent, child, other);
+      expect(calls).toEqual([
+        ["appendChild", parent, child],
+        ["afterMove", child],
+        ["insertBefore", parent, child, other],
+        ["afterMove", child],
+      ]);
+    });
+
+    it("a child the parent ops hold that keeps its place gets no afterMove", () => {
+      const parent = createParent();
+      const child = createChild();
+      const other = createChild();
+      hostOps.appendChild(parent, other);
+      hostOps.appendChild(parent, child);
+      calls.length = 0;
+      hostOps.appendChild(parent, child);
+      expect(calls).toEqual([["appendChild", parent, child]]);
     });
 
     it("a child removed through the parent ops is added again", () => {
@@ -514,6 +589,22 @@ describe("hostOps", () => {
       expect(parent.children).toHaveLength(0);
     });
 
+    it("calls afterMove of a filter that moves among the filters of its parent, and not when it is added", () => {
+      const afterMove = vi.fn();
+      const a = filterInstance("F", { afterMove });
+      const b = filterInstance();
+      hostOps.appendChild(parent, a);
+      hostOps.appendChild(parent, b);
+      expect(afterMove).not.toHaveBeenCalled();
+      hostOps.appendChild(parent, a);
+      expectOrder(parent.filters, [b, a]);
+      expect(afterMove).toHaveBeenCalledTimes(1);
+      hostOps.insertBefore(parent, a, b);
+      expectOrder(parent.filters, [a, b]);
+      expect(afterMove).toHaveBeenCalledTimes(2);
+      expect(afterMove).toHaveBeenLastCalledWith(a);
+    });
+
     it("inserts a filter before a filter and before a display object", () => {
       const c1 = new PIXI.Container();
       const c2 = new PIXI.Container();
@@ -546,6 +637,54 @@ describe("hostOps", () => {
       const c4 = new PIXI.Container();
       hostOps.insertBefore(parent, c4, fA);
       expectOrder(parent.children, [c1, c3, c2, c4]);
+    });
+
+    it("does not call afterMove of a display object that is inserted before a filter and is already in place", () => {
+      const afterMove = vi.fn();
+      const behavior = normalizeBehavior("T", { afterMove, create: () => new PIXI.Container() });
+      const child = createRegisteredInstance("T", behavior, {}, () => {});
+      const c1 = new PIXI.Container();
+      const fA = filterInstance();
+      hostOps.appendChild(parent, c1);
+      hostOps.appendChild(parent, fA);
+      hostOps.appendChild(parent, child);
+      // `child` is the next display sibling of `fA`, so it stays where it is.
+      hostOps.insertBefore(parent, child, fA);
+      expectOrder(parent.children, [c1, child]);
+      expect(afterMove).not.toHaveBeenCalled();
+      hostOps.insertBefore(parent, child, c1);
+      expectOrder(parent.children, [child, c1]);
+      expect(afterMove).toHaveBeenCalledTimes(1);
+    });
+
+    it("does not call afterMove of a display object that only moves past a filter", () => {
+      const afterMove = vi.fn();
+      const behavior = normalizeBehavior("T", { afterMove, create: () => new PIXI.Container() });
+      const child = createRegisteredInstance("T", behavior, {}, () => {});
+      const c1 = new PIXI.Container();
+      const fA = filterInstance();
+      hostOps.appendChild(parent, c1);
+      hostOps.appendChild(parent, child);
+      hostOps.appendChild(parent, fA);
+      // `child` is the last display child before and after the call.
+      hostOps.appendChild(parent, child);
+      expectOrder(parent.children, [c1, child]);
+      expect(afterMove).not.toHaveBeenCalled();
+    });
+
+    it("does not call afterMove of a filter that only moves past a display object", () => {
+      const afterMove = vi.fn();
+      const fA = filterInstance("F", { afterMove });
+      const fB = filterInstance();
+      const c1 = new PIXI.Container();
+      hostOps.appendChild(parent, fA);
+      hostOps.appendChild(parent, fB);
+      hostOps.appendChild(parent, c1);
+      // `fB` is the last filter before and after each call.
+      hostOps.appendChild(parent, fB);
+      hostOps.insertBefore(parent, fA, c1);
+      expectOrder(parent.filters, [fA, fB]);
+      expect(afterMove).not.toHaveBeenCalled();
     });
 
     it("appends a display object inserted before a last filter", () => {
