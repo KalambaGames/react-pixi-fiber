@@ -27,7 +27,16 @@ const material = new Material3D({
 export const fog: Fog = { color: 0x1099bb, far: 80, near: 20, type: "linear" };
 
 export function Floor({ y = 0 }: { y?: number }) {
+  // The floor casts no shadow: a 400 unit caster would stretch the box that a sun fits to its casters,
+  // and blur every shadow.
   return (
-    <Mesh3D geometry={geometry} material={material} position={[0, y, 0]} rotation={[-Math.PI / 2, 0, 0]} scale={size} />
+    <Mesh3D
+      castShadow={false}
+      geometry={geometry}
+      material={material}
+      position={[0, y, 0]}
+      rotation={[-Math.PI / 2, 0, 0]}
+      scale={size}
+    />
   );
 }
