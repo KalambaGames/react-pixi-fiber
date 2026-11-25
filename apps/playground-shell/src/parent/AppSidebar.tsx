@@ -38,10 +38,10 @@ const groups: { icon: LucideIcon; name: ExampleGroup }[] = [
   // PixiJS 8 calls its renderable classes Scene Objects. PixiJS 4 to 7 call them Display Objects.
   { icon: Blocks, name: "Scene Objects" },
   { icon: Blocks, name: "Display Objects" },
-  { icon: Box, name: "3D Scene Objects" },
-  { icon: Rotate3d, name: "3D Features" },
   { icon: Atom, name: "Features" },
   { icon: Sparkles, name: "Filters" },
+  { icon: Box, name: "3D Scene Objects" },
+  { icon: Rotate3d, name: "3D Features" },
   { icon: Puzzle, name: "Integrations" },
   { icon: CircleFadingArrowUp, name: "Migration" },
 ];
