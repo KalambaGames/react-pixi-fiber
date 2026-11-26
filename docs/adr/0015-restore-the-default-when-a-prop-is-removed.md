@@ -16,6 +16,8 @@ A consumer can remove a prop between two renders: `<Sprite alpha={0.5} />` becom
 
 The core commits a removed prop as `undefined`. The default resolution of [0014](0014-take-default-values-from-pixijs-or-the-adapter.md) then applies.
 
+The core restores the defaults before it writes the values of the other props, also for `prop={undefined}`. A setter of one prop can change another prop, for example the `width` setter of a Sprite changes `scale`. A restore after that value would undo it. At mount the core writes no restore, because a new instance already has its defaults.
+
 The core writes an explicit `null` as `null`, also on a point prop. The PixiJS setter of a point prop throws for `null`, and the core lets that error reach the consumer. A point field without a setter, for example on a custom component, stores `null`.
 
 A removed prop prints no warning, because the diff cannot tell a removed prop from `prop={undefined}`. React DOM does not warn about `undefined` either.

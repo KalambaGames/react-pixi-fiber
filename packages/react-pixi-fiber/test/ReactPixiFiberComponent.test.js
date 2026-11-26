@@ -123,6 +123,12 @@ describe("ReactPixiFiber", () => {
       expect(setValueForProperty).toHaveBeenCalledWith(type, instance, "position", rawProps["position"]);
       expect(setValueForProperty).toHaveBeenCalledWith(type, instance, "scale", rawProps["scale"]);
     });
+
+    it("does not call setValueForProperty for an explicit undefined prop", () => {
+      ReactPixiFiberComponent.setInitialPixiProperties(type, instance, { position: "0,0", scale: undefined });
+      expect(setValueForProperty).toHaveBeenCalledWith(type, instance, "position", "0,0");
+      expect(setValueForProperty).not.toHaveBeenCalledWith(type, instance, "scale", undefined);
+    });
   });
 
   describe("diffProperties", () => {
@@ -142,6 +148,17 @@ describe("ReactPixiFiber", () => {
         "text",
         "Goodbye World!",
       ]);
+    });
+
+    it("queues an explicit undefined prop after the deleted props and before every value", () => {
+      expect(
+        ReactPixiFiberComponent.diffProperties(
+          "Text",
+          {},
+          { position: "0,0", scale: 2, text: "a" },
+          { text: "b", scale: undefined }
+        )
+      ).toEqual(["position", undefined, "scale", undefined, "text", "b"]);
     });
   });
 
