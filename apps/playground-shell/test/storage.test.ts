@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+
 import { hashCode } from "../src/share";
 import { createStore } from "../src/storage";
 import { memoryStorage } from "./memoryStorage";

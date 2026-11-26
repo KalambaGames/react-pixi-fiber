@@ -1,14 +1,16 @@
-import { describe, it, expect, vi, afterEach } from "vitest";
 import * as PIXI from "pixi.js";
+import { afterEach, describe, expect, it, vi } from "vitest";
+
+import { strictModeBit } from "@react-pixi-fiber/react-18";
+
+import { getPixiAdapter } from "../src/configure";
+import * as hostOps from "../src/hostOps";
+import { shouldIgnoreAttribute, shouldRemoveAttribute } from "../src/PixiProperty";
 import * as PixiPropertyOperations from "../src/PixiPropertyOperations";
 import { setValueForProperty } from "../src/PixiPropertyOperations";
-import * as hostOps from "../src/hostOps";
-import { createRegisteredInstance, normalizeBehavior } from "../src/registry";
-import { shouldIgnoreAttribute, shouldRemoveAttribute } from "../src/PixiProperty";
-import { setPixiValue } from "../src/utils";
-import { getPixiAdapter } from "../src/configure";
 import { applyDisplayObjectProps, updateProperties } from "../src/ReactPixiFiberComponent";
-import { strictModeBit } from "@react-pixi-fiber/react-18";
+import { createRegisteredInstance, normalizeBehavior } from "../src/registry";
+import { setPixiValue } from "../src/utils";
 
 // The mocks call the real implementations unless a test overrides them; `mockReset` restores that.
 vi.mock("../src/PixiProperty", async importOriginal => {

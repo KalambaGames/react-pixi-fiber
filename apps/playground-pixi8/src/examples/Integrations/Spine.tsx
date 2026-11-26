@@ -8,7 +8,9 @@ import {
 } from "@esotericsoftware/spine-pixi-v8";
 import { Assets, Point, type Texture } from "pixi.js";
 import { useEffect, useRef, useState } from "react";
+
 import { PIXIComponent, Stage, Text } from "react-pixi-fiber";
+
 import atlasText from "./assets/spineboy.atlas?raw";
 import skeletonJson from "./assets/spineboy.json?raw";
 import spineboyPng from "./assets/spineboy.png";

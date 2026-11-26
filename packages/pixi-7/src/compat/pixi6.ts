@@ -1,5 +1,6 @@
 // `pixi7({ compat })` with this module's default export translates the PixiJS 6 props that PixiJS 7 dropped.
 import type { FederatedPointerEvent } from "pixi.js";
+
 import warning from "../warning";
 
 type Rename = (value: unknown) => Record<string, unknown>;

@@ -1,8 +1,8 @@
-import type { PixiApplication } from "./types";
-import React from "react";
-import { useContext, useEffect, useLayoutEffect, useRef } from "react";
+import React, { useContext, useEffect, useLayoutEffect, useRef } from "react";
+
 import { AppContext } from "./AppProvider";
 import invariant from "./invariant";
+import type { PixiApplication } from "./types";
 
 export function usePixiApp(): PixiApplication {
   const app = useContext(AppContext);

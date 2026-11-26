@@ -1,6 +1,7 @@
 import type { Pixi3dAdapter } from "react-pixi-fiber";
-import { createFakeNode, point } from "./fakePixiAdapter";
+
 import type { FakeNode } from "./fakePixiAdapter";
+import { createFakeNode, point } from "./fakePixiAdapter";
 
 function vector(x = 0, y = 0, z = 0) {
   return {

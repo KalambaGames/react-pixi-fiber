@@ -1,6 +1,4 @@
 import invariant from "./invariant";
-import warning from "./warning";
-import { registerComponent } from "./registry";
 import {
   customProperties,
   customStandardNames,
@@ -8,7 +6,9 @@ import {
   PropertyInfoRecord,
   type PropertyInfoRecordConstructor,
 } from "./PixiProperty";
+import { registerComponent } from "./registry";
 import type { PIXIComponentBehavior, PIXIComponentProps, PixiComponent } from "./types";
+import warning from "./warning";
 
 // Register a component. Returns `type`, which is the tag to render (a component in the type system).
 export function PIXIComponent<T extends object, P = {}>(

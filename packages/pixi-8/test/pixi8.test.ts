@@ -1,8 +1,10 @@
-import { describe, it, expect, vi } from "vitest";
 import * as PIXI from "pixi.js";
-import { DISPLAY_OBJECT_TAGS, FILTER_TAGS, TAGS } from "../../react-pixi-fiber/src/tags";
+import { describe, expect, it, vi } from "vitest";
+
 import { configure, PIXIComponent } from "react-pixi-fiber";
+
 import { createInstance } from "../../react-pixi-fiber/src/ReactPixiFiberComponent";
+import { DISPLAY_OBJECT_TAGS, FILTER_TAGS, TAGS } from "../../react-pixi-fiber/src/tags";
 import { factories } from "../src/factories";
 import pixi8, {
   allClasses,

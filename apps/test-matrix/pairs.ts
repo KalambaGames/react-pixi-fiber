@@ -1,9 +1,10 @@
+import type { PixiAdapter, ReactAdapter } from "react-pixi-fiber";
 import pixi4 from "@react-pixi-fiber/pixi-4";
 import pixi5 from "@react-pixi-fiber/pixi-5";
 import pixi6 from "@react-pixi-fiber/pixi-6";
 import pixi7 from "@react-pixi-fiber/pixi-7";
 import pixi8 from "@react-pixi-fiber/pixi-8";
-import type { PixiAdapter, ReactAdapter } from "react-pixi-fiber";
+
 import { smokeSuite } from "../../packages/react-pixi-fiber/test/utils/smoke";
 
 // No tsconfig here: every PixiJS adapter augments the same core types, so one program cannot type-check all five.

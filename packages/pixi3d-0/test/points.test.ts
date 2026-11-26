@@ -1,5 +1,6 @@
-import { describe, expect, it } from "vitest";
 import { Camera3D, Mesh3D, Sprite3D } from "@pixi/3d";
+import { describe, expect, it } from "vitest";
+
 import { clonePoint, isPoint, setPoint } from "../src/points";
 
 const coordinates = (point: { x: number; y: number; z: number }) => [point.x, point.y, point.z];

@@ -2,6 +2,7 @@
 import "@pixi/layout";
 import { LayoutContainer } from "@pixi/layout/components";
 import { useState } from "react";
+
 import { PIXIComponent, Stage, Text } from "react-pixi-fiber";
 
 // A container that draws the background color and the rounded corners of its layout. The `layout` prop takes the

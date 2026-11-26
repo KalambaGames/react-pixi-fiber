@@ -1,16 +1,8 @@
 import "@react-pixi-fiber/pixi-6"; // loads the PixiInstances augmentation
-import {
-  type InteractionCompatibility,
-  type InteractionEventCompatibility,
-  type InteractiveComponent,
-  type PixiTypeFallback,
-  SimpleMesh,
-  SimplePlane,
-  SimpleRope,
-  NineSlicePlane as Pixi6NineSlicePlane,
-} from "@react-pixi-fiber/pixi-6";
+
 import * as PIXI from "pixi.js";
 import * as React from "react";
+
 import type {
   InteractiveComponent as CoreInteractiveComponent,
   CustomDisplayObject,
@@ -25,27 +17,37 @@ import type {
 } from "react-pixi-fiber";
 import {
   AnimatedSprite,
+  applyProps,
   BitmapText,
   BlurFilter,
   Container,
+  CustomPIXIComponent,
+  CustomPIXIProperty,
+  createStageClass,
   Graphics,
+  getInstanceTag,
   MeshRope,
   NineSlicePlane,
   NineSliceSprite,
   ParticleContainer,
+  PIXIComponent,
+  PIXIFilter,
+  PIXIProperty,
   Sprite,
   Stage,
   Text,
   TilingSprite,
-  CustomPIXIComponent,
-  CustomPIXIProperty,
-  PIXIComponent,
-  PIXIFilter,
-  PIXIProperty,
-  applyProps,
-  getInstanceTag,
-  createStageClass,
 } from "react-pixi-fiber";
+import {
+  type InteractionCompatibility,
+  type InteractionEventCompatibility,
+  type InteractiveComponent,
+  NineSlicePlane as Pixi6NineSlicePlane,
+  type PixiTypeFallback,
+  SimpleMesh,
+  SimplePlane,
+  SimpleRope,
+} from "@react-pixi-fiber/pixi-6";
 
 // @ts-expect-error x is a number on PixiJS 6; if this line is unused, the augmentation did not merge
 const WrongProp = <Sprite x="1" />;

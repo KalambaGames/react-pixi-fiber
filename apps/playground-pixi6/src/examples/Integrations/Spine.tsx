@@ -1,8 +1,10 @@
 import { AtlasAttachmentLoader, SkeletonJson } from "@pixi-spine/runtime-4.1";
-import { type ISkeletonData, Spine as PixiSpine, TextureAtlas } from "pixi-spine";
 import { BaseTexture, Point } from "pixi.js";
+import { type ISkeletonData, Spine as PixiSpine, TextureAtlas } from "pixi-spine";
 import { useRef } from "react";
+
 import { PIXIComponent, Stage, Text } from "react-pixi-fiber";
+
 import atlasText from "./assets/spineboy.atlas?raw";
 import skeletonJson from "./assets/spineboy.json?raw";
 import spineboyPng from "./assets/spineboy.png";

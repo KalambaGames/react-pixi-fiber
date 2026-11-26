@@ -1,8 +1,10 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import React from "react";
 import * as PIXI from "pixi.js";
-import react18 from "@react-pixi-fiber/react-18";
+import React from "react";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+
 import { configure, ParticleContainer, render } from "react-pixi-fiber";
+import react18 from "@react-pixi-fiber/react-18";
+
 import pixi7 from "../src/index";
 
 describe("constructor arguments changed after mount", () => {

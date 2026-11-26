@@ -1,9 +1,11 @@
-import react19 from "@react-pixi-fiber/react-19";
+import { createRoot } from "react-dom/client";
+
+import { configure } from "react-pixi-fiber";
 import pixi7 from "@react-pixi-fiber/pixi-7";
 import compat from "@react-pixi-fiber/pixi-7/compat/pixi6";
-import { createRoot } from "react-dom/client";
-import { configure } from "react-pixi-fiber";
+import react19 from "@react-pixi-fiber/react-19";
 import { startRunner } from "playground-shell/runner";
+
 import { lazyModules, modules } from "../modules";
 
 configure({ react: react19(), pixi: pixi7({ compat }) });

@@ -1,5 +1,6 @@
 import { TextStyle } from "pixi.js";
 import { useState } from "react";
+
 import { BitmapText, Stage } from "react-pixi-fiber";
 
 const style = new TextStyle({ fill: "white", fontFamily: "Arial", fontSize: 32 });

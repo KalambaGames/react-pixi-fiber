@@ -1,7 +1,8 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+
+import { setValueForProperty } from "../src/PixiPropertyOperations";
 import * as ReactPixiFiberComponent from "../src/ReactPixiFiberComponent";
 import { createRegisteredInstance, normalizeBehavior, registerComponent } from "../src/registry";
-import { setValueForProperty } from "../src/PixiPropertyOperations";
 
 vi.mock("../src/PixiPropertyOperations", async importOriginal => ({
   ...(await importOriginal()),

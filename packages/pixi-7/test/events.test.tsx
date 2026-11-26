@@ -1,9 +1,11 @@
-import { describe, it, expect, vi } from "vitest";
+import * as PIXI from "pixi.js";
 import React from "react";
 import renderer, { act } from "react-test-renderer";
-import * as PIXI from "pixi.js";
+import { describe, expect, it, vi } from "vitest";
+
 import { configure, Sprite, Stage } from "react-pixi-fiber";
 import react18 from "@react-pixi-fiber/react-18";
+
 import pixi7 from "../src/index";
 
 async function mount(element: React.ReactElement) {

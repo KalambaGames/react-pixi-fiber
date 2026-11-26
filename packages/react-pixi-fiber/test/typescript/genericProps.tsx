@@ -2,6 +2,7 @@
 import "@react-pixi-fiber/pixi-6";
 import type * as PIXI from "pixi.js";
 import * as React from "react";
+
 import type { PIXIComponentProps, Props } from "react-pixi-fiber";
 import { Sprite } from "react-pixi-fiber";
 

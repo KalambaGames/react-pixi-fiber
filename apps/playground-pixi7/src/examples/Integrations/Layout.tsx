@@ -1,5 +1,6 @@
-import { Layout as PixiLayout, type LayoutOptions } from "@pixi/layout";
+import { type LayoutOptions, Layout as PixiLayout } from "@pixi/layout";
 import { useState } from "react";
+
 import { PIXIComponent, Stage } from "react-pixi-fiber";
 
 type LayoutProps = { options: LayoutOptions; parentHeight: number; parentWidth: number };

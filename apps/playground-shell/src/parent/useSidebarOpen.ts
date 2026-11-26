@@ -1,4 +1,5 @@
 import { useState } from "react";
+
 import { browserStorage } from "../storage";
 
 const KEY = "playground:sidebar";

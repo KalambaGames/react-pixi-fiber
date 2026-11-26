@@ -1,11 +1,13 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import * as PIXI3D from "@pixi/3d";
+import * as PIXI from "pixi.js";
 import React, { createRef, Suspense } from "react";
 import { act } from "react-test-renderer";
-import * as PIXI from "pixi.js";
-import * as PIXI3D from "@pixi/3d";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+
+import { configure, PIXIComponent, render, unmount } from "react-pixi-fiber";
 import pixi8 from "@react-pixi-fiber/pixi-8";
 import react18 from "@react-pixi-fiber/react-18";
-import { configure, PIXIComponent, render, unmount } from "react-pixi-fiber";
+
 import pixi3d0, { Camera3D, Container3D, Mesh3D, View3D } from "../src/index";
 import { viewOf } from "../src/view";
 

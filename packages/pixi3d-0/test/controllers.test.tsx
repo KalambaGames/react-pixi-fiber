@@ -1,15 +1,17 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import React, { createRef, Suspense, useLayoutEffect } from "react";
-import { act } from "react-test-renderer";
-import * as PIXI from "pixi.js";
 import * as PIXI3D from "@pixi/3d";
 import { FPSCamera as PixiFPSCamera, OrbitCamera as PixiOrbitCamera } from "@pixi/3d/extras";
+import * as PIXI from "pixi.js";
+import React, { createRef, Suspense, useLayoutEffect } from "react";
+import { act } from "react-test-renderer";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+
+import { Container, configure, render, unmount } from "react-pixi-fiber";
 import pixi8 from "@react-pixi-fiber/pixi-8";
 import react18 from "@react-pixi-fiber/react-18";
-import { configure, Container, render, unmount } from "react-pixi-fiber";
-import pixi3d0, { Camera3D, Container3D, FPSCamera, OrbitCamera, View3D } from "../src/index";
-import type { ControllerNode } from "../src/index";
+
 import { controllerBehavior } from "../src/controllers";
+import type { ControllerNode } from "../src/index";
+import pixi3d0, { Camera3D, Container3D, FPSCamera, OrbitCamera, View3D } from "../src/index";
 
 describe("camera controllers", () => {
   let root: PIXI.Container;

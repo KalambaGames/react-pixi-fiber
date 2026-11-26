@@ -1,9 +1,11 @@
 // @vitest-environment jsdom
-import * as jsxRuntime from "react/jsx-runtime";
+
 import * as React from "react";
 import { act } from "react";
+import * as jsxRuntime from "react/jsx-runtime";
 import { createRoot } from "react-dom/client";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+
 import { canRun, compile, createModuleRequire, loadImports, startRunner } from "../src/runner";
 
 function evaluate(source: string, modules: Record<string, unknown>) {

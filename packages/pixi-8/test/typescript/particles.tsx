@@ -1,7 +1,10 @@
 // Type-checked by `check-types`, not run.
-import React from "react";
+
 import * as PIXI from "pixi.js";
+import React from "react";
+
 import { ParticleContainer } from "react-pixi-fiber";
+
 import { Particle, type ParticleContainerProps } from "../../src/index";
 
 const texture = PIXI.Texture.WHITE;

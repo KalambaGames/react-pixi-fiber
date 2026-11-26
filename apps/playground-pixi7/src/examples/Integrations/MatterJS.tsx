@@ -2,7 +2,9 @@ import Matter from "matter-js";
 import type { Sprite as PixiSprite } from "pixi.js";
 import { BaseTexture, Point, SCALE_MODES, Texture } from "pixi.js";
 import { useEffect, useMemo, useRef, useState } from "react";
+
 import { Sprite, Stage, Text, usePixiTicker } from "react-pixi-fiber";
+
 // useSpritesheet source, frame names and rectangles: see the Features / Spritesheet example.
 import bunnysData from "./assets/bunnys.json";
 import bunnys from "./assets/bunnys.png";

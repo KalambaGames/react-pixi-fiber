@@ -11,6 +11,7 @@ import {
   Sparkles,
 } from "lucide-react";
 import { useState } from "react";
+
 import { buildHash } from "../share";
 import { versionHref, versions } from "../versions";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "./components/ui/collapsible";

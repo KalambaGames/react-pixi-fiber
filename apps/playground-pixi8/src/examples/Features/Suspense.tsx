@@ -1,7 +1,9 @@
 // React 19 or later: use() reads the loading promise.
 import { Assets, type Texture } from "pixi.js";
 import React, { use } from "react";
+
 import { Container, Sprite, Stage } from "react-pixi-fiber";
+
 import bunnys from "./assets/bunnys.png";
 
 // Suspends until the image is downloaded, so the Suspense fallback covers the whole load.

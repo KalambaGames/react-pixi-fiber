@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+
 import { versionHref, versions } from "../src/versions";
 
 const [pixi4, pixi5, pixi6, pixi7, pixi8] = versions;

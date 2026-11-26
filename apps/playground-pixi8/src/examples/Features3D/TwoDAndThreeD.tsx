@@ -1,7 +1,8 @@
 import { Material3D, TorusKnotGeometry } from "@pixi/3d";
-import { Camera3D, DirectionalLight, Mesh3D, OrbitCamera, View3D } from "@react-pixi-fiber/pixi3d-0";
 import { useState } from "react";
+
 import { Stage, Text, usePixiTicker } from "react-pixi-fiber";
+import { Camera3D, DirectionalLight, Mesh3D, OrbitCamera, View3D } from "@react-pixi-fiber/pixi3d-0";
 
 const geometry = new TorusKnotGeometry();
 const material = new Material3D();

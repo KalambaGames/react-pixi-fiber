@@ -1,8 +1,10 @@
 import type { Graphics as PixiGraphics, Sprite as PixiSprite, Text as PixiText } from "pixi.js";
 import { BaseTexture, Point, SCALE_MODES, type Texture } from "pixi.js";
 import { useEffect, useMemo, useRef } from "react";
-import { Container, Graphics, Sprite, Stage, Text, usePixiTicker } from "react-pixi-fiber";
 import { create } from "zustand";
+
+import { Container, Graphics, Sprite, Stage, Text, usePixiTicker } from "react-pixi-fiber";
+
 // useSpritesheet source, frame names and rectangles: see the Features / Spritesheet example.
 import bunnysData from "./assets/bunnys.json";
 import bunnys from "./assets/bunnys.png";

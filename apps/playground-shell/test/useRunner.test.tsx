@@ -2,8 +2,9 @@
 import { act } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+
 import { Preview } from "../src/parent/Preview";
-import { useRunner, type ConsoleEntry } from "../src/parent/useRunner";
+import { type ConsoleEntry, useRunner } from "../src/parent/useRunner";
 
 declare global {
   var IS_REACT_ACT_ENVIRONMENT: boolean;

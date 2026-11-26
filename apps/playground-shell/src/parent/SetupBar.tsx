@@ -1,5 +1,6 @@
 import { ChevronRight, Copy, Plug } from "lucide-react";
 import { toast } from "sonner";
+
 import { Button } from "./components/ui/button";
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "./components/ui/collapsible";
 import { Editor } from "./Editor";

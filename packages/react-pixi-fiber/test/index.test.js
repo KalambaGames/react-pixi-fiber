@@ -1,12 +1,13 @@
-import { describe, it, expect } from "vitest";
+import { describe, expect, it } from "vitest";
+
+import { AppContext, AppProvider, withApp } from "../src/AppProvider";
+import { usePixiApp, usePixiTicker } from "../src/hooks";
 import * as ReactPixiFiber from "../src/index";
 import { CustomPIXIComponent, CustomPIXIProperty, PIXIComponent, PIXIProperty } from "../src/PIXIComponent";
+import { applyDisplayObjectProps, applyProps } from "../src/ReactPixiFiberComponent";
 import { getInstanceTag } from "../src/registry";
-import { AppContext, AppProvider, withApp } from "../src/AppProvider";
 import Stage, { createStageClass } from "../src/Stage";
 import { TAGS } from "../src/tags";
-import { usePixiApp, usePixiTicker } from "../src/hooks";
-import { applyDisplayObjectProps, applyProps } from "../src/ReactPixiFiberComponent";
 
 describe("ReactPixiFiber public API", () => {
   it("should match snapshot", () => {

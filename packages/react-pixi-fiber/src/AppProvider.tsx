@@ -1,5 +1,6 @@
-import React, { createContext, useContext } from "react";
 import type { ComponentType, ReactNode } from "react";
+import React, { createContext, useContext } from "react";
+
 import type { PixiApplication } from "./types";
 import warning from "./warning";
 

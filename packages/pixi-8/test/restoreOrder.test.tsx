@@ -1,8 +1,10 @@
-import { describe, it, expect, beforeEach } from "vitest";
-import React from "react";
 import * as PIXI from "pixi.js";
-import react18 from "@react-pixi-fiber/react-18";
+import React from "react";
+import { beforeEach, describe, expect, it } from "vitest";
+
 import { configure, render, Sprite } from "react-pixi-fiber";
+import react18 from "@react-pixi-fiber/react-18";
+
 import pixi8 from "../src/index";
 
 // The texture is 1 by 1, so a width of 100 is a scale of 100, and a restored scale is a width of 1.

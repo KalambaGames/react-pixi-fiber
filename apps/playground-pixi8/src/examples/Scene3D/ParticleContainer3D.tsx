@@ -1,14 +1,15 @@
 import type { ParticleBlendMode, ParticleContainer3D as PixiParticleContainer3D } from "@pixi/3d";
-import { Camera3D, DirectionalLight, OrbitCamera, ParticleContainer3D, View3D } from "@react-pixi-fiber/pixi3d-0";
 import { useControls } from "leva";
 import { type Texture, TextureSource } from "pixi.js";
 import { useMemo, useRef } from "react";
+
 import { Stage, usePixiTicker } from "react-pixi-fiber";
+import { Camera3D, DirectionalLight, OrbitCamera, ParticleContainer3D, View3D } from "@react-pixi-fiber/pixi3d-0";
 
 import bunnysData from "./assets/bunnys.json";
 import bunnys from "./assets/bunnys.png";
-import { useSpritesheet } from "./hooks/useSpritesheet";
 import { Floor, fog } from "./components/Floor";
+import { useSpritesheet } from "./hooks/useSpritesheet";
 
 TextureSource.defaultOptions.scaleMode = "nearest";
 

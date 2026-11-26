@@ -1,4 +1,5 @@
 import { mountPlayground } from "playground-shell/parent";
+
 import { examples } from "./examples/index";
 
 const root = document.getElementById("root");

@@ -1,7 +1,9 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import React, { Component, StrictMode, Suspense, useState } from "react";
-import react18, { strictModeBit } from "../src/index";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+
 import type { HostOps } from "react-pixi-fiber";
+
+import react18, { strictModeBit } from "../src/index";
 
 // Wraps the real reconciler so a test can see what reaches updateContainer.
 const { updateContainer } = vi.hoisted(() => ({ updateContainer: vi.fn() }));

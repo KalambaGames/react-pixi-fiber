@@ -1,10 +1,12 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import warning from "../src/warning";
+// biome-ignore assist/source/organizeImports: the hook module must load before the mock of configure, or it gets the real getStackAddendum
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+
 import * as ReactPixiFiberUnknownPropertyHook from "../src/ReactPixiFiberUnknownPropertyHook";
-import { customStandardNames, getCustomPropertyInfo, shouldRemoveAttributeWithWarning } from "../src/PixiProperty";
 import { getPixiAdapter } from "../src/configure";
+import { customStandardNames, getCustomPropertyInfo, shouldRemoveAttributeWithWarning } from "../src/PixiProperty";
 import { registerAdapterBehaviors, registerComponent } from "../src/registry";
 import { TAGS } from "../src/tags";
+import warning from "../src/warning";
 
 vi.mock("../src/warning", () => ({ default: vi.fn() }));
 vi.mock("../src/PixiProperty", async importOriginal => ({

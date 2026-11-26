@@ -1,4 +1,5 @@
 import type * as PIXI from "pixi.js";
+
 import type { FilterProps, InteractionEventTypes, Props } from "react-pixi-fiber";
 
 // Importing this package fills the core's augmentable interfaces with the PixiJS 6 classes.

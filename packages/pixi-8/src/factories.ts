@@ -1,5 +1,7 @@
 import type * as PIXI from "pixi.js";
+
 import type { Behavior } from "react-pixi-fiber";
+
 import type { Pixi8Classes } from "./types";
 
 export type Pixi8Tag = Exclude<keyof Pixi8Classes, "Application">;

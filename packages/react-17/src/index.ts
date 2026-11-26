@@ -1,5 +1,6 @@
 import React from "react";
 import Reconciler from "react-reconciler";
+
 import type { HostOps, ReactAdapter, Renderer } from "react-pixi-fiber";
 
 // https://github.com/facebook/react/blob/v17.0.2/packages/react-reconciler/src/ReactTypeOfMode.js: StrictMode

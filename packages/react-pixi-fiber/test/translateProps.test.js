@@ -1,6 +1,7 @@
-import { describe, it, expect, vi } from "vitest";
-import { createInstance, diffProperties, setInitialProperties } from "../src/ReactPixiFiberComponent";
+import { describe, expect, it, vi } from "vitest";
+
 import { validateProperties } from "../src/hostOps";
+import { createInstance, diffProperties, setInitialProperties } from "../src/ReactPixiFiberComponent";
 import { registerAdapterBehaviors, registerComponent } from "../src/registry";
 import { createFakeNode, fakePixiAdapter } from "./utils/fakePixiAdapter";
 

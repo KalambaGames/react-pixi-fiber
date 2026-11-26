@@ -1,8 +1,10 @@
-import PixiViewport from "pixi-viewport";
 import type { Application, Sprite as PixiSprite } from "pixi.js";
 import { Point, SCALE_MODES, settings, type Texture } from "pixi.js";
+import PixiViewport from "pixi-viewport";
 import { useEffect, useMemo, useRef } from "react";
+
 import { PIXIComponent, Sprite, Stage, Text, usePixiApp, usePixiTicker } from "react-pixi-fiber";
+
 // useSpritesheet source, frame names and rectangles: see the Features / Spritesheet example.
 import bunnysData from "./assets/bunnys.json";
 import bunnys from "./assets/bunnys.png";

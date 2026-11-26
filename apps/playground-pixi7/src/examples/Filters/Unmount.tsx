@@ -2,7 +2,9 @@
 import { useControls } from "leva";
 import { BaseTexture, Point, SCALE_MODES, type Texture } from "pixi.js";
 import { useMemo, useState } from "react";
+
 import { BlurFilter, Container, type InstanceOf, Sprite, Stage, Text } from "react-pixi-fiber";
+
 // useSpritesheet source, frame names and rectangles: see the Features / Spritesheet example.
 import bunnysData from "./assets/bunnys.json";
 import bunnys from "./assets/bunnys.png";

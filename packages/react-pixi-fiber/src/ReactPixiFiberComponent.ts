@@ -1,8 +1,9 @@
 // Based on: https://github.com/facebook/react/blob/27535e7bfcb63e8a4d65f273311e380b4ca12eff/packages/react-dom/src/client/ReactDOMFiberComponent.js
-import invariant from "./invariant";
-import warning from "./warning";
+
 import { getPixiAdapter, getTagDefaults } from "./configure";
 import { heldChildren } from "./heldChildren";
+import invariant from "./invariant";
+import { setValueForProperty } from "./PixiPropertyOperations";
 import {
   createRegisteredInstance,
   getAdapterComponent,
@@ -11,7 +12,7 @@ import {
   resolveComponent,
   resolveTag,
 } from "./registry";
-import { setValueForProperty } from "./PixiPropertyOperations";
+import warning from "./warning";
 
 type Instance = Record<string, any>;
 type Props = Record<string, any>;

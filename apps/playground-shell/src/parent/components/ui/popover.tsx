@@ -1,8 +1,9 @@
 "use client";
 
-import * as React from "react";
-import { cn } from "../../lib/utils";
 import { Popover as PopoverPrimitive } from "radix-ui";
+import * as React from "react";
+
+import { cn } from "../../lib/utils";
 
 function Popover({ ...props }: React.ComponentProps<typeof PopoverPrimitive.Root>) {
   return <PopoverPrimitive.Root data-slot="popover" {...props} />;
@@ -50,4 +51,4 @@ function PopoverDescription({ className, ...props }: React.ComponentProps<"p">) 
   return <p data-slot="popover-description" className={cn("text-muted-foreground", className)} {...props} />;
 }
 
-export { Popover, PopoverTrigger, PopoverContent, PopoverAnchor, PopoverHeader, PopoverTitle, PopoverDescription };
+export { Popover, PopoverAnchor, PopoverContent, PopoverDescription, PopoverHeader, PopoverTitle, PopoverTrigger };

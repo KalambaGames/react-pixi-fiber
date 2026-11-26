@@ -1,12 +1,14 @@
 import { CubeGeometry, Material3D, SphereGeometry } from "@pixi/3d";
-import { Camera3D, DirectionalLight, Mesh3D, OrbitCamera, View3D } from "@react-pixi-fiber/pixi3d-0";
 import { useControls } from "leva";
 import {
-  AdjustmentFilter as PixiAdjustmentFilter,
   type AdjustmentFilterOptions,
+  AdjustmentFilter as PixiAdjustmentFilter,
   PixelateFilter as PixiPixelateFilter,
 } from "pixi-filters";
+
 import { PIXIFilter, Stage } from "react-pixi-fiber";
+import { Camera3D, DirectionalLight, Mesh3D, OrbitCamera, View3D } from "@react-pixi-fiber/pixi3d-0";
+
 import { Floor, fog } from "./components/Floor";
 
 const AdjustmentFilter = PIXIFilter(

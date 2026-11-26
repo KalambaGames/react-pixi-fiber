@@ -1,7 +1,9 @@
-import { describe, it, expect } from "vitest";
 import * as PIXI from "pixi.js";
-import * as PixiProperty from "../src/PixiProperty";
+import { describe, expect, it } from "vitest";
+
 import pixi6 from "@react-pixi-fiber/pixi-6";
+
+import * as PixiProperty from "../src/PixiProperty";
 
 const adapter = pixi6();
 

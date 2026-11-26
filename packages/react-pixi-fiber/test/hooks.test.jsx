@@ -1,10 +1,11 @@
-import { describe, it, expect, vi } from "vitest";
+import * as PIXI from "pixi.js";
 import React from "react";
 import renderer from "react-test-renderer";
-import * as PIXI from "pixi.js";
-import { Container } from "../src/index";
-import { usePixiApp, usePixiTicker } from "../src/hooks";
+import { describe, expect, it, vi } from "vitest";
+
 import { AppContext } from "../src/AppProvider";
+import { usePixiApp, usePixiTicker } from "../src/hooks";
+import { Container } from "../src/index";
 import { render } from "../src/render";
 
 // react-test-renderer is a secondary renderer, so the pixi renderer must be primary

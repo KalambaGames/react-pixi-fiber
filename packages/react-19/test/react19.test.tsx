@@ -1,21 +1,23 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import React, {
   Activity,
   Component,
   Fragment,
-  startTransition,
   StrictMode,
   Suspense,
+  startTransition,
   useState,
   ViewTransition,
 } from "react";
-import react19, { strictModeBit } from "../src/index";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+
 import type { HostOps, PixiFragmentInstance } from "react-pixi-fiber";
+
 import {
   commitNewChildToFragmentInstance,
   createFragmentInstance,
   deleteChildFromFragmentInstance,
 } from "../../react-pixi-fiber/src/hostOps";
+import react19, { strictModeBit } from "../src/index";
 
 // Wraps the real reconciler so a test can see what reaches updateContainerSync.
 const { reconcilers, startViewTransitionSpies, updateContainerSync } = vi.hoisted(() => ({

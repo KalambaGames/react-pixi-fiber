@@ -1,5 +1,6 @@
 import { GraphicsContext, type Graphics as PixiGraphics } from "pixi.js";
 import { useMemo } from "react";
+
 import { Graphics, Stage } from "react-pixi-fiber";
 
 // The adapter has no draw prop for PixiJS 8, so the ref callback draws the shapes.

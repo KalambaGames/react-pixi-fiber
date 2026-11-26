@@ -1,10 +1,12 @@
-import { describe, expect, it } from "vitest";
-import React from "react";
-import * as PIXI from "pixi.js";
 import * as PIXI3D from "@pixi/3d";
+import * as PIXI from "pixi.js";
+import React from "react";
+import { describe, expect, it } from "vitest";
+
+import { Container, configure, render, unmount } from "react-pixi-fiber";
 import pixi8 from "@react-pixi-fiber/pixi-8";
 import react18 from "@react-pixi-fiber/react-18";
-import { configure, Container, render, unmount } from "react-pixi-fiber";
+
 import pixi3d0, { Mesh3D, View3D } from "../src/index";
 
 describe("pixi3d0", () => {

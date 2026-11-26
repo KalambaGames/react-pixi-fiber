@@ -1,12 +1,14 @@
-import { afterEach, beforeEach, describe, it, expect, vi } from "vitest";
-import { createElement } from "react";
-import { createRoot } from "react-dom/client";
-import type { Root } from "react-dom/client";
-import { act } from "react-test-renderer";
 import * as PIXI from "pixi.js";
 import { Application } from "pixi.js";
-import react18 from "@react-pixi-fiber/react-18";
+import { createElement } from "react";
+import type { Root } from "react-dom/client";
+import { createRoot } from "react-dom/client";
+import { act } from "react-test-renderer";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+
 import { configure, Sprite, Stage } from "react-pixi-fiber";
+import react18 from "@react-pixi-fiber/react-18";
+
 import pixi8, { pixi8WithClasses } from "../src/index";
 
 it("PixiJS 8 Application.init resolves under jsdom with the WebGL mock", async () => {

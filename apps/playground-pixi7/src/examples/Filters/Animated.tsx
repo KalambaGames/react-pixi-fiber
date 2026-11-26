@@ -1,8 +1,11 @@
 // Every filter and every parameter: https://pixijs.io/filters/examples/
-import { ShockwaveFilter as PixiShockwaveFilter } from "pixi-filters";
+
 import { BaseTexture, Rectangle, SCALE_MODES, type Texture } from "pixi.js";
+import { ShockwaveFilter as PixiShockwaveFilter } from "pixi-filters";
 import { useMemo, useRef } from "react";
+
 import { Container, PIXIFilter, Sprite, Stage, Text, usePixiTicker } from "react-pixi-fiber";
+
 // useSpritesheet source, frame names and rectangles: see the Features / Spritesheet example.
 import bunnysData from "./assets/bunnys.json";
 import bunnys from "./assets/bunnys.png";

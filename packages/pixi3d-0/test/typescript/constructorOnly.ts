@@ -1,4 +1,5 @@
 import type * as PIXI3D from "@pixi/3d";
+
 import { CONSTRUCTOR_ONLY } from "../../src/behaviors";
 
 // An option is constructor-only when the instance has no writable member of that name.

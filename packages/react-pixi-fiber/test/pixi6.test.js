@@ -1,11 +1,12 @@
-import { describe, it, expect, vi, afterEach } from "vitest";
-import React from "react";
 import * as PIXI from "pixi.js";
+import React from "react";
 import { act } from "react-test-renderer";
-import { TAGS } from "../src/tags";
-import { PIXIComponent, applyProps, getInstanceTag, render, unmount } from "../src/index";
+import { afterEach, describe, expect, it, vi } from "vitest";
+
+import { applyProps, getInstanceTag, PIXIComponent, render, unmount } from "../src/index";
 import { createInstance } from "../src/ReactPixiFiberComponent";
 import { validateProperties } from "../src/ReactPixiFiberUnknownPropertyHook";
+import { TAGS } from "../src/tags";
 
 // The core against pixi-6, which test/setup.ts configures. packages/pixi-6/test covers the adapter's own data.
 const texture = PIXI.Texture.WHITE;

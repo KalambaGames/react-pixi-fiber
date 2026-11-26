@@ -1,12 +1,12 @@
 import { createRoot } from "react-dom/client";
 import "./index.css";
-import { Playground, type Example } from "./Playground";
+import { type Example, Playground } from "./Playground";
 
 export { ConsolePanel } from "./ConsolePanel";
+export type { Example, ExampleGroup } from "./Playground";
 export { Preview } from "./Preview";
 export { setup } from "./setup";
-export { useRunner, type ConsoleEntry } from "./useRunner";
-export type { Example, ExampleGroup } from "./Playground";
+export { type ConsoleEntry, useRunner } from "./useRunner";
 
 export function mountPlayground({
   examples,

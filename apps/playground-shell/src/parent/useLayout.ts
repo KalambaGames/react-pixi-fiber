@@ -1,4 +1,5 @@
 import { useState } from "react";
+
 import { browserStorage } from "../storage";
 
 export type Layout = "both" | "editor" | "preview" | "stacked";

@@ -1,8 +1,10 @@
-import { describe, it, expect, vi, beforeAll, afterEach } from "vitest";
 import React, { Activity } from "react";
+import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
+
 import { configure, PIXIComponent, render, unmount } from "react-pixi-fiber";
-import react19 from "../src/index";
+
 import { createFakeNode, fakePixiAdapter } from "../../react-pixi-fiber/test/utils/fakePixiAdapter";
+import react19 from "../src/index";
 
 // The real core on the real reconciler. The core warns once for each module instance, so run one test alone (`-t`) to
 // see it fail.

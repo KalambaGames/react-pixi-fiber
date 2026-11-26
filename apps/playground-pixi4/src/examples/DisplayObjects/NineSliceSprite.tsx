@@ -1,5 +1,6 @@
 import { Graphics, SCALE_MODES, type Texture } from "pixi.js";
 import { useEffect, useState } from "react";
+
 import { NineSliceSprite, Stage, usePixiApp } from "react-pixi-fiber";
 
 // PixiJS 4 class: mesh.NineSlicePlane

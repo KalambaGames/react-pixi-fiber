@@ -1,9 +1,11 @@
-import { describe, it, expect, vi, afterEach } from "vitest";
+import * as PIXI from "pixi.js";
 import React, { StrictMode } from "react";
 import renderer, { act } from "react-test-renderer";
-import * as PIXI from "pixi.js";
+import { afterEach, describe, expect, it, vi } from "vitest";
+
+import { Container, configure, Sprite, Stage } from "react-pixi-fiber";
 import react18 from "@react-pixi-fiber/react-18";
-import { configure, Container, Sprite, Stage } from "react-pixi-fiber";
+
 import pixi8 from "../src/index";
 
 afterEach(() => vi.restoreAllMocks());

@@ -1,6 +1,8 @@
 import { type Texture } from "pixi.js";
 import { Fragment, useMemo, useState } from "react";
+
 import { AnimatedSprite, Stage } from "react-pixi-fiber";
+
 // useSpritesheet source, frame names and rectangles: see the Features / Spritesheet example.
 import bunnysData from "./assets/bunnys.json";
 import bunnys from "./assets/bunnys.png";

@@ -1,9 +1,11 @@
-import { describe, it, expect } from "vitest";
+import * as PIXI from "pixi.js";
 import React from "react";
 import renderer, { act } from "react-test-renderer";
-import * as PIXI from "pixi.js";
-import react18 from "@react-pixi-fiber/react-18";
+import { describe, expect, it } from "vitest";
+
 import { AlphaFilter, BlurFilter, configure, DisplacementFilter, Sprite, Stage } from "react-pixi-fiber";
+import react18 from "@react-pixi-fiber/react-18";
+
 import pixi8 from "../src/index";
 
 // Renders `child` as the filter of a Sprite and returns the filter and a function that renders the next child.

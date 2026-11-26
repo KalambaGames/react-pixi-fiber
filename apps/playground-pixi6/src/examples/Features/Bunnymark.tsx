@@ -1,14 +1,16 @@
 import * as PIXI from "pixi.js";
 import { Fragment, useCallback, useLayoutEffect, useMemo, useState } from "react";
+
 import {
-  type PixiAppProperties,
   ParticleContainer,
+  type PixiAppProperties,
   Sprite,
   Stage,
   Text,
   usePixiTicker,
   withApp,
 } from "react-pixi-fiber";
+
 // useSpritesheet source, frame names and rectangles: see the Features / Spritesheet example.
 import bunnysData from "./assets/bunnys.json";
 import bunnysImage from "./assets/bunnys.png";

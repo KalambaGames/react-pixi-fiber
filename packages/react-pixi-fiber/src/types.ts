@@ -1,9 +1,10 @@
 import type * as React from "react";
-import type { Behavior } from "./registry";
+
 // Declared in index.ts, not here: `declare module "react-pixi-fiber" { interface PixiInstances … }` merges only with an
 // interface declared in the module itself, not with one reached through `export * from "./types"` (the reason
 // express augmentations target express-serve-static-core). index.ts declares the three empty interfaces and types.ts imports them.
 import type { PixiExtraProps, PixiInstances, PixiTypes } from "./index";
+import type { Behavior } from "./registry";
 
 /**
  * PixiJS types, filled by a PixiJS adapter's augmentation, with loose fallbacks

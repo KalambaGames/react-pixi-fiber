@@ -1,6 +1,7 @@
 import { type Fog, Material3D, PlaneGeometry } from "@pixi/3d";
-import { Mesh3D } from "@react-pixi-fiber/pixi3d-0";
 import { BufferImageSource, Matrix, Texture } from "pixi.js";
+
+import { Mesh3D } from "@react-pixi-fiber/pixi3d-0";
 
 // The floor is 400 units across, so it reaches past the horizon. One cell of the checker is one unit.
 const size = 400;

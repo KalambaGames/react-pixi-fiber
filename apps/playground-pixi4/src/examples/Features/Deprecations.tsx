@@ -1,12 +1,14 @@
+import * as PIXI from "pixi.js";
+
 import {
   Container,
   CustomPIXIComponent,
   CustomPIXIProperty,
+  createStageClass,
   NineSlicePlane,
   Sprite,
-  createStageClass,
 } from "react-pixi-fiber";
-import * as PIXI from "pixi.js";
+
 import bunnys from "./assets/bunnys.png";
 
 type LegacyRectProps = {
