@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 
 This project adheres to [Semantic Versioning](http://semver.org/). From 3.0.0 on, [Changesets](https://github.com/changesets/changesets) writes the entries from `.changeset/` at release; the entries up to 2.x follow [Keep a Changelog](http://keepachangelog.com/).
 
+## 3.1.1
+
+### Patch Changes
+
+- [#435](https://github.com/KalambaGames/react-pixi-fiber/pull/435) [`0184943`](https://github.com/KalambaGames/react-pixi-fiber/commit/0184943e8c51edd170da8de54bcfb63d7e0c34c0) Thanks [@kozickikarol](https://github.com/kozickikarol)! - The core declares `@types/react` as an optional peer dependency, with the same range as `react`. With pnpm, the typings of the core now use the `@types/react` of the app. Before, they used the copy that pnpm hoists, which can be for a different React major. For example, an app on React 19 in a workspace that also has React 18 got a type error for `children`. The error was `Type 'bigint' is not assignable to type 'ReactNode'`. A project without `@types/react` needs no change.
+
 ## 3.1.0
 
 ### Minor Changes
