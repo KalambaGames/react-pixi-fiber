@@ -2,7 +2,6 @@ import { describe, it, expect, vi } from "vitest";
 import * as PIXI from "pixi.js";
 import { DISPLAY_OBJECT_TAGS, FILTER_TAGS, TAGS } from "../../react-pixi-fiber/src/tags";
 import { configure } from "../../react-pixi-fiber/src/configure";
-import react18, { strictModeBit } from "@react-pixi-fiber/react-18";
 import {
   createInstance,
   diffProperties,
@@ -258,7 +257,9 @@ describe("AnimatedSprite applyProps", () => {
 });
 
 describe("props after mount", () => {
-  const strict = { mode: strictModeBit, return: null };
+  // The core needs a React adapter only for its StrictMode bit and stack addendum here, so a stub stands in for it.
+  const react18 = () => ({ createRenderer: () => ({ getStackAddendum: () => "" }), strictModeBit: 1 }) as never;
+  const strict = { mode: 1, return: null };
   // Creates the tag and writes its props through the core, then returns an `update` that writes a prop change the
   // way a commit does, under StrictMode.
   function mount(tag: string, props: Record<string, unknown>) {
