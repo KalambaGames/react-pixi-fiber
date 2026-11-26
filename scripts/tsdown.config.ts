@@ -11,6 +11,8 @@ export interface PackageBuild {
   entries?: Record<string, string>;
   // Peer dependencies, left as imports
   external: string[];
+  // Output formats, both by default. A package whose peers ship no CommonJS build has only "es".
+  formats?: ("es" | "cjs")[];
   // Dependencies to inline, for example [/^react-reconciler/]
   bundle?: RegExp[];
   hooks?: Partial<TsdownHooks>;
@@ -46,12 +48,20 @@ const exportDefaultAsExportEquals: TsdownHooks["build:done"] = ({ chunks }) => {
   }
 };
 
-export function createTsdownConfig({ name, entries, external, bundle = [], hooks, tsconfig }: PackageBuild) {
+export function createTsdownConfig({
+  name,
+  entries,
+  external,
+  formats = ["es", "cjs"],
+  bundle = [],
+  hooks,
+  tsconfig,
+}: PackageBuild) {
   const isProduction = process.env.NODE_ENV === "production";
   const suffix = isProduction ? "production.min" : "development";
   // One build per format, so every output lands in dist/<format>/.
   return defineConfig(
-    (["es", "cjs"] as const).map(
+    formats.map(
       (format): UserConfig => ({
         entry: { [name]: "src/index.ts", ...entries },
         format,

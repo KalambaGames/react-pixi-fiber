@@ -1,5 +1,5 @@
 // Based on: https://github.com/facebook/react/blob/9c77ffb444598c32c8f92c8d79e406959a10445b/packages/react-dom/src/shared/DOMProperty.js
-import type { PixiAdapter } from "./types";
+import type { PixiAdapter, PixiPropertyTable } from "./types";
 import { parsePoint } from "./utils";
 
 // A reserved attribute.
@@ -85,10 +85,10 @@ export function shouldRemoveAttribute(
   return false;
 }
 
-const infoCache = new WeakMap<PixiAdapter, Record<string, PropertyInfoRecord>>();
+const infoCache = new WeakMap<{ properties: PixiPropertyTable }, Record<string, PropertyInfoRecord>>();
 const namesCache = new WeakMap<PixiAdapter, Record<string, string>>();
 
-function buildInfo(pixi: PixiAdapter): Record<string, PropertyInfoRecord> {
+function buildInfo(pixi: { properties: PixiPropertyTable }): Record<string, PropertyInfoRecord> {
   const info: Record<string, PropertyInfoRecord> = {};
   // These props are reserved by React. They shouldn't be written to the PIXI tree.
   ["children", "parent"].forEach(name => {
@@ -109,7 +109,7 @@ function buildInfo(pixi: PixiAdapter): Record<string, PropertyInfoRecord> {
   return info;
 }
 
-export function getPropertyInfo(name: string, pixi: PixiAdapter): PropertyInfoRecord | null {
+export function getPropertyInfo(name: string, pixi: { properties: PixiPropertyTable }): PropertyInfoRecord | null {
   let info = infoCache.get(pixi);
   if (!info) {
     info = buildInfo(pixi);

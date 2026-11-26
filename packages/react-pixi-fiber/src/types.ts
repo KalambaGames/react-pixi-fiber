@@ -164,7 +164,41 @@ export type DisplayObjectProps<T, S = SetterTypesOf<T>> = PropsWithReactChildren
   Partial<WithSetterTypes<WithPointLike<T>, Omit<S, PointProperties<T>>>>
 > &
   PixiExtraProps;
-export type Props<T> = DisplayObjectProps<T>;
+/**
+ * 3D nodes, filled by a 3D adapter's augmentation
+ */
+
+// `never` when no 3D adapter is installed.
+export type PixiNode3D = PixiTypes extends { Node3D: infer T } ? T : never;
+type PointLikeList3D = PixiTypes extends { PointLikes3D: infer L } ? L : [];
+type SetterTypeList3D = PixiTypes extends { SetterTypes3D: infer L } ? L : [];
+// What a prop that may hold `V` accepts: the second type of the first pair whose first type `V` can hold.
+// `never` when no pair matches.
+export type PointLike3DOf<V, L = PointLikeList3D> = L extends [[infer I, infer A], ...infer Rest]
+  ? [I] extends [V]
+    ? A
+    : PointLike3DOf<V, Rest>
+  : never;
+// Properties of `T` that hold a point type of the 3D adapter.
+export type PointProperties3D<T> = Extract<
+  { [K in keyof T]-?: [PointLike3DOf<T[K]>] extends [never] ? never : K }[keyof T],
+  KeysThatAreNotAny<T>
+>;
+type WithPointLike3D<T> = Omit<T, PointProperties3D<T>> & { [K in PointProperties3D<T>]: PointLike3DOf<T[K]> };
+// As `DisplayObjectProps`, built from the 3D lists. The props a PixiJS adapter declares for every tag are not added.
+export type SetterTypes3DOf<T> = FirstSetterTypes<T, SetterTypeList3D>;
+export type Node3DProps<T, S = SetterTypes3DOf<T>> = PropsWithReactChildren<
+  Partial<WithSetterTypes<WithPointLike3D<T>, Omit<S, PointProperties3D<T>>>>
+>;
+// Not distributive, so a union of classes gets one props type. `any` and `never` are not 3D nodes.
+export type IsNode3D<T> = [T] extends [never]
+  ? false
+  : 0 extends 1 & T
+    ? false
+    : [T] extends [PixiNode3D]
+      ? true
+      : false;
+export type Props<T> = IsNode3D<T> extends true ? Node3DProps<T> : DisplayObjectProps<T>;
 // Props of a filter: its own fields and setters, without `children` and the props the adapter adds to every tag.
 export type FilterProps<T, S = SetterTypesOf<T>> = Partial<
   WithSetterTypes<WithPointLike<T>, Omit<S, PointProperties<T>>>
@@ -266,6 +300,23 @@ export interface PixiAdapter {
   // renderer.
   releaseFilter?: (filter: object) => void;
   translateProps?(type: string, props: Record<string, unknown>): Record<string, unknown>;
+}
+
+export interface Pixi3dAdapter {
+  behaviors: Record<string, Behavior>;
+  defaults?: Record<string, Record<string, unknown>>;
+  properties: PixiPropertyTable;
+  /** True for a 3D node. The core uses this adapter's tables and point functions for its props. */
+  isNode(value: unknown): boolean;
+  /** True for a vector or quaternion that a prop of a 3D node holds. */
+  isPoint(value: unknown): boolean;
+  /** A plain copy of a point, for the recorded default. */
+  clonePoint(point: object): object;
+  /**
+   * Sets the point prop `propName` of `instance` from `value`.
+   * Returns false and writes nothing when `value` cannot set it.
+   */
+  setPoint(instance: object, propName: string, value: unknown): boolean;
 }
 
 /**
@@ -388,7 +439,10 @@ export type DisplayObjectCreator<T extends object, P> = (props: P) => PIXICompon
 
 // Props accepted by a `PIXIComponent`: props defined on the component overwrite props of underlying DisplayObject.
 // The setter types come from `T`: the `Omit` copy loses the private members a class match needs.
-export type PIXIComponentProps<T extends object, P> = P & DisplayObjectProps<Omit<T, keyof P>, SetterTypesOf<T>>;
+export type PIXIComponentProps<T extends object, P> = P &
+  (IsNode3D<T> extends true
+    ? Node3DProps<Omit<T, keyof P>, SetterTypes3DOf<T>>
+    : DisplayObjectProps<Omit<T, keyof P>, SetterTypesOf<T>>);
 
 // `this` available inside `applyProps`, see `registry.ts`.
 // `applyDisplayObjectProps` is already bound to `type` and `displayObject`.

@@ -26,8 +26,10 @@ let configuredAdapter = adapter;
 vi.mock("../../src/configure", () => ({
   getConfigured: () => ({ pixi: configuredAdapter, secondary: { render: renderMock, unmount: unmountMock } }),
   markRendered() {},
+  getNodeAdapter: () => undefined,
   getPixiAdapter: () => configuredAdapter,
   getStackAddendum: () => "",
+  getTagDefaults: () => undefined,
   getStrictModeBit: () => strictModeBit,
 }));
 

@@ -44,16 +44,20 @@ send CORS headers. If it does not, the preview stays blank.
 
 ## Add an example
 
-1. Create a TSX file in the folder of its sidebar group in `src/examples/`: `SceneObjects/`, `Features/`,
-   `Integrations/` or `Migration/`. The file has one default-exported function component.
+1. Create a TSX file in the folder of its sidebar group in `src/examples/`: `SceneObjects/`, `Scene3D/`,
+   `Features3D/`, `Features/`, `Integrations/` or `Migration/`. The file has one default-exported function component.
 2. In `src/examples/index.ts`, add a helper call to the `examples` list. The helper finds the source by the name of the
    file, so the name and the file name must be the same. Use `example("Name")` for a Scene Object,
+   `scene3d("Name", "Title")` for a 3D scene object, `feature3d("Name", "Title")` for a 3D feature,
    `feature("Name", "Title")` for a feature, `integration("Name", "Title")` for an integration example, or
    `compat(6, "Name", "Title")` for a migration example. The first argument of `compat` is 6 or 7. Keep the entries in
    alphabetical order. Each group has its own part of the list.
 3. If the example imports a new package or asset path, add it to `src/modules.ts`. Put a large package that only some
    examples use in `lazyModules`. The runner downloads it only when the example code names it. Put all other imports in
-   `modules`. The runner resolves only the imports in these two maps.
+   `modules`. The runner resolves only the imports in these two maps. A `.glb` import needs `?url`. A new hook or shared
+   component needs a `declare module` in `src/vite-env.d.ts`. A file in the `modules` map imports `@pixi/3d` only as
+   types. A shared component that imports `@pixi/3d` as a value, as `src/examples/components/Floor.tsx` does, goes in
+   `lazyModules`.
 
 ## Why the runner uses a sandbox
 

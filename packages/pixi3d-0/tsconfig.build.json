@@ -1,0 +1,8 @@
+// The build resolves `react-pixi-fiber` like a consumer does, through the workspace package, see scripts/tsdown.config.ts.
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "paths": {}
+  },
+  "include": ["src"]
+}

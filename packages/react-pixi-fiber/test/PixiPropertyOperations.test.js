@@ -34,7 +34,13 @@ async function withDefaults(defaults) {
     const adapter = { ...pixi, behaviors };
     const { registerAdapterBehaviors } = await import("../src/registry");
     registerAdapterBehaviors(behaviors);
-    return { getPixiAdapter: () => ({ ...adapter, defaults }), getStrictModeBit: () => strictModeBit };
+    return {
+      getNodeAdapter: () => undefined,
+      getPixiAdapter: () => ({ ...adapter, defaults }),
+      getStrictModeBit: () => strictModeBit,
+      getTagDefaults: tag =>
+        defaults && Object.prototype.hasOwnProperty.call(defaults, tag) ? defaults[tag] : undefined,
+    };
   });
   return {
     ...(await import("../src/hostOps")),
@@ -116,8 +122,10 @@ describe("PixiPropertyOperations", () => {
       vi.doMock("../src/configure", async () => {
         const adapter = (await vi.importActual("@react-pixi-fiber/pixi-6")).default();
         return {
+          getNodeAdapter: () => undefined,
           getPixiAdapter: () => ({ ...adapter, defaults: { Sprite: { alpha: 0.25 } } }),
           getStrictModeBit: () => strictModeBit,
+          getTagDefaults: tag => (tag === "Sprite" ? { alpha: 0.25 } : undefined),
         };
       });
       const { setValueForProperty } = await import("../src/PixiPropertyOperations");

@@ -1,11 +1,13 @@
 import {
   Atom,
   Blocks,
+  Box,
   ChevronRight,
   CircleFadingArrowUp,
   type LucideIcon,
   Package,
   Puzzle,
+  Rotate3d,
   Sparkles,
 } from "lucide-react";
 import { useState } from "react";
@@ -38,6 +40,8 @@ const groups: { icon: LucideIcon; name: ExampleGroup }[] = [
   { icon: Blocks, name: "Display Objects" },
   { icon: Atom, name: "Features" },
   { icon: Sparkles, name: "Filters" },
+  { icon: Box, name: "3D Scene Objects" },
+  { icon: Rotate3d, name: "3D Features" },
   { icon: Puzzle, name: "Integrations" },
   { icon: CircleFadingArrowUp, name: "Migration" },
 ];

@@ -1075,6 +1075,10 @@ describe("hostOps", () => {
       // Fresh modules: the other tests leave parents with filter children behind.
       vi.resetModules();
       const fresh = await import("../src/hostOps");
+      (await import("../src/configure")).configure({
+        react: (await import("@react-pixi-fiber/react-18")).default(),
+        pixi: (await import("@react-pixi-fiber/pixi-6")).default(),
+      });
       const registry = await import("../src/registry");
       const readChildren = vi.fn(() => []);
       const removed = {

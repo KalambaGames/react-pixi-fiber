@@ -1,0 +1,63 @@
+{
+  "name": "@react-pixi-fiber/pixi3d-0",
+  "version": "0.0.0",
+  "description": "PixiJS 3D adapter for react-pixi-fiber",
+  "type": "module",
+  "main": "./dist/es/pixi3d-0.production.min.js",
+  "author": "Michal Ochman",
+  "license": "MIT",
+  "homepage": "https://react-pixi-fiber.pages.dev",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/KalambaGames/react-pixi-fiber.git",
+    "directory": "packages/pixi3d-0"
+  },
+  "types": "./dist/es/pixi3d-0.d.mts",
+  "exports": {
+    ".": {
+      "types": "./dist/es/pixi3d-0.d.mts",
+      "development": "./dist/es/pixi3d-0.development.js",
+      "node": {
+        "production": "./dist/es/pixi3d-0.production.min.js",
+        "default": "./dist/es/pixi3d-0.development.js"
+      },
+      "default": "./dist/es/pixi3d-0.production.min.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "CHANGELOG.md",
+    "LICENSE",
+    "README.md",
+    "dist/",
+    "src/"
+  ],
+  "sideEffects": false,
+  "peerDependencies": {
+    "@pixi/3d": "^0.1.0",
+    "pixi.js": "^8.23.0",
+    "react-pixi-fiber": "^3.0.0"
+  },
+  "devDependencies": {
+    "@pixi/3d": "0.1.0",
+    "@react-pixi-fiber/pixi-8": "workspace:*",
+    "@react-pixi-fiber/react-18": "workspace:*",
+    "@types/react": "18.3.31",
+    "@types/react-dom": "18.3.7",
+    "@types/react-test-renderer": "18.3.1",
+    "pixi.js": "8.23.0",
+    "react": "18.3.1",
+    "react-dom": "18.3.1",
+    "react-pixi-fiber": "workspace:*",
+    "react-test-renderer": "18.3.1"
+  },
+  "scripts": {
+    "build": "rm -rf dist && pnpm run build:prod && pnpm run build:dev",
+    "build:dev": "cross-env NODE_ENV=development tsdown",
+    "build:prod": "cross-env NODE_ENV=production tsdown",
+    "check-types": "tsc -p tsconfig.json",
+    "test": "pnpm run test:dev && pnpm run test:prod",
+    "test:dev": "vitest run --mode development",
+    "test:prod": "vitest run --mode production"
+  }
+}

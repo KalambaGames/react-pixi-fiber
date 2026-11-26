@@ -13,6 +13,7 @@ const behaviors = {
   NineSliceSprite: { create: vi.fn(() => ({ kind: "NineSliceSprite" })) },
 };
 vi.mock("../src/configure", () => ({
+  getNodeAdapter: () => undefined,
   getPixiAdapter: () => ({
     behaviors,
     properties: { boolean: [], numeric: [], positiveNumeric: [], vector: [], callback: [] },
@@ -20,6 +21,7 @@ vi.mock("../src/configure", () => ({
     copyPoint() {},
     defaults: { Defaulted: { alpha: 0.5 } },
   }),
+  getTagDefaults: tag => (tag === "Defaulted" ? { alpha: 0.5 } : undefined),
 }));
 
 describe("createInstance", () => {

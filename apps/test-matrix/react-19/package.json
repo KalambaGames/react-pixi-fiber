@@ -13,6 +13,7 @@
     "@react-pixi-fiber/pixi-6": "workspace:*",
     "@react-pixi-fiber/pixi-7": "workspace:*",
     "@react-pixi-fiber/pixi-8": "workspace:*",
+    "@react-pixi-fiber/pixi3d-0": "workspace:*",
     "@react-pixi-fiber/react-19": "workspace:*",
     "react": "19.3.1",
     "react-pixi-fiber": "workspace:*",

@@ -39,6 +39,33 @@ const defaults = (name: string, title: string): Example => ({
   runner: "runner-defaults.html",
 });
 
+// The runner configures the 3D adapter next to the other two, see src/runners/pixi3d.tsx.
+const scene3d = (name: string, title: string, load = source(`./Scene3D/${name}.tsx`)): Example => {
+  const base = setup(8);
+  return {
+    ...feature(name, title, load),
+    aliases: [],
+    configure: {
+      code: base.code
+        .replace(
+          '@react-pixi-fiber/pixi-8";',
+          '@react-pixi-fiber/pixi-8";\nimport pixi3d0 from "@react-pixi-fiber/pixi3d-0";\nimport { FPSCamera, OrbitCamera } from "@pixi/3d/extras";'
+        )
+        .replace("pixi8()", "pixi8(), pixi3d: pixi3d0({ extras: { FPSCamera, OrbitCamera } })"),
+      summary: `${base.summary} and the PixiJS 3D adapter`,
+    },
+    group: "3D Scene Objects",
+    id: `3d-${name.toLowerCase()}`,
+    runner: "runner-3d.html",
+  };
+};
+
+const feature3d = (name: string, title: string): Example => ({
+  ...scene3d(name, title, source(`./Features3D/${name}.tsx`)),
+  group: "3D Features",
+  id: `3d-features-${name.toLowerCase()}`,
+});
+
 const filter = (name: string, title: string): Example => ({
   ...example(title, source(`./Filters/${name}.tsx`)),
   group: "Filters",
@@ -78,6 +105,25 @@ export const examples: Example[] = [
   example("Sprite"),
   example("Text"),
   example("TilingSprite"),
+  scene3d("BatchedMesh3D", "BatchedMesh3D"),
+  scene3d("Camera3D", "Camera3D"),
+  scene3d("Container3D", "Container3D"),
+  scene3d("FPSCamera", "FPSCamera"),
+  scene3d("Lights", "Lights"),
+  scene3d("Mesh3D", "Mesh3D"),
+  scene3d("Model3D", "Model3D"),
+  scene3d("OrbitCamera", "OrbitCamera"),
+  scene3d("ParticleContainer3D", "ParticleContainer3D"),
+  scene3d("Sprite3D", "Sprite3D"),
+  scene3d("View3D", "View3D"),
+  feature3d("CameraSwitch", "Camera switch"),
+  feature3d("Events", "Events"),
+  feature3d("Filters", "Filters on a view"),
+  feature3d("Labels", "Labels"),
+  feature3d("Suspense", "Suspense"),
+  feature3d("TwoDAndThreeD", "2D and 3D"),
+  feature3d("Unmount", "Unmount"),
+  feature3d("VectorProps", "Vector props"),
   feature("Bunnymark", "Bunnymark"),
   feature("BunnymarkCustomComponents", "Bunnymark with custom components"),
   feature("CanvasProps", "Canvas props"),

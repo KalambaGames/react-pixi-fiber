@@ -7,8 +7,9 @@ export default defineConfig({
   base: process.env.PLAYGROUND_SITE ? "/pixi-8/" : "/",
   plugins: [react(), tailwindcss()],
   // Development builds of React, react-pixi-fiber and the adapter in every mode, so the console shows warnings.
-  // The workspace packages resolve their own devDependency copies of react, which differ from the one the app uses.
-  resolve: { conditions: ["development", "module", "browser"], dedupe: ["react", "react-dom"] },
+  // The workspace packages resolve their own devDependency copies of react and pixi.js.
+  // These copies differ from the ones the app uses.
+  resolve: { conditions: ["development", "module", "browser"], dedupe: ["pixi.js", "react", "react-dom"] },
   // animated reads Node's `global`.
   define: { global: "globalThis", "process.env.NODE_ENV": JSON.stringify("development") },
   // The sandboxed iframe runs in the opaque origin "null" and fetches its scripts cross-origin.
@@ -19,6 +20,7 @@ export default defineConfig({
       input: {
         index: resolve(import.meta.dirname, "index.html"),
         runner: resolve(import.meta.dirname, "runner.html"),
+        runner3d: resolve(import.meta.dirname, "runner-3d.html"),
         runnerCompatPixi6: resolve(import.meta.dirname, "runner-compat-pixi6.html"),
         runnerCompatPixi7: resolve(import.meta.dirname, "runner-compat-pixi7.html"),
         runnerDefaults: resolve(import.meta.dirname, "runner-defaults.html"),

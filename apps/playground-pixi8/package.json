@@ -5,11 +5,13 @@
   "type": "module",
   "dependencies": {
     "@esotericsoftware/spine-pixi-v8": "4.3.13",
+    "@pixi/3d": "0.1.0",
     "@pixi/layout": "3.2.1",
     "@pixi/sound": "6.0.1",
     "@pixi/tilemap": "5.0.2",
     "@pixi/ui": "2.4.1",
     "@react-pixi-fiber/pixi-8": "workspace:*",
+    "@react-pixi-fiber/pixi3d-0": "workspace:*",
     "@react-pixi-fiber/react-19": "workspace:*",
     "@react-spring/core": "10.1.2",
     "animated": "0.2.2",

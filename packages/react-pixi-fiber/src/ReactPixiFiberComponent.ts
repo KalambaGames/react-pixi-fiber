@@ -1,7 +1,7 @@
 // Based on: https://github.com/facebook/react/blob/27535e7bfcb63e8a4d65f273311e380b4ca12eff/packages/react-dom/src/client/ReactDOMFiberComponent.js
 import invariant from "./invariant";
 import warning from "./warning";
-import { getPixiAdapter } from "./configure";
+import { getPixiAdapter, getTagDefaults } from "./configure";
 import { heldChildren } from "./heldChildren";
 import {
   createRegisteredInstance,
@@ -11,7 +11,6 @@ import {
   resolveComponent,
   resolveTag,
 } from "./registry";
-import { getOwn } from "./PixiProperty";
 import { setValueForProperty } from "./PixiPropertyOperations";
 
 type Instance = Record<string, any>;
@@ -34,7 +33,7 @@ export function translate(type: string, props: Props): Props {
 
 // The adapter's `defaults` for a tag fill the props that are missing or `undefined`, like React's `defaultProps`.
 function withDefaults(tag: string, props: Props): Props {
-  const defaults = getOwn(getPixiAdapter().defaults, tag);
+  const defaults = getTagDefaults(tag);
   if (defaults === undefined || props == null) return props;
   const merged = { ...props };
   for (const key of Object.keys(defaults)) {
