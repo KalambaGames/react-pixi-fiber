@@ -1,4 +1,6 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import { readdirSync, readFileSync } from "node:fs";
+import { join } from "node:path";
 import React from "react";
 import react18 from "@react-pixi-fiber/react-18";
 import { createFakeNode, fakePixiAdapter, point } from "./utils/fakePixiAdapter";
@@ -324,5 +326,22 @@ describe("tree rules", () => {
       other
     );
     expect(other.children[0].children).toHaveLength(1);
+  });
+});
+
+// ADR 0022: the 3D adapter holds every PixiJS 3D class name and every rule for a third coordinate, not the core.
+describe("the core source", () => {
+  it("names no PixiJS 3D class and no third coordinate", () => {
+    const src = join(import.meta.dirname, "../src");
+    const hits = [];
+    for (const file of readdirSync(src, { recursive: true })) {
+      if (!/\.tsx?$/.test(file)) continue;
+      readFileSync(join(src, file), "utf8")
+        .split("\n")
+        .forEach((line, index) => {
+          if (/Container3D|View3D|Mesh3D|\bz\b/.test(line)) hits.push(`${file}:${index + 1}`);
+        });
+    }
+    expect(hits).toEqual([]);
   });
 });
