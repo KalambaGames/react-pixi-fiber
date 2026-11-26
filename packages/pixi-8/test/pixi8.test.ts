@@ -1,7 +1,6 @@
 import { describe, it, expect, vi } from "vitest";
 import * as PIXI from "pixi.js";
 import { DISPLAY_OBJECT_TAGS, FILTER_TAGS, TAGS } from "../../react-pixi-fiber/src/tags";
-import react18 from "@react-pixi-fiber/react-18";
 import { configure, PIXIComponent } from "react-pixi-fiber";
 import { createInstance } from "../../react-pixi-fiber/src/ReactPixiFiberComponent";
 import { factories } from "../src/factories";
@@ -16,6 +15,8 @@ import pixi8, {
   RenderLayer,
 } from "../src/index";
 
+// The core needs a React adapter only for `configure` here, so a stub stands in for it.
+const react18 = () => ({ createRenderer: () => ({ getStackAddendum: () => "" }), strictModeBit: 1 }) as never;
 const texture = PIXI.Texture.WHITE;
 const EXTRA_TAGS = {
   DOMContainer,
