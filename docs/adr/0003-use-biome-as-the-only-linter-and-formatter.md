@@ -50,7 +50,7 @@ One tool is enough for both jobs with the stylistic plugin. But ESLint is not a 
 ## Consequences
 
 - One tool and one file configure lint and format, but contributors who know ESLint must learn the Biome rule names
-- The code style of 2.x stays the same, so `git blame` stays useful. The exceptions are two formatting-only commits: Biome replaced Prettier in one, and sorted the imports in the other.
+- The code style of 2.x stays the same, so `git blame` stays useful. The exceptions are two formatting-only commits: Biome replaced Prettier in one, and sorted the imports in the other. `.git-blame-ignore-revs` lists both, so `git blame` skips them.
 - The linter enables few rules, so it rarely blocks a change, but it also finds few problems. Enabling the recommended rules of Biome is a separate, later change.
 - Biome does not enforce project conventions such as alphabetical order of components and props. Code review checks them.
 - Biome does not check types. `pnpm check-types` stays a separate step.

@@ -14,6 +14,7 @@
     "check-types": "pnpm -r check-types && tsc -p scripts/tsconfig.json",
     "format": "biome check --write",
     "lint": "biome check",
+    "prepare": "git config blame.ignoreRevsFile \":(optional).git-blame-ignore-revs\" || exit 0",
     "release": "pnpm -r build && pnpm check-package && pnpm check-bundle && changeset publish",
     "start": "pnpm --filter \"playground-pixi*\" --parallel start",
     "test": "pnpm -r test",
