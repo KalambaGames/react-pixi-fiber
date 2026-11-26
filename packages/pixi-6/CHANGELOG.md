@@ -1,5 +1,11 @@
 # @react-pixi-fiber/pixi-6
 
+## 1.1.0
+
+### Minor Changes
+
+- [#425](https://github.com/KalambaGames/react-pixi-fiber/pull/425) [`fdebe47`](https://github.com/KalambaGames/react-pixi-fiber/commit/fdebe47be3d48fc34840a4868946c05889e44a3f) Thanks [@michalochman](https://github.com/michalochman)! - `<AnimatedSprite playing />` starts the sprite when React commits it, in `afterMount`. A render that React drops no longer leaves the sprite on the shared ticker. The adapter needs a core that calls `afterMount`. Update your React adapter too: an older React adapter does not call `commitMount`, so the sprite does not start on mount.
+
 ## 1.0.0
 
 ### Major Changes
@@ -19,11 +25,11 @@
 ### Patch Changes
 
 - [#417](https://github.com/KalambaGames/react-pixi-fiber/pull/417) [`d452441`](https://github.com/KalambaGames/react-pixi-fiber/commit/d4524411d47813afb741c1d339b6880fe521b116) Thanks [@michalochman](https://github.com/michalochman)! - A behavior can list in `constructorOnly` the props that its `create` gives to the constructor and that PixiJS cannot change later. The core does not write these props. In development, under `StrictMode`, a change to one of them after mount warns one time. Give the element a new `key` to change such a prop.
-  
+
   `<Graphics geometry={geometry} />` no longer throws `Cannot set property geometry` on PixiJS 5, 6 and 7. The Graphics uses the geometry from its constructor.
-  
+
   A change after mount to these props now changes the Scene Object:
-  
+
   - BitmapText: `style` on PixiJS 4 to 7.
   - Mesh: `uvs` and `indices` on PixiJS 4.
   - MeshPlane: `verticesX` and `verticesY`.
@@ -31,14 +37,14 @@
   - MeshSimple: `uvs` and `indices`, and `topology` on PixiJS 8.
   - ParticleContainer: `properties` on PixiJS 5 to 7.
   - PerspectiveMesh: `verticesX`, `verticesY` and the corners `x0` to `y3`.
-  
+
   A change after mount to these props warns:
-  
+
   - AnimatedSprite: `autoUpdate` on PixiJS 4.
   - Graphics: `geometry` on PixiJS 5 to 7.
   - ParticleContainer: `maxSize` and `batchSize` on PixiJS 4 to 7, `properties` on PixiJS 4, `dynamicProperties` on PixiJS 8.
   - Text: `canvas` on PixiJS 4 to 7.
-  
+
   The MeshRope prop types require `points`. Every PixiJS constructor needs them.
 
 ## 1.0.0-beta.0
@@ -58,11 +64,11 @@
 ### Patch Changes
 
 - [#417](https://github.com/KalambaGames/react-pixi-fiber/pull/417) [`d452441`](https://github.com/KalambaGames/react-pixi-fiber/commit/d4524411d47813afb741c1d339b6880fe521b116) Thanks [@michalochman](https://github.com/michalochman)! - A behavior can list in `constructorOnly` the props that its `create` gives to the constructor and that PixiJS cannot change later. The core does not write these props. In development, under `StrictMode`, a change to one of them after mount warns one time. Give the element a new `key` to change such a prop.
-  
+
   `<Graphics geometry={geometry} />` no longer throws `Cannot set property geometry` on PixiJS 5, 6 and 7. The Graphics uses the geometry from its constructor.
-  
+
   A change after mount to these props now changes the Scene Object:
-  
+
   - BitmapText: `style` on PixiJS 4 to 7.
   - Mesh: `uvs` and `indices` on PixiJS 4.
   - MeshPlane: `verticesX` and `verticesY`.
@@ -70,14 +76,14 @@
   - MeshSimple: `uvs` and `indices`, and `topology` on PixiJS 8.
   - ParticleContainer: `properties` on PixiJS 5 to 7.
   - PerspectiveMesh: `verticesX`, `verticesY` and the corners `x0` to `y3`.
-  
+
   A change after mount to these props warns:
-  
+
   - AnimatedSprite: `autoUpdate` on PixiJS 4.
   - Graphics: `geometry` on PixiJS 5 to 7.
   - ParticleContainer: `maxSize` and `batchSize` on PixiJS 4 to 7, `properties` on PixiJS 4, `dynamicProperties` on PixiJS 8.
   - Text: `canvas` on PixiJS 4 to 7.
-  
+
   The MeshRope prop types require `points`. Every PixiJS constructor needs them.
 
 ## 1.0.0-alpha.1
@@ -87,7 +93,7 @@
 - [#402](https://github.com/KalambaGames/react-pixi-fiber/pull/402) [`f662611`](https://github.com/KalambaGames/react-pixi-fiber/commit/f6626110ecfe4fb94f985474d24206104d8fdb38) Thanks [@michalochman](https://github.com/michalochman)! - `PixiAdapter.behaviors` replaces `PixiAdapter.components`. The map holds a `Behavior` for each tag, Display Objects and filters.
 
 - [#402](https://github.com/KalambaGames/react-pixi-fiber/pull/402) [`659aa2d`](https://github.com/KalambaGames/react-pixi-fiber/commit/659aa2dd2097a757e191e884fea6f194c13e8a58) Thanks [@michalochman](https://github.com/michalochman)! - The PixiJS 4 to 7 adapters create the filter tags `AlphaFilter`, `BlurFilter`, `ColorMatrixFilter`, `DisplacementFilter` and `NoiseFilter`, and add the `FXAAFilter` tag, imported from the adapter package. The PixiJS 5 and 6 adapters release a filter without a call to `destroy`.
-  
+
   `@react-pixi-fiber/pixi-4` peers `pixi.js` ^4.6.0, up from ^4.4.0: 4.6.0 is the first PixiJS 4 with `AlphaFilter`.
 
 ## 1.0.0-alpha.0

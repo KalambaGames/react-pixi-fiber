@@ -1,5 +1,11 @@
 # @react-pixi-fiber/react-18
 
+## 1.1.0
+
+### Minor Changes
+
+- [#425](https://github.com/KalambaGames/react-pixi-fiber/pull/425) [`eff542e`](https://github.com/KalambaGames/react-pixi-fiber/commit/eff542e1c2ea359bb0bd9e6044e30508a9e2c90e) Thanks [@michalochman](https://github.com/michalochman)! - A behavior can have `afterMount(displayObject, props)`. It runs when React commits a new Display Object, after `afterAdd`, once for each Display Object. Inside a hidden `<Activity>`, it runs when React shows the Display Object. Start a ticker callback or a timer there: React can drop a render without a commit, and then `beforeRemove` never runs. The React adapters call the new `HostOps.commitMount`, so they need a core that has it. In development, the core warns once when a React adapter does not call it.
+
 ## 1.0.0
 
 ### Major Changes

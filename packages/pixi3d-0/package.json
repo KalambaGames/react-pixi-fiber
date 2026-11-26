@@ -1,6 +1,6 @@
 {
   "name": "@react-pixi-fiber/pixi3d-0",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "description": "PixiJS 3D adapter for react-pixi-fiber",
   "type": "module",
   "main": "./dist/es/pixi3d-0.production.min.js",
@@ -36,7 +36,7 @@
   "peerDependencies": {
     "@pixi/3d": "^0.1.0",
     "pixi.js": "^8.23.0",
-    "react-pixi-fiber": "^3.0.0"
+    "react-pixi-fiber": "^3.1.0"
   },
   "devDependencies": {
     "@pixi/3d": "0.1.0",
