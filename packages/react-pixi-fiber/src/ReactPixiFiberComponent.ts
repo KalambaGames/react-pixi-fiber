@@ -99,11 +99,9 @@ export function setInitialPixiProperties(
       continue;
     }
     const nextProp = rawProps[propKey];
-    if (propKey === CHILDREN) {
-      // Noop. Text children not supported
-    } else {
-      setValueForProperty(type, instance, propKey, nextProp);
-    }
+    // Text children are not supported. An explicit `undefined` is an omitted prop: a new instance has its defaults.
+    if (propKey === CHILDREN || nextProp === undefined) continue;
+    setValueForProperty(type, instance, propKey, nextProp);
   }
 }
 
@@ -179,6 +177,8 @@ export function diffProperties(
       (updatePayload = updatePayload || []).push(propKey, undefined);
     }
   }
+  // The restores go before every value, so that a restore cannot undo a value that a sibling prop wrote.
+  let restoreEnd = updatePayload === null ? 0 : updatePayload.length;
   for (propKey in nextProps) {
     const nextProp = nextProps[propKey];
     const lastProp = lastProps != null ? lastProps[propKey] : undefined;
@@ -187,6 +187,10 @@ export function diffProperties(
     }
     if (propKey === CHILDREN) {
       // Noop. Text children not supported
+    } else if (nextProp === undefined) {
+      // An explicit `undefined` is a deleted prop: its restore goes after the deleted props and before every value.
+      (updatePayload = updatePayload || []).splice(restoreEnd, 0, propKey, undefined);
+      restoreEnd += 2;
     } else {
       // For any other property we always add it to the queue and then we
       // filter it out using the whitelist during the commit.
