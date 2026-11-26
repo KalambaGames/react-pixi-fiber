@@ -1,8 +1,9 @@
-import { describe, it, expect, vi } from "vitest";
+import * as PIXI from "pixi.js";
 import React, { createRef, StrictMode, Suspense } from "react";
 import { createRoot } from "react-dom/client";
 import { act } from "react-test-renderer";
-import * as PIXI from "pixi.js";
+import { describe, expect, it, vi } from "vitest";
+
 import { PIXIFilter, render, Sprite, Stage, unmount } from "../src/index";
 
 // Each instance gets its own `destroy` spy, so a test can tell the instances apart.

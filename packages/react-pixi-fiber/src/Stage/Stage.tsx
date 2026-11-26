@@ -1,10 +1,12 @@
-import React, { forwardRef, useImperativeHandle, useLayoutEffect, useRef, useState } from "react";
 import type { Ref } from "react";
+import React, { forwardRef, useImperativeHandle, useLayoutEffect, useRef, useState } from "react";
+
 import { getPixiAdapter } from "../configure";
 import invariant from "../invariant";
 import type { StageComponent, StageProps, StageRef } from "../types";
 import { shallowEqual } from "../utils";
 import warning from "../warning";
+import { ContextBridge } from "./ContextBridge";
 import {
   cleanupStage,
   renderStage,
@@ -13,7 +15,6 @@ import {
   STAGE_OPTIONS_RECREATE,
   STAGE_OPTIONS_UNMOUNT,
 } from "./common";
-import { ContextBridge } from "./ContextBridge";
 import { getCanvasProps } from "./props";
 
 interface InitToken {

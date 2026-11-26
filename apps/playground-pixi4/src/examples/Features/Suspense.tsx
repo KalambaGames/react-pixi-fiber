@@ -1,7 +1,9 @@
 // React 19 or later: use() reads the loading promise.
 import { Texture } from "pixi.js";
 import React, { use } from "react";
+
 import { Container, Sprite, Stage } from "react-pixi-fiber";
+
 import bunnys from "./assets/bunnys.png";
 
 // PixiJS 4 has no Texture.fromURL. The texture from Texture.fromImage loads in the background.

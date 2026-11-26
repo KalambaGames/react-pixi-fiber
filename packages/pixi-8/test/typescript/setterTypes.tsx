@@ -1,7 +1,10 @@
 // Type-checked by `check-types`, not run: a prop accepts what the PixiJS setter accepts, not only the getter type.
-import React from "react";
+
 import * as PIXI from "pixi.js";
+import React from "react";
+
 import { AnimatedSprite, BlurFilter, Graphics, MeshRope, PIXIComponent, Text } from "react-pixi-fiber";
+
 import { HTMLText, Particle } from "../../src/index";
 
 const style = { fill: "white", fontSize: 16 } as const;

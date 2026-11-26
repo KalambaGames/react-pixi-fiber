@@ -1,4 +1,5 @@
 import type { PixiAdapter } from "react-pixi-fiber";
+
 import { DISPLAY_OBJECT_TAGS, FILTER_TAGS } from "../../src/tags";
 
 export function point(x = 0, y = 0) {

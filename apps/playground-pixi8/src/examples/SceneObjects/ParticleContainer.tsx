@@ -1,7 +1,9 @@
-import { Particle } from "@react-pixi-fiber/pixi-8";
 import { type Texture } from "pixi.js";
 import { useCallback, useState } from "react";
+
 import { ParticleContainer, Stage, usePixiTicker } from "react-pixi-fiber";
+import { Particle } from "@react-pixi-fiber/pixi-8";
+
 // useSpritesheet source, frame names and rectangles: see the Features / Spritesheet example.
 import bunnysData from "./assets/bunnys.json";
 import bunnys from "./assets/bunnys.png";

@@ -1,6 +1,8 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import * as PIXI from "pixi.js";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+
 import { strictModeBit } from "@react-pixi-fiber/react-18";
+
 import { getPixiAdapter } from "../src/configure";
 import { recordDefault } from "../src/defaults";
 import { hasFilterChildren } from "../src/filters";

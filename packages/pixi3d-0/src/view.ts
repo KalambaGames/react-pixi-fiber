@@ -1,5 +1,7 @@
 import { Camera3D, Container3D, View3D } from "@pixi/3d";
+
 import type { Behavior } from "react-pixi-fiber";
+
 import warning from "./warning";
 
 // The views this adapter created, by their root, and the camera each view had at creation or got from the fallback.

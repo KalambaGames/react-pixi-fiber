@@ -1,5 +1,6 @@
 import * as PIXI from "pixi.js";
 import { useEffect, useRef, useState } from "react";
+
 import { PIXIComponent, Stage, Text } from "react-pixi-fiber";
 
 type CircleProps = {

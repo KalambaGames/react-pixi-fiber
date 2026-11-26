@@ -1,6 +1,8 @@
 import { readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
+
 import type { TsdownHooks } from "tsdown";
+
 import { createTsdownConfig } from "../../scripts/tsdown.config.ts";
 
 // src/index.ts exports `Stage` as a value and a type (a local type alias next to the imported value).

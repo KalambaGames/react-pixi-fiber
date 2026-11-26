@@ -1,5 +1,7 @@
 import type * as PIXI from "pixi.js";
+
 import type { Props } from "react-pixi-fiber";
+
 import type { allClasses } from "./allClasses";
 
 // Importing this package fills the core's augmentable interfaces with the PixiJS 8 classes.

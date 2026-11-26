@@ -1,6 +1,7 @@
-import { HTMLText } from "@react-pixi-fiber/pixi-8";
 import { HTMLTextStyle } from "pixi.js";
+
 import { Stage } from "react-pixi-fiber";
+import { HTMLText } from "@react-pixi-fiber/pixi-8";
 
 const style = new HTMLTextStyle({ fill: "white", fontSize: 28 });
 

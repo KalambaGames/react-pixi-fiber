@@ -1,10 +1,13 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import { readdirSync, readFileSync } from "node:fs";
 import { join } from "node:path";
+
 import React from "react";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+
 import react18 from "@react-pixi-fiber/react-18";
-import { createFakeNode, fakePixiAdapter, point } from "./utils/fakePixiAdapter";
+
 import { createFakeNode3d, fakePixi3dAdapter } from "./utils/fakePixi3dAdapter";
+import { createFakeNode, fakePixiAdapter, point } from "./utils/fakePixiAdapter";
 
 describe("configure with a PixiJS 3D adapter", () => {
   let configure, render, Container, Node3D, View, pixi, pixi3d, stage;

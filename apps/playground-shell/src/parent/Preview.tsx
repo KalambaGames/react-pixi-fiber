@@ -1,4 +1,5 @@
 import { type CSSProperties, type RefObject, useLayoutEffect, useRef, useState } from "react";
+
 import { Skeleton } from "./components/ui/skeleton";
 
 // A browser reloads an iframe that moves to a new parent, so the frame stays in one place and covers the slot

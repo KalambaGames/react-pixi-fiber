@@ -1,10 +1,11 @@
-import type { PixiAdapter, PixiApplication } from "../types";
 import React from "react";
+
 import { AppProvider } from "../AppProvider";
 import { diffProperties, setInitialProperties, updateProperties } from "../ReactPixiFiberComponent";
 import { renderWith, unmountWith } from "../render";
-import { getContainerProps } from "./props";
 import { TAGS } from "../tags";
+import type { PixiAdapter, PixiApplication } from "../types";
+import { getContainerProps } from "./props";
 
 // React Pixi Fiber renderer is secondary to React DOM renderer when Stage is rendered by React DOM
 export function render(element: React.ReactNode, container: any, callback?: () => void): unknown {

@@ -1,10 +1,12 @@
-import { describe, it, expect, vi, afterEach, beforeEach } from "vitest";
+import * as PIXI from "pixi.js";
 import React from "react";
 import renderer, { act } from "react-test-renderer";
-import * as PIXI from "pixi.js";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+
+import type { PixiAdapter } from "react-pixi-fiber";
 import { configure, PIXIComponent, Sprite, Stage } from "react-pixi-fiber";
 import react18 from "@react-pixi-fiber/react-18";
-import type { PixiAdapter } from "react-pixi-fiber";
+
 import pixi7 from "../src/index";
 
 type Translate = typeof import("../src/compat/pixi6").default;

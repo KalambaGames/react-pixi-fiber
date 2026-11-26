@@ -1,7 +1,10 @@
-import { describe, it, expect, vi } from "vitest";
 import * as PIXI from "pixi.js";
+import { describe, expect, it, vi } from "vitest";
+
 import pixi6 from "@react-pixi-fiber/pixi-6";
+
 import {
+  copyPoint,
   filterByKey,
   findStrictRoot,
   including,
@@ -9,7 +12,6 @@ import {
   not,
   parsePoint,
   setPixiValue,
-  copyPoint,
 } from "../src/utils";
 
 const adapter = pixi6();

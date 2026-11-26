@@ -1,8 +1,9 @@
 import React from "react";
+
 import { hostOps } from "./hostOps";
 import invariant from "./invariant";
-import { registerAdapterBehaviors } from "./registry";
 import { getOwn } from "./PixiProperty";
+import { registerAdapterBehaviors } from "./registry";
 import type { Pixi3dAdapter, PixiAdapter, ReactAdapter, Renderer } from "./types";
 import warning from "./warning";
 

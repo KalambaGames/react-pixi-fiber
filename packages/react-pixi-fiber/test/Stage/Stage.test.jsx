@@ -1,9 +1,11 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
 import React, { createRef, StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import renderer, { act } from "react-test-renderer";
-import Stage from "../../src/Stage";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+
 import { strictModeBit } from "@react-pixi-fiber/react-18";
+
+import Stage from "../../src/Stage";
 import { createFakeApp, fakePixiAdapter } from "../utils/fakePixiAdapter";
 
 // Stage renders through the configured secondary renderer; these spies stand in for it.

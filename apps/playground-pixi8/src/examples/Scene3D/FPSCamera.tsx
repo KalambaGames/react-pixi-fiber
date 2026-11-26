@@ -1,7 +1,9 @@
 import { ConeGeometry, CubeGeometry, Material3D, SphereGeometry } from "@pixi/3d";
-import { Camera3D, DirectionalLight, FPSCamera, Mesh3D, View3D } from "@react-pixi-fiber/pixi3d-0";
 import { useControls } from "leva";
+
 import { Stage } from "react-pixi-fiber";
+import { Camera3D, DirectionalLight, FPSCamera, Mesh3D, View3D } from "@react-pixi-fiber/pixi3d-0";
+
 import { Floor, fog } from "./components/Floor";
 
 type Vec3 = [number, number, number];

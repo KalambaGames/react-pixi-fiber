@@ -1,8 +1,10 @@
 import { CubeGeometry, Material3D, SphereGeometry } from "@pixi/3d";
-import { Camera3D, DirectionalLight, Mesh3D, OrbitCamera, View3D } from "@react-pixi-fiber/pixi3d-0";
 import { button, useControls } from "leva";
 import { Suspense, use, useLayoutEffect, useState } from "react";
+
 import { Stage, Text } from "react-pixi-fiber";
+import { Camera3D, DirectionalLight, Mesh3D, OrbitCamera, View3D } from "@react-pixi-fiber/pixi3d-0";
+
 import { Floor, fog } from "./components/Floor";
 
 const cube = new CubeGeometry();

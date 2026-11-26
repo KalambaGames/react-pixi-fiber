@@ -1,4 +1,5 @@
-import { useEffect, useRef, useState, type RefObject } from "react";
+import { type RefObject, useEffect, useRef, useState } from "react";
+
 import { isRunnerMessage, type ParentMessage, type RunnerMessage } from "../protocol";
 
 const MAX_ENTRIES = 500;

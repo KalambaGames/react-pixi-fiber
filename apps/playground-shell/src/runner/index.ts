@@ -1,5 +1,6 @@
-import { Component, createElement, type ComponentType, type ReactNode } from "react";
-import { isParentMessage, type ConsoleLevel, type RunnerMessage } from "../protocol";
+import { Component, type ComponentType, createElement, type ReactNode } from "react";
+
+import { type ConsoleLevel, isParentMessage, type RunnerMessage } from "../protocol";
 import { compile } from "./compile";
 import { createModuleRequire, type LazyModules, loadImports } from "./modules";
 

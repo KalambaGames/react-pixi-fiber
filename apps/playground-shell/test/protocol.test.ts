@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+
 import { isParentMessage, isRunnerMessage } from "../src/protocol";
 
 describe("isParentMessage", () => {

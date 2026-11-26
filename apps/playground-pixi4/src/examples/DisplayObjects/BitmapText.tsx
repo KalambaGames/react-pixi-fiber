@@ -1,5 +1,6 @@
 import { extras, Texture } from "pixi.js";
 import { useState } from "react";
+
 import { BitmapText, Stage } from "react-pixi-fiber";
 
 // PixiJS 4 has no BitmapFont.from, so the glyphs are drawn on a canvas and registered as a font.

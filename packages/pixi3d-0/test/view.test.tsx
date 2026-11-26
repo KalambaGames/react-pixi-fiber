@@ -1,10 +1,12 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import React, { createRef, StrictMode } from "react";
-import * as PIXI from "pixi.js";
 import * as PIXI3D from "@pixi/3d";
+import * as PIXI from "pixi.js";
+import React, { createRef, StrictMode } from "react";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+
+import { BlurFilter, Container, configure, render, Sprite, unmount } from "react-pixi-fiber";
 import pixi8 from "@react-pixi-fiber/pixi-8";
 import react18 from "@react-pixi-fiber/react-18";
-import { BlurFilter, configure, Container, render, Sprite, unmount } from "react-pixi-fiber";
+
 import pixi3d0, { Mesh3D, View3D } from "../src/index";
 
 describe("View3D", () => {

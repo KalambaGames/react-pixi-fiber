@@ -7,6 +7,7 @@ import {
   DiscreteEventPriority,
   NoEventPriority,
 } from "react-reconciler/constants";
+
 import type { HostOps, ReactAdapter, Renderer } from "react-pixi-fiber";
 
 // https://github.com/facebook/react/blob/v19.3.0/packages/react-reconciler/src/ReactTypeOfMode.js: StrictLegacyMode

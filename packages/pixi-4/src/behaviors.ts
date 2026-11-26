@@ -1,4 +1,5 @@
 import * as PIXI from "pixi.js";
+
 import type { Behavior } from "react-pixi-fiber";
 
 // The constructor reads the font from its style, so a `font` passed as a prop of its own goes in it too.

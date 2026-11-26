@@ -1,5 +1,6 @@
 // No 3D adapter in this program: `Props` must be `DisplayObjectProps`.
 import type * as PIXI from "pixi.js";
+
 import type {
   DisplayObjectProps,
   InstanceOf,

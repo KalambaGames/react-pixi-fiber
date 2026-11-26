@@ -1,6 +1,8 @@
 import { BaseTexture, type ISpritesheetData, Spritesheet, type Texture } from "pixi.js";
 import { useEffect, useState } from "react";
+
 import { Container, Sprite, Stage, Text } from "react-pixi-fiber";
+
 import bunnys from "./assets/bunnys.png";
 
 // TexturePacker "hash" format: each frame is a rectangle in bunnys.png.

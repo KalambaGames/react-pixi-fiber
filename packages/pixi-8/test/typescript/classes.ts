@@ -1,6 +1,8 @@
 // Type-checked by `check-types`, not run: `pixi8` takes no `classes`, and `pixi8WithClasses` needs them.
-import pixi8, { pixi8WithClasses } from "../../src/index";
+
 import { Sprite } from "pixi.js";
+
+import pixi8, { pixi8WithClasses } from "../../src/index";
 
 export const withoutOptions = () => pixi8();
 // @ts-expect-error

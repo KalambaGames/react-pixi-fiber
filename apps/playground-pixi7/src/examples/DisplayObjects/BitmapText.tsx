@@ -1,5 +1,6 @@
 import { BitmapFont } from "pixi.js";
 import { useState } from "react";
+
 import { BitmapText, Stage } from "react-pixi-fiber";
 
 BitmapFont.from("Example", { fill: "white", fontFamily: "Arial", fontSize: 32 });

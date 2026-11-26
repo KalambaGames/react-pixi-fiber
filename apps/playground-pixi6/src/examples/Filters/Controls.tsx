@@ -1,9 +1,11 @@
 // Every filter and every parameter: https://pixijs.io/filters/examples/
 import { useControls } from "leva";
-import { AdjustmentFilter as PixiAdjustmentFilter, type AdjustmentFilterOptions } from "pixi-filters";
 import { Point, SCALE_MODES, settings, type Texture } from "pixi.js";
+import { type AdjustmentFilterOptions, AdjustmentFilter as PixiAdjustmentFilter } from "pixi-filters";
 import { useMemo, useRef } from "react";
+
 import { Container, PIXIFilter, Sprite, Stage, Text } from "react-pixi-fiber";
+
 // useSpritesheet source, frame names and rectangles: see the Features / Spritesheet example.
 import bunnysData from "./assets/bunnys.json";
 import bunnys from "./assets/bunnys.png";

@@ -1,4 +1,5 @@
 import type * as PIXI from "pixi.js";
+
 import type { FilterProps, Props } from "react-pixi-fiber";
 
 // Importing this package fills the core's augmentable interfaces with the PixiJS 7 classes.

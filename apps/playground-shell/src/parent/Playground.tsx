@@ -2,25 +2,26 @@ import { type ReactNode, useEffect, useRef, useState, useSyncExternalStore } fro
 import { createPortal } from "react-dom";
 import { type GroupProps, type Layout as PanelLayout, useDefaultLayout, usePanelRef } from "react-resizable-panels";
 import { toast } from "sonner";
+
 import { buildHash, decodeCode, encodeCode, parseHash } from "../share";
-import { browserStorage, createStore, type CodeStore } from "../storage";
+import { browserStorage, type CodeStore, createStore } from "../storage";
 import { AppSidebar } from "./AppSidebar";
 import { Banner } from "./Banner";
+import { ConsolePanel } from "./ConsolePanel";
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from "./components/ui/resizable";
 import { SidebarInset, SidebarProvider } from "./components/ui/sidebar";
 import { Skeleton } from "./components/ui/skeleton";
 import { Toaster } from "./components/ui/sonner";
-import { ConsolePanel } from "./ConsolePanel";
 import { Editor } from "./Editor";
 import { useIsMobile } from "./hooks/use-mobile";
-import type { Layout } from "./useLayout";
 import { Preview } from "./Preview";
 import { SetupBar } from "./SetupBar";
 import { TopBar } from "./TopBar";
+import type { Layout } from "./useLayout";
 import { useLayout } from "./useLayout";
 import { useRunner } from "./useRunner";
 import { useSidebarOpen } from "./useSidebarOpen";
-import { useTheme, type Theme } from "./useTheme";
+import { type Theme, useTheme } from "./useTheme";
 
 export type ExampleGroup =
   | "3D Features"

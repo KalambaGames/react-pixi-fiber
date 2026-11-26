@@ -1,14 +1,15 @@
 import type * as React from "react";
+
+import { AppContext, AppProvider, withApp } from "./AppProvider";
+import { configure } from "./configure";
+import { usePixiApp, usePixiTicker } from "./hooks";
 import { CustomPIXIComponent, CustomPIXIProperty, PIXIComponent, PIXIProperty } from "./PIXIComponent";
 import { PIXIFilter } from "./PIXIFilter";
+import { applyDisplayObjectProps, applyProps } from "./ReactPixiFiberComponent";
 import { getInstanceTag } from "./registry";
-import { AppContext, AppProvider, withApp } from "./AppProvider";
+import { render as renderLazy, unmount as unmountLazy } from "./render";
 import Stage, { createStageClass } from "./Stage";
 import { TAGS } from "./tags";
-import { usePixiApp, usePixiTicker } from "./hooks";
-import { render as renderLazy, unmount as unmountLazy } from "./render";
-import { configure } from "./configure";
-import { applyDisplayObjectProps, applyProps } from "./ReactPixiFiberComponent";
 import type {
   AlphaFilterProps,
   AnimatedSpriteProps,
@@ -34,9 +35,9 @@ import type {
   TilingSpriteProps,
 } from "./types";
 
-export * from "./types";
-export type { ApplyPropsContext, Behavior, BehaviorInput } from "./registry";
 export type { PixiTickerCallback, PixiTickerOptions } from "./hooks";
+export type { ApplyPropsContext, Behavior, BehaviorInput } from "./registry";
+export * from "./types";
 
 // Filled by a PixiJS adapter's module augmentation. Empty here so the core compiles without one.
 export interface PixiExtraProps {}
@@ -64,13 +65,13 @@ type Stage = StageComponent;
 
 export {
   AppContext,
+  AppProvider,
   applyDisplayObjectProps,
   applyProps,
-  AppProvider,
-  configure,
-  createStageClass,
   CustomPIXIComponent,
   CustomPIXIProperty,
+  configure,
+  createStageClass,
   getInstanceTag,
   PIXIComponent,
   PIXIFilter,

@@ -2,7 +2,9 @@ import { CompositeTilemap } from "@pixi/tilemap";
 import type { Container as PixiContainer } from "pixi.js";
 import { Assets, Rectangle, Texture, TextureSource } from "pixi.js";
 import { useEffect, useRef, useState } from "react";
+
 import { Container, PIXIComponent, Stage, Text, usePixiTicker } from "react-pixi-fiber";
+
 import tinyTown from "./assets/tiny-town.png";
 
 TextureSource.defaultOptions.scaleMode = "nearest";

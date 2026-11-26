@@ -2,14 +2,16 @@ import {
   CubeGeometry,
   Material3D,
   type Mesh3D as PixiMesh3D,
-  SphereGeometry,
   type View3D as PixiView3D,
+  SphereGeometry,
   Vector3,
 } from "@pixi/3d";
-import { Camera3D, DirectionalLight, Mesh3D, OrbitCamera, View3D } from "@react-pixi-fiber/pixi3d-0";
-import { Point, type Text as PixiText } from "pixi.js";
+import { type Text as PixiText, Point } from "pixi.js";
 import { useRef } from "react";
+
 import { Stage, Text, usePixiTicker } from "react-pixi-fiber";
+import { Camera3D, DirectionalLight, Mesh3D, OrbitCamera, View3D } from "@react-pixi-fiber/pixi3d-0";
+
 import { Floor, fog } from "./components/Floor";
 
 const cube = new CubeGeometry();

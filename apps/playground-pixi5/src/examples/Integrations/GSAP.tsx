@@ -3,7 +3,9 @@ import { PixiPlugin } from "gsap/PixiPlugin";
 import * as PIXI from "pixi.js";
 import { Point, SCALE_MODES, settings, type Texture } from "pixi.js";
 import { useEffect, useMemo, useRef } from "react";
+
 import { Sprite, Stage, Text } from "react-pixi-fiber";
+
 // useSpritesheet source, frame names and rectangles: see the Features / Spritesheet example.
 import bunnysData from "./assets/bunnys.json";
 import bunnys from "./assets/bunnys.png";

@@ -1,10 +1,11 @@
-import { afterEach, beforeEach, describe, it, expect, vi } from "vitest";
-import type { MockInstance } from "vitest";
 import React, { StrictMode } from "react";
-import renderer, { act } from "react-test-renderer";
 import type { ReactTestRenderer } from "react-test-renderer";
-import { configure, Container, PIXIComponent, Sprite, Stage } from "react-pixi-fiber";
+import renderer, { act } from "react-test-renderer";
+import type { MockInstance } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+
 import type { PixiAdapter, ReactAdapter } from "react-pixi-fiber";
+import { Container, configure, PIXIComponent, Sprite, Stage } from "react-pixi-fiber";
 
 const settle = () =>
   act(async () => {

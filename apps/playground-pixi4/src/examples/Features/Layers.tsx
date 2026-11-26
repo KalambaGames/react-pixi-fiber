@@ -1,10 +1,13 @@
 // This is demo of pixi-display.js, https://github.com/gameofbombs/pixi-display
 // Drag the rabbits to understand what's going on
 // https://pixijs.io/examples/#/layers/zorder.js
-import { Group, Layer as PixiLayer, Stage as LayersStage } from "pixi-layers";
+
 import * as PIXI from "pixi.js";
+import { Group, Stage as LayersStage, Layer as PixiLayer } from "pixi-layers";
 import React from "react";
+
 import { Container, PIXIComponent, PIXIProperty, Sprite, Stage } from "react-pixi-fiber";
+
 // useSpritesheet source, frame names and rectangles: see the Features / Spritesheet example.
 import bunnysData from "./assets/bunnys.json";
 import bunnys from "./assets/bunnys.png";

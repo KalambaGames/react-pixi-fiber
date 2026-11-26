@@ -1,5 +1,6 @@
-import { describe, it, expect } from "vitest";
-import { recordDefault, getRecordedDefault } from "../src/defaults";
+import { describe, expect, it } from "vitest";
+
+import { getRecordedDefault, recordDefault } from "../src/defaults";
 
 const isPoint = v => v != null && typeof v === "object" && "isFakePoint" in v;
 

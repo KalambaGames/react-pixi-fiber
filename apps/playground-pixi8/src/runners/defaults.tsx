@@ -1,8 +1,10 @@
-import react19 from "@react-pixi-fiber/react-19";
-import pixi8 from "@react-pixi-fiber/pixi-8";
 import { createRoot } from "react-dom/client";
+
 import { configure } from "react-pixi-fiber";
+import pixi8 from "@react-pixi-fiber/pixi-8";
+import react19 from "@react-pixi-fiber/react-19";
 import { startRunner } from "playground-shell/runner";
+
 import { lazyModules, modules } from "../modules";
 
 // The setup panel in src/examples/index.ts shows the same defaults.

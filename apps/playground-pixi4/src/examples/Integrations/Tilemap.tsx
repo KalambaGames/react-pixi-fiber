@@ -1,8 +1,10 @@
-import { CompositeRectTileLayer } from "pixi-tilemap";
 import type { Container as PixiContainer } from "pixi.js";
 import { Rectangle, SCALE_MODES, settings, Texture } from "pixi.js";
+import { CompositeRectTileLayer } from "pixi-tilemap";
 import { useEffect, useRef } from "react";
+
 import { Container, PIXIComponent, Stage, Text, usePixiTicker } from "react-pixi-fiber";
+
 import tinyTown from "./assets/tiny-town.png";
 
 settings.SCALE_MODE = SCALE_MODES.NEAREST;

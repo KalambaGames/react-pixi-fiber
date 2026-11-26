@@ -1,8 +1,10 @@
-import { type BatchedMesh3D as PixiBatchedMesh3D, CubeGeometry, Material3D, Matrix4, RenderPassBit } from "@pixi/3d";
-import { BatchedMesh3D, Camera3D, DirectionalLight, OrbitCamera, View3D } from "@react-pixi-fiber/pixi3d-0";
+import { CubeGeometry, Material3D, Matrix4, type BatchedMesh3D as PixiBatchedMesh3D, RenderPassBit } from "@pixi/3d";
 import { useControls } from "leva";
 import { useEffect, useRef } from "react";
+
 import { Stage, usePixiTicker } from "react-pixi-fiber";
+import { BatchedMesh3D, Camera3D, DirectionalLight, OrbitCamera, View3D } from "@react-pixi-fiber/pixi3d-0";
+
 import { Floor, fog } from "./components/Floor";
 
 const cube = new CubeGeometry({ depth: 0.6, height: 0.6, width: 0.6 });

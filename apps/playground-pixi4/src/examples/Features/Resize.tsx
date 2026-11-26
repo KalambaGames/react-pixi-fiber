@@ -1,6 +1,7 @@
 // The left stage resizes on a window resize only, so it ignores the dragged corner.
 // The right stage resizes from a `ResizeObserver`, so it follows any change to its element.
 import { type RefObject, useEffect, useRef, useState } from "react";
+
 import { Stage, Text, usePixiApp } from "react-pixi-fiber";
 
 function Size({

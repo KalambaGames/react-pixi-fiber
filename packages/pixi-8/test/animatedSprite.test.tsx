@@ -1,9 +1,11 @@
-import { describe, it, expect, vi } from "vitest";
+import * as PIXI from "pixi.js";
 import React from "react";
 import renderer, { act } from "react-test-renderer";
-import * as PIXI from "pixi.js";
-import react18 from "@react-pixi-fiber/react-18";
+import { describe, expect, it, vi } from "vitest";
+
 import { AnimatedSprite, configure, Stage } from "react-pixi-fiber";
+import react18 from "@react-pixi-fiber/react-18";
+
 import pixi8 from "../src/index";
 
 // Renders `child` on a Stage and returns the sprite and a function that renders the next child.

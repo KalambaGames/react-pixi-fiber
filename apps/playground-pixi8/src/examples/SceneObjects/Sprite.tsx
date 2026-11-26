@@ -9,7 +9,9 @@ import {
   useMemo,
   useState,
 } from "react";
+
 import { Container, type PixiAppProperties, Sprite, Stage, usePixiTicker, withApp } from "react-pixi-fiber";
+
 // useSpritesheet source, frame names and rectangles: see the Features / Spritesheet example.
 import bunnysData from "./assets/bunnys.json";
 import bunnys from "./assets/bunnys.png";

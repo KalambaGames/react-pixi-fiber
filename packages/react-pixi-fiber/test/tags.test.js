@@ -1,4 +1,5 @@
-import { describe, it, expect } from "vitest";
+import { describe, expect, it } from "vitest";
+
 import { DEPRECATED_TAGS, DISPLAY_OBJECT_TAGS, FILTER_TAGS, TAGS } from "../src/tags";
 
 describe("TAGS", () => {

@@ -1,7 +1,8 @@
-import { describe, it, expect, vi } from "vitest";
-import React from "react";
 import * as PIXI from "pixi.js";
-import { Container, Text, render, unmount } from "../src/index";
+import React from "react";
+import { describe, expect, it, vi } from "vitest";
+
+import { Container, render, Text, unmount } from "../src/index";
 
 describe("render and unmount", () => {
   it("renders synchronously into a PixiJS container and unmounts it", () => {

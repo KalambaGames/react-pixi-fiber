@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+
 import { setup } from "../src/parent/setup";
 
 describe("setup", () => {

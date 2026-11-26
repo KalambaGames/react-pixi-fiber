@@ -1,13 +1,14 @@
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
-import React, { createRef } from "react";
-import * as PIXI from "pixi.js";
 import type * as PIXI3D from "@pixi/3d";
 import { OrbitCamera as PixiOrbitCamera } from "@pixi/3d/extras";
-import pixi8 from "@react-pixi-fiber/pixi-8";
-import pixi3d0, { Camera3D, Container3D, Mesh3D, OrbitCamera, View3D } from "@react-pixi-fiber/pixi3d-0";
-import type { ControllerNode } from "@react-pixi-fiber/pixi3d-0";
-import { configure, Container, render, unmount } from "react-pixi-fiber";
+import * as PIXI from "pixi.js";
+import React, { createRef } from "react";
+import { afterEach, beforeEach, describe, expect, it } from "vitest";
+
 import type { ReactAdapter } from "react-pixi-fiber";
+import { Container, configure, render, unmount } from "react-pixi-fiber";
+import pixi8 from "@react-pixi-fiber/pixi-8";
+import type { ControllerNode } from "@react-pixi-fiber/pixi3d-0";
+import pixi3d0, { Camera3D, Container3D, Mesh3D, OrbitCamera, View3D } from "@react-pixi-fiber/pixi3d-0";
 
 // The PixiJS 3D adapter with one React adapter. The tree renders into a `PIXI.Container`, not a `<Stage>`: with
 // `@pixi/3d` imported, `Application.init` with the WebGL renderer throws under the WebGL mock.

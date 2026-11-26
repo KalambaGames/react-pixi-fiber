@@ -1,7 +1,8 @@
-import { describe, it, expect, vi, afterEach } from "vitest";
+import * as PIXI from "pixi.js";
 import React, { StrictMode } from "react";
 import { act } from "react-test-renderer";
-import * as PIXI from "pixi.js";
+import { afterEach, describe, expect, it, vi } from "vitest";
+
 import { Container, PIXIComponent, render, unmount } from "../src/index";
 
 const casingWarning = /Invalid prop `buttonmode` on `<Container \/>`. Did you mean `buttonMode`\?/;

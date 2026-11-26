@@ -1,7 +1,8 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import React from "react";
 import * as PIXI from "pixi.js";
+import React from "react";
 import renderer, { act } from "react-test-renderer";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+
 import react18 from "@react-pixi-fiber/react-18";
 
 describe("configure", () => {

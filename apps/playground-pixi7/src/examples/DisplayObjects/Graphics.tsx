@@ -1,4 +1,5 @@
 import type { Graphics as PixiGraphics } from "pixi.js";
+
 import { Graphics, Stage } from "react-pixi-fiber";
 
 // The adapter has no draw prop for PixiJS 7, so the ref callback draws the shapes.

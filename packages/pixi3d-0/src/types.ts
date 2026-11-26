@@ -1,7 +1,9 @@
 import type * as PIXI3D from "@pixi/3d";
 import type { FPSCameraOptions, OrbitCameraOptions } from "@pixi/3d/extras";
 import type * as PIXI from "pixi.js";
+
 import type { Props } from "react-pixi-fiber";
+
 import type { CONSTRUCTOR_ONLY } from "./behaviors";
 
 // Importing this package fills the core's augmentable interfaces with the `@pixi/3d` classes.

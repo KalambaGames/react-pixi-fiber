@@ -1,15 +1,4 @@
-import {
-  afterMount,
-  afterMountRevealed,
-  createInstance,
-  isAfterMountPending,
-  diffProperties,
-  setInitialProperties,
-  translate,
-  updateProperties,
-} from "./ReactPixiFiberComponent";
-import { getDefaultValue } from "./PixiPropertyOperations";
-import { validateProperties as validateUnknownProperties } from "./ReactPixiFiberUnknownPropertyHook";
+import { getNodeAdapter, getStrictModeBit } from "./configure";
 import {
   destroyOwnedFilters,
   displayBefore,
@@ -21,12 +10,23 @@ import {
   removeFilter,
 } from "./filters";
 import { heldChildren, holdChild, isHeldBy, releaseChild } from "./heldChildren";
-import { getBoundBehavior, getInstanceTag, isFilterInstance } from "./registry";
-import { getNodeAdapter, getStrictModeBit } from "./configure";
-import { findStrictRoot } from "./utils";
 import invariant from "./invariant";
-import warning from "./warning";
+import { getDefaultValue } from "./PixiPropertyOperations";
+import {
+  afterMount,
+  afterMountRevealed,
+  createInstance,
+  diffProperties,
+  isAfterMountPending,
+  setInitialProperties,
+  translate,
+  updateProperties,
+} from "./ReactPixiFiberComponent";
+import { validateProperties as validateUnknownProperties } from "./ReactPixiFiberUnknownPropertyHook";
+import { getBoundBehavior, getInstanceTag, isFilterInstance } from "./registry";
 import type { HostOps, PixiFragmentInstance } from "./types";
+import { findStrictRoot } from "./utils";
+import warning from "./warning";
 
 function appendDisplayChild(parentInstance: any, child: any): void {
   const ops = getBoundBehavior(parentInstance);

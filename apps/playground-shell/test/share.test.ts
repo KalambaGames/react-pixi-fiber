@@ -1,4 +1,5 @@
 import { describe, expect, it } from "vitest";
+
 import { buildHash, decodeCode, encodeCode, hashCode, parseHash } from "../src/share";
 
 describe("share codec", () => {

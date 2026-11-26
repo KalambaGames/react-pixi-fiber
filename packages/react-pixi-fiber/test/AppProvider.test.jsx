@@ -1,10 +1,11 @@
-import { describe, it, expect, vi } from "vitest";
+import * as PIXI from "pixi.js";
 import React from "react";
 import renderer from "react-test-renderer";
+import { describe, expect, it, vi } from "vitest";
+
 import { AppContext, AppProvider, Container, withApp } from "../src";
-import Stage from "../src/Stage";
 import { render } from "../src/render";
-import * as PIXI from "pixi.js";
+import Stage from "../src/Stage";
 
 describe("AppProvider", () => {
   it("exports AppContext with Provider and Consumer", () => {

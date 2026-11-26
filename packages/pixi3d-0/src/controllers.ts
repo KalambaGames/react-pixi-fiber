@@ -1,7 +1,9 @@
-import { Container3D } from "@pixi/3d";
 import type { Destroy3DOptions } from "@pixi/3d";
+import { Container3D } from "@pixi/3d";
 import type { FPSCamera, OrbitCamera } from "@pixi/3d/extras";
+
 import type { Behavior } from "react-pixi-fiber";
+
 import { clonePoint, hasSetter, parseCoordinates } from "./points";
 import { viewOf } from "./view";
 

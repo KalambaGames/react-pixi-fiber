@@ -1,8 +1,10 @@
-import { describe, it, expect, beforeEach } from "vitest";
-import React from "react";
 import * as PIXI from "pixi.js";
+import React from "react";
+import { beforeEach, describe, expect, it } from "vitest";
+
+import { Container, configure, PIXIComponent, render, unmount } from "react-pixi-fiber";
 import react18 from "@react-pixi-fiber/react-18";
-import { configure, Container, PIXIComponent, render, unmount } from "react-pixi-fiber";
+
 import pixi8 from "../src/index";
 
 describe("afterMove", () => {

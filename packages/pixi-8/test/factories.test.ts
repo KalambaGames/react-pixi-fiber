@@ -1,5 +1,6 @@
-import { describe, it, expect, vi } from "vitest";
 import * as PIXI from "pixi.js";
+import { describe, expect, it, vi } from "vitest";
+
 import { allClasses } from "../src/allClasses";
 import { factories, type Pixi8Tag } from "../src/factories";
 

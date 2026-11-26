@@ -1,6 +1,7 @@
 import { FancyButton, CheckBox as PixiCheckBox, Slider as PixiSlider, ScrollBox } from "@pixi/ui";
 import { Graphics, Text as PixiText } from "pixi.js";
 import { useState } from "react";
+
 import { PIXIComponent, Stage, Text } from "react-pixi-fiber";
 
 const textStyle = { fill: "white", fontFamily: "Arial", fontSize: 16 } as const;

@@ -1,6 +1,7 @@
-import { RenderContainer } from "@react-pixi-fiber/pixi-8";
 import type { Renderer } from "pixi.js";
+
 import { Stage, Text } from "react-pixi-fiber";
+import { RenderContainer } from "@react-pixi-fiber/pixi-8";
 
 const clearToPurple = (renderer: Renderer) => renderer.clear({ clearColor: "purple" });
 

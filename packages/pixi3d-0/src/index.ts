@@ -1,10 +1,12 @@
 import type * as PIXI3D from "@pixi/3d";
 import { Container3D as Container3DClass } from "@pixi/3d";
 import type { FPSCamera as PixiFPSCamera, OrbitCamera as PixiOrbitCamera } from "@pixi/3d/extras";
+
 import type { Pixi3dAdapter, PixiComponent } from "react-pixi-fiber";
+
 import { behaviors } from "./behaviors";
-import { controllerBehavior } from "./controllers";
 import type { ControllerNode } from "./controllers";
+import { controllerBehavior } from "./controllers";
 import { clonePoint, isPoint, setPoint } from "./points";
 import { properties } from "./properties";
 import type {
@@ -23,6 +25,7 @@ import type {
   Sprite3DProps,
   View3DProps,
 } from "./types";
+
 export type { ControllerNode } from "./controllers";
 export * from "./types";
 

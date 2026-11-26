@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+
 import { browserStorage } from "../storage";
 
 export type Theme = "system" | "light" | "dark";

@@ -1,6 +1,7 @@
-import { DOMContainer } from "@react-pixi-fiber/pixi-8";
 import { useMemo } from "react";
+
 import { Stage } from "react-pixi-fiber";
+import { DOMContainer } from "@react-pixi-fiber/pixi-8";
 
 export default function DOMContainerExample() {
   const element = useMemo(() => {

@@ -1,8 +1,10 @@
-import { describe, it, expect } from "vitest";
-import { STAGE_PROP_NAMES, getCanvasProps, getContainerProps } from "../../src/Stage/props";
-import { getStandardNames } from "../../src/PixiProperty";
-import { getPixiAdapter } from "../../src/configure";
+import { describe, expect, it } from "vitest";
+
 import pixi6 from "@react-pixi-fiber/pixi-6";
+
+import { getPixiAdapter } from "../../src/configure";
+import { getStandardNames } from "../../src/PixiProperty";
+import { getCanvasProps, getContainerProps, STAGE_PROP_NAMES } from "../../src/Stage/props";
 
 const adapter = pixi6();
 

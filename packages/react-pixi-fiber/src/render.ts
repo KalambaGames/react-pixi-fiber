@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+
 import { getConfigured, markRendered } from "./configure";
 import type { Renderer } from "./types";
 import warning from "./warning";

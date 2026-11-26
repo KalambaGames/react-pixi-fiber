@@ -1,6 +1,6 @@
-import { describe, it, expect, vi } from "vitest";
 import * as PIXI from "pixi.js";
-import { DISPLAY_OBJECT_TAGS, FILTER_TAGS, TAGS } from "../../react-pixi-fiber/src/tags";
+import { describe, expect, it, vi } from "vitest";
+
 import { configure } from "../../react-pixi-fiber/src/configure";
 import {
   createInstance,
@@ -8,6 +8,7 @@ import {
   setInitialProperties,
   updateProperties,
 } from "../../react-pixi-fiber/src/ReactPixiFiberComponent";
+import { DISPLAY_OBJECT_TAGS, FILTER_TAGS, TAGS } from "../../react-pixi-fiber/src/tags";
 import pixi7, { FXAAFilter, HTMLText, NineSlicePlane, SimpleMesh, SimplePlane, SimpleRope } from "../src/index";
 
 const texture = PIXI.Texture.WHITE;

@@ -11,7 +11,9 @@ import {
   SpotLight,
   Sprite3D,
 } from "@pixi/3d";
+
 import type { Behavior } from "react-pixi-fiber";
+
 import { constructorOptions, guardCamera, setActive, viewBehavior, watchVisible } from "./view";
 
 // The options of each class that the instance cannot take after construction: it has no member of that name, or only

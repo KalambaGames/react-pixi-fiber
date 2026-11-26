@@ -1,7 +1,10 @@
 // Type-checked by `check-types`, not run: the compat module's typings accept the translated props on every tag.
-import React from "react";
+
 import * as PIXI from "pixi.js";
+import React from "react";
+
 import { Container, Sprite } from "react-pixi-fiber";
+
 import compat from "../../src/compat/pixi6";
 import pixi8 from "../../src/index";
 

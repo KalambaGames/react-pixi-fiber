@@ -1,25 +1,27 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
+import * as PIXI from "pixi.js";
 import React, { StrictMode } from "react";
 import renderer, { act } from "react-test-renderer";
-import * as PIXI from "pixi.js";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+
+import pixi6 from "@react-pixi-fiber/pixi-6";
+
 import {
   AppContext,
   AppProvider,
+  applyDisplayObjectProps,
+  applyProps,
   Container,
   CustomPIXIComponent,
   CustomPIXIProperty,
-  NineSlicePlane,
-  Sprite,
-  applyDisplayObjectProps,
-  applyProps,
   createStageClass,
+  NineSlicePlane,
   render,
+  Sprite,
   unmount,
   usePixiApp,
   usePixiTicker,
   withApp,
 } from "../src/index";
-import pixi6 from "@react-pixi-fiber/pixi-6";
 import { registerAdapterBehaviors } from "../src/registry";
 
 // 2.x code, unchanged, against react-18 and pixi-6. The deprecation warnings are module-level once guards, and this

@@ -4,6 +4,7 @@
 // PixiJS measures the `resizeTo` element on a window resize only, so the left stage ignores the dragged corner.
 // The right stage also calls `app.resize()` from a `ResizeObserver`, so it follows any change to its element.
 import { type RefObject, useEffect, useRef, useState } from "react";
+
 import { Stage, Text, usePixiApp } from "react-pixi-fiber";
 
 function Size({ label, observe }: { label: string; observe?: RefObject<HTMLDivElement | null> }) {

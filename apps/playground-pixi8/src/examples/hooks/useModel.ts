@@ -1,7 +1,7 @@
-import { Assets } from "pixi.js";
-import { useEffect, useState } from "react";
 // Types only: a value import of @pixi/3d here would register the 3D backend in every runner.
 import type { Scene3DSource } from "@pixi/3d";
+import { Assets } from "pixi.js";
+import { useEffect, useState } from "react";
 
 // null until the file is ready.
 // The Assets cache keeps the source. An app that drops the model calls Assets.unload(url).

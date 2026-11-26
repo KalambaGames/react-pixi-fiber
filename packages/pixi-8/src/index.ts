@@ -1,6 +1,9 @@
 import type * as PIXI from "pixi.js";
 import { ObservablePoint, Point } from "pixi.js";
+
 import type { Behavior, PixiAdapter, PixiComponent } from "react-pixi-fiber";
+
+import { allClasses } from "./allClasses";
 import { factories, type Pixi8Tag } from "./factories";
 import { properties } from "./properties";
 import type {
@@ -12,9 +15,9 @@ import type {
   RenderContainerProps,
   RenderLayerProps,
 } from "./types";
-import { allClasses } from "./allClasses";
-export { allClasses };
+
 export * from "./types";
+export { allClasses };
 
 // A tag is a string at runtime and a component in the type system, like the core tags.
 export const DOMContainer = "DOMContainer" as unknown as PixiComponent<DOMContainerProps, PIXI.DOMContainer>;

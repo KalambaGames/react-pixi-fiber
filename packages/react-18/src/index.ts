@@ -7,6 +7,7 @@ import {
   DiscreteEventPriority,
   LegacyRoot,
 } from "react-reconciler/constants";
+
 import type { HostOps, ReactAdapter, Renderer } from "react-pixi-fiber";
 
 // https://github.com/facebook/react/blob/v18.3.1/packages/react-reconciler/src/ReactTypeOfMode.js: StrictLegacyMode

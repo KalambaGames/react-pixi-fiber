@@ -1,8 +1,10 @@
 import * as PIXI3D from "@pixi/3d";
 import * as PIXI from "pixi.js";
 import React from "react";
+
 import type { DisplayObjectProps, IsNode3D, PointProperties3D, Props } from "react-pixi-fiber";
 import { PIXIComponent, Sprite } from "react-pixi-fiber";
+
 import { Camera3D, Container3D, Mesh3D, Model3D, Sprite3D, View3D } from "../../src/index";
 
 type Equal<A, B> = (<G>() => G extends A ? 1 : 2) extends <G>() => G extends B ? 1 : 2 ? true : false;

@@ -1,11 +1,12 @@
 // Based on: https://github.com/facebook/react/blob/27535e7bfcb63e8a4d65f273311e380b4ca12eff/packages/react-dom/src/client/DOMPropertyOperations.js
-import warning from "./warning";
+
 import { getNodeAdapter, getPixiAdapter, getStackAddendum, getStrictModeBit, getTagDefaults } from "./configure";
 import { getRecordedDefault, recordDefault } from "./defaults";
 import { filtersPropWritten } from "./filters";
 import { getOwn, getPropertyInfo, shouldIgnoreAttribute, shouldRemoveAttribute } from "./PixiProperty";
 import { getBoundBehavior, getInstanceTag, isFilterInstance } from "./registry";
 import { findStrictRoot, parsePoint, setPixiValue } from "./utils";
+import warning from "./warning";
 
 const warnedInvalid = new Set<string>();
 // The filter props that the instance did not have before the core first wrote them: options the constructor reads.

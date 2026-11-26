@@ -1,6 +1,7 @@
 // `pixi8({ compat })` with this module's default export translates the PixiJS 6 and 7 props that PixiJS 8 renamed or
 // dropped. The `compat/pixi6` and `compat/pixi7` subpaths both point at this module: the two tables are the same.
 import type { FederatedPointerEvent } from "pixi.js";
+
 import warning from "../warning";
 
 type Rename = (value: unknown) => Record<string, unknown>;

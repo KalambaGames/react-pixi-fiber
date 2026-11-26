@@ -1,8 +1,10 @@
-import { describe, it, expect } from "vitest";
-import React, { useLayoutEffect, useRef } from "react";
 import * as PIXI from "pixi.js";
+import React, { useLayoutEffect, useRef } from "react";
+import { describe, expect, it } from "vitest";
+
+import { Container, configure, render, Sprite, unmount } from "react-pixi-fiber";
 import react18 from "@react-pixi-fiber/react-18";
-import { configure, Container, render, Sprite, unmount } from "react-pixi-fiber";
+
 import pixi8, { RenderLayer } from "../src/index";
 
 describe("RenderLayer", () => {

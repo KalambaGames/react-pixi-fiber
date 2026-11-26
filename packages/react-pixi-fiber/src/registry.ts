@@ -1,6 +1,6 @@
 import invariant from "./invariant";
-import warning from "./warning";
 import { DEPRECATED_TAGS } from "./tags";
+import warning from "./warning";
 
 export interface ApplyPropsContext<P> {
   applyDisplayObjectProps(oldProps: P | undefined, newProps: P): void;

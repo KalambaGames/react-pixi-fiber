@@ -1,7 +1,9 @@
 import { CubeGeometry, Material3D } from "@pixi/3d";
-import { Camera3D, DirectionalLight, Mesh3D, OrbitCamera, View3D } from "@react-pixi-fiber/pixi3d-0";
 import { useMemo, useState } from "react";
+
 import { Stage, Text, usePixiTicker } from "react-pixi-fiber";
+import { Camera3D, DirectionalLight, Mesh3D, OrbitCamera, View3D } from "@react-pixi-fiber/pixi3d-0";
+
 import { Floor, fog } from "./components/Floor";
 
 const start: [number, number, number] = [0, 1.5, 4];

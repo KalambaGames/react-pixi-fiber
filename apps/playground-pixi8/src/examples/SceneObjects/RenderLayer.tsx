@@ -1,7 +1,7 @@
 // This is a port of the pixi-display.js demo, https://github.com/gameofbombs/pixi-display, onto the PixiJS 8 RenderLayer
 // Drag the rabbits to understand what's going on
 // https://pixijs.io/examples/#/layers/zorder.js
-import { RenderLayer } from "@react-pixi-fiber/pixi-8";
+
 import * as PIXI from "pixi.js";
 import { Point, type Texture } from "pixi.js";
 import {
@@ -16,7 +16,10 @@ import {
   useMemo,
   useState,
 } from "react";
+
 import { Container, PIXIComponent, PIXIProperty, Sprite, Stage } from "react-pixi-fiber";
+import { RenderLayer } from "@react-pixi-fiber/pixi-8";
+
 // useSpritesheet source, frame names and rectangles: see the Features / Spritesheet example.
 import bunnysData from "./assets/bunnys.json";
 import bunnys from "./assets/bunnys.png";

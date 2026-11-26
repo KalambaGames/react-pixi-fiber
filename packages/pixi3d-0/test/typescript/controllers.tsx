@@ -1,6 +1,7 @@
 import type * as PIXI3D from "@pixi/3d";
 import type { OrbitCamera as PixiOrbitCamera } from "@pixi/3d/extras";
 import React from "react";
+
 import type { ControllerNode } from "../../src/index";
 import { FPSCamera, OrbitCamera } from "../../src/index";
 
