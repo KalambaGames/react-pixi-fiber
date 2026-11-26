@@ -26,7 +26,7 @@ Install the core, one React adapter and one PixiJS adapter next to [React] and [
     npm install react-pixi-fiber @react-pixi-fiber/react-19 @react-pixi-fiber/pixi-8 react react-dom pixi.js
 
 > [!IMPORTANT]
-> The core renders nothing without adapters. Install one React adapter that matches the major version of `react`. Install one PixiJS adapter that matches the major version of `pixi.js`. Then call `configure` once, before the first render. [Setup](#setup) has the adapter table.
+> The core renders nothing without adapters. Call `configure` once, before the first render. [Setup](#setup) has the adapter table.
 
 This package works with [Vite](https://vite.dev) and webpack based setups such as [Create React App](https://github.com/facebookincubator/create-react-app) – the examples below use Vite.
 
@@ -102,7 +102,7 @@ No. It adds no cost per frame. PixiJS renders the scene, and React runs only whe
 
 #### Can I use PixiJS classes that have no tag?
 
-Yes. Every PixiJS adapter implements the 13 Display Object [tags](#tags) and the 5 filter tags. For any other class, use [custom components](#custom-components).
+Yes, with [custom components](#custom-components).
 
 ## Setup
 
@@ -321,7 +321,7 @@ The HTML-like syntax; [called JSX](https://reactjs.org/docs/introducing-jsx.html
     <strong>With ReactDOM (React 17)</strong>
   </summary>
 
-Configure `@react-pixi-fiber/react-17` first, as in [Setup](#setup). React 16 is not supported.
+Configure `@react-pixi-fiber/react-17` first, as in [Setup](#setup).
 
 ```jsx harmony
 import * as PIXI from "pixi.js";
@@ -342,9 +342,6 @@ render(
 );
 ```
 
-This example will render [`PIXI.Sprite`] object into a [Root Container] of [`PIXI.Application`] on the page.
-
-The HTML-like syntax; [called JSX](https://reactjs.org/docs/introducing-jsx.html) is not required to use with this renderer, but it makes code more readable. You can use [Babel](https://babeljs.io/) with a [React preset](https://babeljs.io/docs/plugins/preset-react/) to convert JSX into native JavaScript.
 </details>
 
 ---
@@ -408,7 +405,7 @@ A change to `options.width` or `options.height` resizes the renderer. A change t
 | Unmount | – | with the application | `destroyOptions`, default `true`: objects the app added to `app.stage`, with their textures |
 | `app` provided | after the first render | never | nothing |
 
-`onBeforeDestroy` runs once for each application that `Stage` created and that got `onInit`, after React unmounts the children of `Stage`. Children that `Stage` renders are always destroyed without their textures. An error thrown in `onBeforeDestroy` does not reach an error boundary: `Stage` destroys the application, then throws the error again from a timeout.
+`onBeforeDestroy` runs once for each application that `Stage` created and that got `onInit`, after React unmounts the children of `Stage`. An error thrown in `onBeforeDestroy` does not reach an error boundary: `Stage` destroys the application, then throws the error again from a timeout.
 
 `bridgeContexts` lists React contexts provided around `<Stage />` that its children can read, see [Context – Using a context provided outside `Stage`](#context--using-a-context-provided-outside-stage).
 
@@ -624,49 +621,13 @@ Outside `<Stage />` and `<AppProvider />`, the wrapped component gets `app={null
 
 ```jsx harmony
 import { render } from "react-dom";
-import { AppContext, Sprite, Stage } from "react-pixi-fiber";
-import bunny from "./bunny.png";
+import { AppContext, Stage } from "react-pixi-fiber";
 
-class RotatingBunny extends Component {
-  state = {
-    rotation: 0,
-  };
-
-  componentDidMount() {
-    // Note that `app` prop is coming directly from AppContext.Consumer
-    this.props.app.ticker.add(this.animate);
-  }
-
-  componentWillUnmount() {
-    this.props.app.ticker.remove(this.animate);
-  }
-
-  animate = delta => {
-    this.setState(state => ({
-      rotation: state.rotation + 0.1 * delta,
-    }));
-  };
-
-  render() {
-    return (
-      <Sprite 
-        {...this.props}
-        texture={PIXI.Texture.from(bunny)}
-        rotation={this.state.rotation} 
-      />
-    );
-  }
-}
-RotatingBunny.propTypes = {
-  app: PropTypes.object.isRequired,
-};
-
+// `RotatingBunny` as in the `withApp` example, without `withApp`
 render(
   <Stage options={{ backgroundColor: 0x10bb99, height: 600, width: 800 }}>
     <AppContext.Consumer>
-      {app => (
-        <RotatingBunny app={app} x={200} y={200} />
-      )}
+      {app => <RotatingBunny app={app} x={200} y={200} />}
     </AppContext.Consumer>
   </Stage>,
   document.getElementById("container")
@@ -796,7 +757,7 @@ The core creates each filter, and it destroys the filter when the element or an 
 | `<DisplacementFilter />` | a displacement read from the texture of `sprite`, `PIXI.DisplacementFilter` |
 | `<NoiseFilter />` | random noise, `PIXI.NoiseFilter` |
 
-Every adapter implements the 5 filter tags. The PixiJS 4 to 7 adapters add `FXAAFilter`, imported from the adapter package. PixiJS 8 has no `FXAAFilter`.
+The PixiJS 4 to 7 adapters add `FXAAFilter`, imported from the adapter package. PixiJS 8 has no `FXAAFilter`.
 
 The props are the setters of the filter class of your PixiJS version. For example, `BlurFilter` takes `blur` on PixiJS 4 to 7 and `strength` on PixiJS 8.
 
@@ -1037,18 +998,6 @@ Add a renderer or application extension before `Stage` creates the application, 
 ### What does `unmount` return?
 
 `unmount(container)` never throws. It returns `true` for a container that was rendered into (calling it again is a no-op that returns `true`) and `false`, with a warning in development, for a container that never was.
-
-### Can I migrate from `react-pixi-fiber@0.x.y`?
-
-Yes, read [migration guide](#migrating-from-react-pixi-fiber0xy-before-version-100).
-
-### Can I migrate from `react-pixi-fiber@2.x`?
-
-Yes, read [migration guide](#migrating-to-300).
-
-### Can I migrate from `react-pixi`?
-
-Yes, it is easy, read [migration guide](#migrating-from-react-pixi).
 
 ### Is server-side rendering supported?
 
