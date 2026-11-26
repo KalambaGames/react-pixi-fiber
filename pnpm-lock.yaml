@@ -684,6 +684,9 @@ importers:
       '@react-pixi-fiber/pixi-8':
         specifier: workspace:*
         version: link:../../../packages/pixi-8
+      '@react-pixi-fiber/pixi3d-0':
+        specifier: workspace:*
+        version: link:../../../packages/pixi3d-0
       '@react-pixi-fiber/react-17':
         specifier: workspace:*
         version: link:../../../packages/react-17
@@ -714,6 +717,9 @@ importers:
       '@react-pixi-fiber/pixi-8':
         specifier: workspace:*
         version: link:../../../packages/pixi-8
+      '@react-pixi-fiber/pixi3d-0':
+        specifier: workspace:*
+        version: link:../../../packages/pixi3d-0
       '@react-pixi-fiber/react-18':
         specifier: workspace:*
         version: link:../../../packages/react-18
@@ -744,6 +750,9 @@ importers:
       '@react-pixi-fiber/pixi-8':
         specifier: workspace:*
         version: link:../../../packages/pixi-8
+      '@react-pixi-fiber/pixi3d-0':
+        specifier: workspace:*
+        version: link:../../../packages/pixi3d-0
       '@react-pixi-fiber/react-19':
         specifier: workspace:*
         version: link:../../../packages/react-19

@@ -9,6 +9,7 @@
     "module": "esnext",
     "moduleResolution": "bundler",
     "paths": {
+      "@react-pixi-fiber/pixi3d-0": ["./src/index.ts"],
       "@react-pixi-fiber/pixi-8": ["../pixi-8/src/index.ts"],
       "@react-pixi-fiber/react-18": ["../react-18/src/index.ts"],
       "pixi.js": ["./node_modules/pixi.js"],
