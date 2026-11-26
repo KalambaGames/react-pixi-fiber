@@ -2,12 +2,12 @@
 
 ## Open Development
 
-All work on React Pixi Fiber happens on [GitHub](https://github.com/KalambaGames/react-pixi-fiber). Core team members and external contributors send pull requests. All pull requests go through the same review.
+All work on React Pixi Fiber happens on [GitHub](https://github.com/KalambaGames/react-pixi-fiber). Core team members and external contributors send pull requests.
 
 
 ## Branch Organization
 
-We try to keep the [`master` branch](https://github.com/KalambaGames/react-pixi-fiber/tree/master) stable, with all tests passing. To move fast, we make API changes that can break your application. We recommend [the latest stable version of React](https://reactjs.org/downloads.html).
+We try to keep the [`master` branch](https://github.com/KalambaGames/react-pixi-fiber/tree/master) stable, with all tests passing.
 
 Send pull requests against the `master` branch.
 
@@ -19,7 +19,7 @@ React Pixi Fiber follows [semantic versioning](http://semver.org/). We release p
 
 ## Changelog
 
-Every package has its own `CHANGELOG.md`, for example the [core changelog](./packages/react-pixi-fiber/CHANGELOG.md). At release, Changesets writes the entries from the pending changesets. Put each change in a changeset (`pnpm changeset`). Do not edit a `CHANGELOG.md` by hand.
+Every package has its own `CHANGELOG.md`, for example the [core changelog](./packages/react-pixi-fiber/CHANGELOG.md). At release, Changesets writes the entries from the pending changesets. Do not edit a `CHANGELOG.md` by hand.
 
 Changesets inserts a release above the first header that starts with a version number, for example `## 3.0.0` or `## 2.0.0-rc.4 - 2026-09-28`. A header in brackets, such as `## [2.0.0]`, does not count. Keep version headers without brackets, also in entries that you write by hand on a maintenance branch. Then each release goes on top. An adapter `CHANGELOG.md` holds only its `# <package name>` title until its first release.
 
@@ -69,15 +69,10 @@ The core team reviews each pull request. Then we merge it, request changes, or c
 2. Run `pnpm install` in the repository root.
 3. If you fixed a bug or added code that needs tests, add tests.
 4. Ensure the test suite passes (`pnpm test`) and the types check (`pnpm check-types`). If you changed `package.json` or the build, run the package check (`pnpm check-package`). If you changed an adapter or its build, run the bundle check (`pnpm check-bundle`).
-5. Format your code (`pnpm format`). Make sure that `pnpm lint` passes.
+5. Format your code with [Biome](https://biomejs.dev) (`pnpm format`). Make sure that `pnpm lint` passes.
 6. Write your commit messages as [Conventional Commits](#commit-messages).
 
 Each pull request gets a preview of the playgrounds on Cloudflare Pages. A comment on the pull request gives the preview URL.
-
-## Style Guide
-
-We use [Biome](https://biomejs.dev) to format and lint the code. Run `pnpm format` after you change the code. Run `pnpm lint` to check it.
-
 
 ## Commit Messages
 
