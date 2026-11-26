@@ -44,7 +44,7 @@
     "react-pixi-fiber": "^3.0.0"
   },
   "devDependencies": {
-    "@types/react": "17.0.93",
+    "@types/react": "17.0.94",
     "@types/react-reconciler": "0.26.7",
     "react": "17.0.2",
     "react-pixi-fiber": "workspace:*",
