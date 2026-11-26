@@ -22,7 +22,7 @@ The dependencies between packages point in one direction:
 apps  →  adapters  →  core (types only)
 ```
 
-1. **The core depends on no adapter.** It declares only `react` as a peer dependency.
+1. **The core depends on no adapter.** It declares only `react` as a peer dependency. The declarations of the core import `react`, so the core also declares `@types/react` as an optional peer with the same range. A package manager that isolates packages then gives the core the React typings of the application.
 2. **An adapter imports only types from the core** (`import type ... from "react-pixi-fiber"`). The built JavaScript of an adapter contains no `import` or `require` of the core. The adapter declares the core as a peer dependency with a caret range, because its declarations import types from the core.
 3. **An adapter depends on no other adapter.** A React adapter declares only `react` and the core as peers. A PixiJS adapter declares only `pixi.js` and the core as peers. A PixiJS 3D adapter declares only `@pixi/3d`, `pixi.js`, and the core as peers (see [0022](0022-describe-each-pixijs-3d-major-as-its-own-adapter.md)). When a PixiJS major ships no typings, its adapter can also declare the package of those typings as an optional peer. An example is `@types/pixi.js` for PixiJS 4.
 4. **React, PixiJS, PixiJS 3D, and the core are always peer dependencies**, never regular dependencies. The React adapters bundle their `react-reconciler`, so no other runtime dependency remains (see [0011](0011-use-one-react-adapter-for-each-react-major.md)).

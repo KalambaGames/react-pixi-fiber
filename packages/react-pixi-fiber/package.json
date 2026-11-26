@@ -40,7 +40,13 @@
   ],
   "sideEffects": false,
   "peerDependencies": {
+    "@types/react": ">=17.0.0 <20.0.0",
     "react": ">=17.0.0 <20.0.0"
+  },
+  "peerDependenciesMeta": {
+    "@types/react": {
+      "optional": true
+    }
   },
   "devDependencies": {
     "@types/react": "18.3.32",
