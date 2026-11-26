@@ -32,5 +32,35 @@
       }
     }
   },
-  "assist": { "enabled": false }
+  "assist": {
+    "actions": {
+      "preset": "none",
+      "source": {
+        "organizeImports": {
+          "level": "on",
+          "options": {
+            "groups": [
+              ":NODE:",
+              ":BLANK_LINE:",
+              [
+                ":PACKAGE:",
+                "!react-pixi-fiber",
+                "!react-pixi-fiber/**",
+                "!@react-pixi-fiber/**",
+                "!playground-shell/**"
+              ],
+              ":BLANK_LINE:",
+              ["react-pixi-fiber", "react-pixi-fiber/**"],
+              "@react-pixi-fiber/**",
+              "playground-shell/**",
+              ":BLANK_LINE:",
+              ":ALIAS:",
+              "../**",
+              "./**"
+            ]
+          }
+        }
+      }
+    }
+  }
 }

@@ -26,6 +26,15 @@ The formatter keeps the Prettier options of 2.x:
 
 The linter starts from no preset (`"preset": "none"`). It enables only the rules that match the ESLint setup of 2.x: the React rules and the two React hooks rules. `useExhaustiveDependencies` stays a warning. A `biome-ignore` comment with a reason suppresses a rule at one location.
 
+Biome sorts the imports and exports of each file with the `organizeImports` action. No other assist action is on. Empty lines divide the imports into four groups, in this order:
+
+1. Node.js modules
+2. external packages
+3. the packages of this workspace
+4. aliases and relative paths
+
+Biome does not format Markdown and YAML files.
+
 `pnpm lint` checks. `pnpm format` writes. CI runs `pnpm lint` on every change.
 
 ## Considered Alternatives
@@ -41,7 +50,7 @@ One tool is enough for both jobs with the stylistic plugin. But ESLint is not a 
 ## Consequences
 
 - One tool and one file configure lint and format, but contributors who know ESLint must learn the Biome rule names
-- The code style of 2.x stays the same, so `git blame` stays useful, except for one formatting-only commit when Biome replaced Prettier
+- The code style of 2.x stays the same, so `git blame` stays useful. The exceptions are two formatting-only commits: Biome replaced Prettier in one, and sorted the imports in the other.
 - The linter enables few rules, so it rarely blocks a change, but it also finds few problems. Enabling the recommended rules of Biome is a separate, later change.
 - Biome does not enforce project conventions such as alphabetical order of components and props. Code review checks them.
 - Biome does not check types. `pnpm check-types` stays a separate step.
